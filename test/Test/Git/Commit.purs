@@ -1,4 +1,4 @@
-module Test.Git.Commit where
+module Test.Git.Commit (spec) where
 
 import Prelude
 
