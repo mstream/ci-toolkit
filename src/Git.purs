@@ -2,10 +2,9 @@ module Git (getCommitInfo, getCommitNotes, getCommitRefs) where
 
 import Prelude
 
-import Data.Either (hush)
+import Data.Either (either, hush)
 import Data.List (List)
 import Data.Maybe (Maybe(Nothing), maybe)
-import Effect (Effect)
 import Effect.Aff (Aff, catchError, throwError)
 import Effect.Exception (error)
 import Git.Commit
@@ -23,7 +22,9 @@ import Text.Parsing.StringParser (runParser)
 
 getCommitRefs ∷ FilePath → Aff (List CommitRef)
 getCommitRefs gitDirPath = do
-  cmdOutput ← executeCommand gitDirPath "git rev-list --all"
+  cmdOutput ← executeCommand
+    gitDirPath
+    "git rev-list --all --invert-grep --grep 'Notes added by'"
   maybe
     (throwError $ error "cannot parse commit refs")
     pure
@@ -42,9 +43,12 @@ getCommitNotes gitDirPath commitRef =
       ("git notes show " <> asHex commitRef)
     pure $ hush $ runParser notesParser cmdOutput
 
-getCommitInfo ∷ FilePath → CommitRef → Aff (Maybe CommitInfo)
+getCommitInfo ∷ FilePath → CommitRef → Aff CommitInfo
 getCommitInfo gitDirPath commitRef = do
   cmdOutput ← executeCommand
     gitDirPath
     ("git cat-file -p " <> asHex commitRef)
-  pure $ hush $ runParser commitInfoParser cmdOutput
+  either
+    (throwError <<< error <<< (_.error))
+    pure
+    (runParser commitInfoParser cmdOutput)

@@ -2,94 +2,65 @@ module Git.Commit
   ( Author(..)
   , Committer(..)
   , CommitInfo(..)
+  , CommitMessage
   , CommitRef
   , Email
   , Notes(..)
-  , Timestamp
+  , Timestamp(..)
   , Timezone
   , User
   , asHex
   , commitInfoParser
+  , commitMessageParser
   , commitRefParser
   , commitRefsParser
   , notesParser
+  , unsafeCommitMessage
   , unsafeCommitRef
   , unsafeEmail
-  , unsafeTimestamp
   , unsafeTimezone
   , unsafeUser
   ) where
 
 import Prelude
 
-import Data.Argonaut.Encode
-  ( class EncodeJson
-  )
-
-import Data.Argonaut.Encode.Generic
-  ( genericEncodeJson
-  )
-
-import Data.Eq.Generic
-  ( genericEq
-  )
-
-import Data.Int
-  ( fromString
-  )
-
+import Data.Argonaut.Encode (class EncodeJson)
+import Data.Argonaut.Encode.Encoders (encodeInt)
+import Data.Argonaut.Encode.Generic (genericEncodeJson)
+import Data.Array (fromFoldable)
+import Data.DateTime.Instant (Instant, fromDateTime, instant, unInstant)
+import Data.Eq.Generic (genericEq)
+import Data.Int (fromString, round, toNumber)
 import Data.Either
   ( Either(Left, Right)
   , either
   , hush
   , note
   )
-
-import Data.Foldable
-  ( oneOf
+import Data.Foldable (oneOf, foldMap)
+import Data.Generic.Rep (class Generic)
+import Data.Maybe (maybe)
+import Data.List (List(Nil), filter)
+import Data.Time.Duration
+  ( Milliseconds(Milliseconds)
+  , Seconds(Seconds)
+  , convertDuration
   )
-
-import Data.Generic.Rep
-  ( class Generic
-  )
-
-import Data.Maybe
-  ( maybe
-  )
-
-import Data.List
-  ( List(Nil)
-  , filter
-  , fromFoldable
-  )
-
-import Data.Show.Generic
-  ( genericShow
-  )
-
-import Data.String
-  ( Pattern(Pattern)
-  , length
-  , split
-  )
-
-import Text.Parsing.StringParser
-  ( Parser
-  , fail
-  , runParser
-  )
-
+import Data.Show.Generic (genericShow)
+import Data.String (Pattern(Pattern), joinWith, length, split)
+import Text.Parsing.StringParser (Parser, fail, runParser)
 import Text.Parsing.StringParser.CodePoints
   ( anyChar
   , eof
   , regex
-  , string
+  , skipSpaces
   , string
   )
-
 import Text.Parsing.StringParser.Combinators
-  ( endBy
+  ( between
+  , endBy
   , many
+  , manyTill
   , sepBy
   )
 
@@ -135,6 +106,7 @@ newtype CommitInfo =
   CommitInfo
     { author ∷ Author
     , committer ∷ Committer
+    , message ∷ CommitMessage
     }
 
 derive instance Generic CommitInfo _
@@ -146,6 +118,20 @@ instance EncodeJson CommitInfo where
   encodeJson = genericEncodeJson
 
 instance Eq CommitInfo where
+  eq = genericEq
+
+newtype CommitMessage =
+  CommitMessage String
+
+derive instance Generic CommitMessage _
+
+instance Show CommitMessage where
+  show = genericShow
+
+instance EncodeJson CommitMessage where
+  encodeJson = genericEncodeJson
+
+instance Eq CommitMessage where
   eq = genericEq
 
 newtype CommitRef =
@@ -191,7 +177,7 @@ instance Eq Notes where
   eq = genericEq
 
 newtype Timestamp =
-  Timestamp Int
+  Timestamp Instant
 
 derive instance Generic Timestamp _
 
@@ -199,7 +185,12 @@ instance Show Timestamp where
   show = genericShow
 
 instance EncodeJson Timestamp where
-  encodeJson = genericEncodeJson
+  encodeJson (Timestamp ins) =
+    let
+      (Milliseconds millis) = unInstant ins
+
+    in
+      encodeInt $ round millis
 
 instance Eq Timestamp where
   eq = genericEq
@@ -232,6 +223,18 @@ instance EncodeJson User where
 instance Eq User where
   eq = genericEq
 
+newLineParser ∷ Parser Unit
+newLineParser = void $ string "\n"
+
+fullStringParser ∷ Parser String
+fullStringParser = regex ".*"
+
+linesParser ∷ Parser (List String)
+linesParser = fullStringParser `sepBy` newLineParser
+
+wordParser ∷ Parser String
+wordParser = regex "[^ ]+"
+
 emailParser ∷ Parser Email
 emailParser =
   do
@@ -242,16 +245,22 @@ emailParser =
 
 userParser ∷ Parser User
 userParser = do
-  userString ← regex "[^ ]+"
+  userString ← wordParser
   pure $ User userString
 
 timestampParser ∷ Parser Timestamp
 timestampParser = do
-  timestampString ← regex "[^ ]+"
+  timestampString ← wordParser
+
+  let
+    timestamp = do
+      duration ← Seconds <$> (toNumber <$> fromString timestampString)
+      Timestamp <$> (instant $ convertDuration duration)
+
   maybe
     (fail "unparsable timestamp")
-    (pure <<< Timestamp)
-    (fromString timestampString)
+    pure
+    timestamp
 
 timezoneParser ∷ Parser Timezone
 timezoneParser = do
@@ -276,17 +285,17 @@ committerParser ∷ Parser Committer
 committerParser = do
   void $ string "committer "
   user ← userParser
-  void $ string " "
+  skipSpaces
   email ← emailParser
-  void $ string " "
+  skipSpaces
   timestamp ← timestampParser
-  void $ string " "
+  skipSpaces
   timezone ← timezoneParser
   pure $ Committer { email, timestamp, timezone, user }
 
 commitInfoParser ∷ Parser CommitInfo
 commitInfoParser = do
-  lines ← regex ".*" `sepBy` (string "\n")
+  lines ← linesParser
   let
     result = ado
       author ← note
@@ -296,40 +305,51 @@ commitInfoParser = do
       committer ← note "no valid committer line"
         (oneOf $ hush <<< runParser committerParser <$> lines)
 
-      in { author, committer }
+      message ← note
+        "no commit message"
+        ( hush $ runParser commitMessageParser
+            (joinWith "\n" (fromFoldable lines))
+        )
+
+      in { author, committer, message }
   case result of
     Left errMsg → fail errMsg
-    Right { author, committer } → pure $ CommitInfo
-      { author, committer }
+    Right { author, committer, message } → pure $ CommitInfo
+      { author, committer, message }
 
 notesParser ∷ Parser Notes
 notesParser = do
-  lines ← regex ".*" `sepBy` (string "\n")
+  lines ← linesParser
   pure $ Notes lines
+
+commitMessageParser ∷ Parser CommitMessage
+commitMessageParser = do
+  void $ manyTill (manyTill anyChar newLineParser) newLineParser
+  messageString ← fullStringParser
+  pure $ CommitMessage messageString
 
 commitRefParser ∷ Parser CommitRef
 commitRefParser = do
-  fullString ← regex ".*"
+  fullString ← fullStringParser
   if length fullString == 40 then pure $ CommitRef fullString
   else fail "not a 40-character long hex string"
 
 commitRefsParser ∷ Parser (List CommitRef)
 commitRefsParser = do
-  refs ← commitRefParser `endBy` (string "\n")
-  void $ eof
+  refs ← commitRefParser `endBy` newLineParser
   pure refs
 
 asHex ∷ CommitRef → String
 asHex (CommitRef commitRefString) = commitRefString
+
+unsafeCommitMessage ∷ String → CommitMessage
+unsafeCommitMessage = CommitMessage
 
 unsafeCommitRef ∷ String → CommitRef
 unsafeCommitRef = CommitRef
 
 unsafeEmail ∷ String → Email
 unsafeEmail = Email
-
-unsafeTimestamp ∷ Int → Timestamp
-unsafeTimestamp = Timestamp
 
 unsafeTimezone ∷ Int → Timezone
 unsafeTimezone = Timezone

@@ -10,7 +10,13 @@ import Effect.Console (log)
 import Git (getCommitInfo, getCommitNotes, getCommitRefs)
 import Options.Applicative as Opts
 import Options.Applicative ((<**>))
-import ProgramInput (ProgramInput, programInput)
+import ProgramInput
+  ( Command(Render)
+  , CommonOptions(CommonOptions)
+  , ProgramInput(ProgramInput)
+  , RenderOptions(RenderOptions)
+  , programInput
+  )
 
 main ∷ Effect Unit
 main = do
@@ -21,18 +27,21 @@ options ∷ Opts.ParserInfo ProgramInput
 options = Opts.info (programInput <**> Opts.helper) (Opts.fullDesc)
 
 run ∷ ProgramInput → Aff Unit
-run _ = do
-  let gitDirPath = "."
-  commitRefs ← getCommitRefs gitDirPath
+run (ProgramInput (CommonOptions commonOptions) command) = do
+  commitRefs ← getCommitRefs commonOptions.gitDirectory
   commitRefsWithNotes ← traverse
-    ( \ref → getCommitNotes gitDirPath ref >>= \notes →
+    ( \ref → getCommitNotes commonOptions.gitDirectory ref >>= \notes →
         pure { ref, notes }
     )
     commitRefs
   commitRefsWithNotesAndInfo ← traverse
-    ( \commit → getCommitInfo gitDirPath commit.ref >>= \info →
-        pure { info, notes: commit.notes, ref: commit.ref }
+    ( \commit → do
+        commitInfo ← getCommitInfo commonOptions.gitDirectory commit.ref
+        pure { info: commitInfo, notes: commit.notes, ref: commit.ref }
     )
     commitRefsWithNotes
-  let output = stringify $ encodeJson commitRefsWithNotesAndInfo
-  liftEffect $ log output
+  case command of
+    Render (RenderOptions renderOptions) → do
+      liftEffect $ log $ show $ renderOptions.ciStages
+      liftEffect $ log $ stringify $ encodeJson
+        commitRefsWithNotesAndInfo
