@@ -1,6 +1,7 @@
 module Main where
 
 import Prelude
+import CI (loadRepo)
 import Data.Argonaut (encodeJson, stringify)
 import Data.Traversable (traverse)
 import Effect (Effect)
@@ -11,9 +12,11 @@ import Git (getCommitInfo, getCommitNotes, getCommitRefs)
 import Options.Applicative as Opts
 import Options.Applicative ((<**>))
 import ProgramInput
-  ( Command(Render)
+  ( Command(GetLast, Render)
   , CommonOptions(CommonOptions)
+  , GetLastOptions(GetLastOptions)
   , ProgramInput(ProgramInput)
+  , RenderFormat(JSON)
   , RenderOptions(RenderOptions)
   , programInput
   )
@@ -28,20 +31,15 @@ options = Opts.info (programInput <**> Opts.helper) (Opts.fullDesc)
 
 run ∷ ProgramInput → Aff Unit
 run (ProgramInput (CommonOptions commonOptions) command) = do
-  commitRefs ← getCommitRefs commonOptions.gitDirectory
-  commitRefsWithNotes ← traverse
-    ( \ref → getCommitNotes commonOptions.gitDirectory ref >>= \notes →
-        pure { ref, notes }
-    )
-    commitRefs
-  commitRefsWithNotesAndInfo ← traverse
-    ( \commit → do
-        commitInfo ← getCommitInfo commonOptions.gitDirectory commit.ref
-        pure { info: commitInfo, notes: commit.notes, ref: commit.ref }
-    )
-    commitRefsWithNotes
   case command of
-    Render (RenderOptions renderOptions) → do
-      liftEffect $ log $ show $ renderOptions.ciStages
-      liftEffect $ log $ stringify $ encodeJson
-        commitRefsWithNotesAndInfo
+
+    GetLast (GetLastOptions cmdOpts) → do
+      liftEffect $ log $ stringify $ encodeJson $ "TODO"
+
+    Render (RenderOptions cmdOpts) → do
+      repo ← loadRepo commonOptions.gitDirectory commonOptions.ciPrefix
+      let
+        output = case cmdOpts.format of
+          JSON → stringify $ encodeJson repo
+
+      liftEffect $ log output

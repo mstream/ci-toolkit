@@ -13,6 +13,7 @@ import Shell (executeCommand)
 import Test.CI as CI
 import Test.Git as Git
 import Test.Git.Commit as GitCommit
+import Test.Query as Query
 import Test.Spec (Spec)
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (runSpec)
@@ -23,3 +24,4 @@ main = do
     CI.spec
     GitCommit.spec
     Git.spec
+    Query.spec

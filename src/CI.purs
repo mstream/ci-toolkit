@@ -8,6 +8,8 @@ module CI
   ) where
 
 import Prelude
+import Data.Argonaut.Encode (class EncodeJson)
+import Data.Argonaut.Encode.Generic (genericEncodeJson)
 import Data.Eq.Generic
   ( genericEq
   )
@@ -37,6 +39,9 @@ derive instance Generic CIStage _
 instance Show CIStage where
   show = genericShow
 
+instance EncodeJson CIStage where
+  encodeJson = genericEncodeJson
+
 instance Eq CIStage where
   eq = genericEq
 
@@ -62,6 +67,9 @@ derive instance Generic Repo _
 
 instance Show Repo where
   show = genericShow
+
+instance EncodeJson Repo where
+  encodeJson = genericEncodeJson
 
 instance Eq Repo where
   eq = genericEq

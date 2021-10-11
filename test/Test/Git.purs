@@ -11,19 +11,10 @@ import Data.Maybe (fromJust)
 import Data.Time (Time)
 import Data.Time as Time
 import Git (getCommitRefs)
-import Git.Commit
-  ( Author(Author)
-  , CommitInfo(CommitInfo)
-  , Committer(Committer)
-  , Timestamp(Timestamp)
-  , unsafeCommitRef
-  , unsafeEmail
-  , unsafeTimezone
-  , unsafeUser
-  )
+import Git.Commit (unsafeCommitRef)
 import Partial.Unsafe (unsafePartial)
 import Test.Spec (Spec, around, describe, it)
-import Test.Utils (createCommit, unsafeInstantFromSeconds, withGitRepo)
+import Test.Utils (createCommit, withGitRepo)
 import Test.Spec.Assertions (shouldEqual)
 
 time ∷ Time

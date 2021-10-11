@@ -2,11 +2,13 @@ module Test.Utils
   ( appendNotes
   , createCommit
   , unsafeInstantFromSeconds
+  , unsafeNonEmptyString
   , withGitRepo
   ) where
 
 import Prelude
 
+import Data.Char (fromCharCode)
 import Data.DateTime (DateTime)
 import Data.DateTime.Instant (Instant, fromDateTime, instant)
 import Data.Either (Either(Left, Right))
@@ -14,6 +16,8 @@ import Data.Formatter.DateTime (format, parseFormatString)
 import Data.Int (toNumber)
 import Data.Maybe (fromJust)
 import Data.String (trim)
+import Data.String.NonEmpty (NonEmptyString)
+import Data.String.NonEmpty as NES
 import Data.Time.Duration (Seconds(Seconds), convertDuration)
 import Data.Tuple.Nested (type (/\), (/\))
 import Effect.Aff (Aff, bracket, error, throwError)
@@ -25,12 +29,13 @@ import Git.Commit
   , CommitRef
   , Committer(Committer)
   , Timestamp(Timestamp)
+  , UserInfo(UserInfo)
+  , Username(Username)
   , asHex
   , unsafeCommitMessage
   , unsafeCommitRef
   , unsafeEmail
   , unsafeTimezone
-  , unsafeUser
   )
 import Node.FS.Aff (mkdir, rmdir)
 import Node.OS (tmpdir)
@@ -99,17 +104,19 @@ createCommit gitDirPath { authorName, committerName, date, message } =
           <> "\""
 
         commitInfo = CommitInfo
-          { author: Author
+          { author: Author $ UserInfo
               { email: unsafeEmail authorEmail
               , timestamp
               , timezone: unsafeTimezone 0
-              , user: unsafeUser authorName
+              , username: Username $ unsafePartial $ fromJust $
+                  NES.fromString authorName
               }
-          , committer: Committer
+          , committer: Committer $ UserInfo
               { email: unsafeEmail committerEmail
               , timestamp
               , timezone: unsafeTimezone 0
-              , user: unsafeUser committerName
+              , username: Username $ unsafePartial $ fromJust $
+                  NES.fromString committerName
               }
           , message: unsafeCommitMessage message
           }
@@ -133,8 +140,15 @@ appendNotes gitDirPath commitRef message =
   in
     void $ executeCommand gitDirPath cmd
 
-unsafeInstantFromSeconds ∷ Int → Instant
+unsafeCharFromCharCode ∷ Int → Char
+unsafeCharFromCharCode i =
+  unsafePartial $ fromJust $ fromCharCode i
 
+unsafeNonEmptyString ∷ String → NonEmptyString
+unsafeNonEmptyString s =
+  unsafePartial $ fromJust $ NES.fromString s
+
+unsafeInstantFromSeconds ∷ Int → Instant
 unsafeInstantFromSeconds seconds =
   unsafePartial $ fromJust $ instant $ convertDuration $ Seconds $
     toNumber seconds
