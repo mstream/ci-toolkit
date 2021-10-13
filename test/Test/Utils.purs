@@ -1,6 +1,7 @@
 module Test.Utils
   ( appendNotes
   , createCommit
+  , unsafeCharFromCharCode
   , unsafeInstantFromSeconds
   , unsafeNonEmptyString
   , withGitRepo

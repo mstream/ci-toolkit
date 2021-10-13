@@ -20,7 +20,12 @@ import Data.Time as Time
 import Data.Tuple.Nested ((/\))
 import Partial.Unsafe (unsafePartial)
 import Test.Spec (Spec, around, describe, it)
-import Test.Utils (appendNotes, createCommit, withGitRepo)
+import Test.Utils
+  ( appendNotes
+  , createCommit
+  , unsafeNonEmptyString
+  , withGitRepo
+  )
 import Test.Spec.Assertions (shouldEqual)
 import Type.Proxy (Proxy(Proxy))
 
@@ -55,10 +60,12 @@ spec = describe "Git" do
 
         commitRef1 /\ commitInfo1 ← createExampleCommit "commit1"
         commitRef2 /\ commitInfo2 ← createExampleCommit "commit2"
+
         appendNotes
           gitDirPath
           commitRef1
           "aaa\nbbb\n"
+
         appendNotes
           gitDirPath
           commitRef2
@@ -68,8 +75,8 @@ spec = describe "Git" do
           expected = Repo $ fromFoldable
             [ { info: commitInfo2
               , passedStages: fromFoldable
-                  [ CIStage $ nes (Proxy ∷ Proxy "one")
-                  , CIStage $ nes (Proxy ∷ Proxy "two")
+                  [ CIStage $ unsafeNonEmptyString "one"
+                  , CIStage $ unsafeNonEmptyString "two"
                   ]
               , ref: commitRef2
               }
@@ -78,7 +85,9 @@ spec = describe "Git" do
               , ref: commitRef1
               }
             ]
+
         actual ← loadRepo
           gitDirPath
-          (CIStagePrefix (nes (Proxy ∷ Proxy "ci-")))
+          (CIStagePrefix $ unsafeNonEmptyString "ci-")
+
         actual `shouldEqual` expected

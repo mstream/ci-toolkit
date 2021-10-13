@@ -3,20 +3,15 @@ module Test.Main where
 import Prelude
 
 import Effect (Effect)
-import Effect.Class (liftEffect)
-import Effect.Exception (Error)
-import Effect.Aff (Aff, catchError, launchAff_, throwError)
-import Node.FS.Sync (rmdir)
-import Node.OS (tmpdir)
-import Node.Path (FilePath)
-import Shell (executeCommand)
+import Effect.Aff (launchAff_)
 import Test.CI as CI
 import Test.Git as Git
 import Test.Git.Commit as GitCommit
+import Test.Program as Program
 import Test.Query as Query
-import Test.Spec (Spec)
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (runSpec)
+import Test.Update as Update
 
 main ∷ Effect Unit
 main = do
@@ -24,4 +19,6 @@ main = do
     CI.spec
     GitCommit.spec
     Git.spec
+    Program.spec
     Query.spec
+    Update.spec

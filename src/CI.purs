@@ -23,14 +23,15 @@ import Data.Show.Generic
   ( genericShow
   )
 import Data.String (Pattern(Pattern), stripPrefix)
-import Data.String.NonEmpty (NonEmptyString, fromString, toString)
+import Data.String.NonEmpty (NonEmptyString)
+import Data.String.NonEmpty as NES
 import Data.Traversable (traverse)
 import Effect.Aff (Aff)
 import Git (getCommitInfo, getCommitNotes, getCommitRefs)
 import Git.Commit (CommitInfo, CommitRef, Notes(Notes))
 import Node.Path (FilePath)
 import Text.Parsing.StringParser (Parser, fail)
-import Text.Parsing.StringParser.CodePoints (regex, string)
+import Text.Parsing.StringParser.CodePoints (regex)
 
 newtype CIStage = CIStage NonEmptyString
 
@@ -80,16 +81,15 @@ wordParser = do
   maybe
     (fail "empty word")
     pure
-    (fromString word)
+    (NES.fromString word)
 
 ciPrefixParser ∷ Parser CIStagePrefix
 ciPrefixParser = do
   ciPrefixName ← wordParser
   pure $ CIStagePrefix ciPrefixName
 
-ciStageParser ∷ CIStagePrefix → Parser CIStage
-ciStageParser (CIStagePrefix prefix) = do
-  void $ string $ toString prefix
+ciStageParser ∷ Parser CIStage
+ciStageParser = do
   ciStageName ← wordParser
   pure $ CIStage ciStageName
 
@@ -98,8 +98,8 @@ passedStagesFromNotes (CIStagePrefix prefix) (Notes noteLines) =
   foldMap (maybe Nil singleton <<< lineToCIStage) noteLines
   where
   lineToCIStage line = do
-    suffix ← stripPrefix (Pattern $ toString prefix) line
-    ciStageName ← fromString suffix
+    suffix ← stripPrefix (Pattern $ NES.toString prefix) line
+    ciStageName ← NES.fromString suffix
     pure $ CIStage ciStageName
 
 loadRepo ∷ FilePath → CIStagePrefix → Aff Repo

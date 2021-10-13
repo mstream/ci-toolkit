@@ -24,7 +24,7 @@ import Git.Commit
 import Query (findLastCommit)
 import Test.Spec (Spec, SpecT, describe, it)
 import Test.Spec.Assertions (shouldEqual)
-import Test.Utils (unsafeInstantFromSeconds)
+import Test.Utils (unsafeInstantFromSeconds, unsafeNonEmptyString)
 import Type.Proxy (Proxy(Proxy))
 
 spec ∷ Spec Unit
@@ -53,8 +53,7 @@ dummyCommitInfoData =
   , message: unsafeCommitMessage "commit message"
   }
 
-findLastCommitSpec
-  ∷ ∀ m1 m2. Monad m1 ⇒ MonadThrow Error m2 ⇒ SpecT m2 Unit m1 Unit
+findLastCommitSpec ∷ Spec Unit
 findLastCommitSpec = describe "findLastCommit" do
   it "retrieves the last commit which passed given CI stages" do
     let
@@ -74,21 +73,21 @@ findLastCommitSpec = describe "findLastCommit" do
       repo = Repo $ fromFoldable
         [ { info: commitInfo3
           , passedStages: fromFoldable
-              [ CIStage $ NES.nes (Proxy ∷ Proxy "one")
+              [ CIStage $ unsafeNonEmptyString "one"
               ]
           , ref: commitRef3
           }
         , { info: commitInfo2
           , passedStages: fromFoldable
-              [ CIStage $ NES.nes (Proxy ∷ Proxy "one")
-              , CIStage $ NES.nes (Proxy ∷ Proxy "two")
+              [ CIStage $ unsafeNonEmptyString "one"
+              , CIStage $ unsafeNonEmptyString "two"
               ]
           , ref: commitRef2
           }
         , { info: commitInfo1
           , passedStages: fromFoldable
-              [ CIStage $ NES.nes (Proxy ∷ Proxy "one")
-              , CIStage $ NES.nes (Proxy ∷ Proxy "two")
+              [ CIStage $ unsafeNonEmptyString "one"
+              , CIStage $ unsafeNonEmptyString "two"
               ]
           , ref: commitRef1
           }
@@ -98,8 +97,8 @@ findLastCommitSpec = describe "findLastCommit" do
       expected = pure $ commitRef2 /\ commitInfo2
       actual = findLastCommit
         ( fromFoldable
-            [ CIStage $ NES.nes (Proxy ∷ Proxy "one")
-            , CIStage $ NES.nes (Proxy ∷ Proxy "two")
+            [ CIStage $ unsafeNonEmptyString "one"
+            , CIStage $ unsafeNonEmptyString "two"
             ]
         )
         repo
