@@ -49,6 +49,7 @@ spec = describe "Git" do
   describe "execute" do
     markCommitAndGetLastCommitSpec
     markCommitAndRenderJsonSpec
+    markCommitWithTheSameStageTwiceSpec
     renderNoStagesJsonSpec
 
 renderNoStagesJsonSpec ∷ Spec Unit
@@ -215,3 +216,58 @@ markCommitAndGetLastCommitSpec = around withGitRepo do
         )
 
       actual `shouldEqual` expected
+
+markCommitWithTheSameStageTwiceSpec ∷ Spec Unit
+markCommitWithTheSameStageTwiceSpec = around withGitRepo do
+  it "marks a commit with the same stage name twice" $
+    \gitDirPath → do
+      let
+        createExampleCommit message =
+          createCommit
+            gitDirPath
+            { authorName: "user1"
+            , committerName: "user2"
+            , date: DateTime date time
+            , message
+            }
+
+      commitRef1 /\ _ ← createExampleCommit "commit1"
+      _ ← createExampleCommit "commit2"
+
+      let
+        stageNameToMark = "one"
+
+      void $ execute $ ProgramInput
+        ( CommonOptions
+            { ciPrefix: CIStagePrefix $ unsafeNonEmptyString "ci-"
+            , dryRun: false
+            , gitDirectory: gitDirPath
+            , isVerbose: false
+            }
+        )
+        ( MarkCommit $ MarkCommitOptions
+            { ciStage: CIStage $ unsafeNonEmptyString stageNameToMark
+            , commitRef: commitRef1
+            }
+        )
+
+      output ← execute $ ProgramInput
+        ( CommonOptions
+            { ciPrefix: CIStagePrefix $ unsafeNonEmptyString "ci-"
+            , dryRun: false
+            , gitDirectory: gitDirPath
+            , isVerbose: false
+            }
+        )
+        ( MarkCommit $ MarkCommitOptions
+            { ciStage: CIStage $ unsafeNonEmptyString stageNameToMark
+            , commitRef: commitRef1
+            }
+        )
+
+      output `shouldEqual`
+        ( ProgramOutput.Text $ "Commit '" <> asHex commitRef1
+            <> "' is already marked with CI stage '"
+            <> stageNameToMark
+            <> "'"
+        )

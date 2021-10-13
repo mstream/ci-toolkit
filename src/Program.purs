@@ -37,8 +37,8 @@ execute (ProgramInput (CommonOptions commonOpts) command) = do
           pure $ ProgramOutput.Text $ asHex commitRef
         Nothing → pure $ ProgramOutput.Text $ "Not found."
 
-    MarkCommit (MarkCommitOptions cmdOpts) →
-      case markCommit cmdOpts.ciStage cmdOpts.commitRef repo of
+    MarkCommit (MarkCommitOptions { ciStage, commitRef }) →
+      case markCommit ciStage commitRef repo of
         Just update → do
 
           if commonOpts.dryRun then pure unit
@@ -50,9 +50,15 @@ execute (ProgramInput (CommonOptions commonOpts) command) = do
 
           pure $ ProgramOutput.Text $ showToHuman update
 
-        Nothing →
-          pure $ ProgramOutput.Text
-            "Commit already marked with the stage."
+        Nothing → do
+          let
+            (CIStage stage) = ciStage
+
+          pure $ ProgramOutput.Text $
+            "Commit '" <> asHex commitRef
+              <> "' is already marked with CI stage '"
+              <> NES.toString stage
+              <> "'"
 
     Render (RenderOptions cmdOpts) → do
       case cmdOpts.format of
