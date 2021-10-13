@@ -12,6 +12,7 @@ import Git (appendCommitNotes)
 import Git.Commit (Notes(Notes), asHex)
 import Node.Path (FilePath)
 import Query (findLastCommit)
+import Print (showToHuman)
 import ProgramInput
   ( Command(Render, MarkCommit, GetLast)
   , CommonOptions(CommonOptions)
@@ -39,12 +40,15 @@ execute (ProgramInput (CommonOptions commonOpts) command) = do
     MarkCommit (MarkCommitOptions cmdOpts) →
       case markCommit cmdOpts.ciStage cmdOpts.commitRef repo of
         Just update → do
-          executeUpdate
-            commonOpts.gitDirectory
-            commonOpts.ciPrefix
-            update
 
-          pure $ ProgramOutput.Text "Done."
+          if commonOpts.dryRun then pure unit
+          else
+            executeUpdate
+              commonOpts.gitDirectory
+              commonOpts.ciPrefix
+              update
+
+          pure $ ProgramOutput.Text $ showToHuman update
 
         Nothing →
           pure $ ProgramOutput.Text

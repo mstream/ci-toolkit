@@ -111,6 +111,7 @@ markCommitAndRenderJsonSpec = around withGitRepo do
       commitRef2 /\ commitInfo2 ← createExampleCommit "commit2"
 
       let
+        stageNameToMark = "one"
         expected = ProgramOutput.JSON $ encodeJson $ Repo $
           fromFoldable
             [ { info: commitInfo2
@@ -119,7 +120,7 @@ markCommitAndRenderJsonSpec = around withGitRepo do
               }
             , { info: commitInfo1
               , passedStages: fromFoldable
-                  [ CIStage $ unsafeNonEmptyString "one" ]
+                  [ CIStage $ unsafeNonEmptyString stageNameToMark ]
               , ref: commitRef1
               }
             ]
@@ -133,7 +134,7 @@ markCommitAndRenderJsonSpec = around withGitRepo do
             }
         )
         ( MarkCommit $ MarkCommitOptions
-            { ciStage: CIStage $ unsafeNonEmptyString "one"
+            { ciStage: CIStage $ unsafeNonEmptyString stageNameToMark
             , commitRef: commitRef1
             }
         )
@@ -148,7 +149,13 @@ markCommitAndRenderJsonSpec = around withGitRepo do
         )
         (Render $ RenderOptions { format: JSON })
 
-      output `shouldEqual` (ProgramOutput.Text "Done.")
+      output `shouldEqual`
+        ( ProgramOutput.Text $ "Marking commit " <> asHex commitRef1
+            <> " with CI stage '"
+            <> stageNameToMark
+            <> "'"
+        )
+
       actual `shouldEqual` expected
 
 markCommitAndGetLastCommitSpec ∷ Spec Unit
@@ -200,5 +207,11 @@ markCommitAndGetLastCommitSpec = around withGitRepo do
             }
         )
 
-      output `shouldEqual` (ProgramOutput.Text "Done.")
+      output `shouldEqual`
+        ( ProgramOutput.Text $ "Marking commit " <> asHex commitRef1
+            <> " with CI stage '"
+            <> stageNameToMark
+            <> "'"
+        )
+
       actual `shouldEqual` expected
