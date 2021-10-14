@@ -71,13 +71,37 @@ mkRandomDir = do
   mkdir dir
   pure dir
 
-formatCommitDate ∷ DateTime → Either String String
-formatCommitDate d = do
-  dateFormat ← parseFormatString "ddd MMM D HH:mm:ss UTC YYYY"
-  pure $ format dateFormat d
-
 createCommit ∷ FilePath → TestCommitInfo → Aff (CommitRef /\ CommitInfo)
-createCommit gitDirPath { authorName, committerName, date, message } =
+createCommit gitDirPath testCommitInfo = do
+  cmd /\ commitInfo ← commitCommand
+    testCommitInfo
+    ( "commit --allow-empty -m \""
+        <> testCommitInfo.message
+        <> "\""
+    )
+
+  void $ executeCommand gitDirPath cmd
+  cmdOutput ← executeCommand gitDirPath "git rev-parse HEAD"
+
+  let
+    commitRef = unsafeCommitRef $ trim cmdOutput
+
+  pure $ commitRef /\ commitInfo
+
+appendNotes ∷ FilePath → TestCommitInfo → CommitRef → Aff Unit
+appendNotes gitDirPath testCommitInfo commitRef = do
+  cmd /\ _ ← commitCommand
+    testCommitInfo
+    ( "notes append -m '"
+        <> testCommitInfo.message
+        <> "' "
+        <> (asHex commitRef)
+    )
+
+  void $ executeCommand gitDirPath cmd
+
+commitCommand ∷ TestCommitInfo → String → Aff (String /\ CommitInfo)
+commitCommand { authorName, committerName, date, message } cmd =
   case formatCommitDate date of
     Left errMsg → throwError $ error errMsg
     Right dateString → do
@@ -87,22 +111,6 @@ createCommit gitDirPath { authorName, committerName, date, message } =
         committerEmail = committerName <> "@example.com"
 
         timestamp = Timestamp $ fromDateTime date
-
-        cmd = "GIT_AUTHOR_DATE='"
-          <> dateString
-          <> "' GIT_AUTHOR_NAME='"
-          <> authorName
-          <> "' GIT_AUTHOR_EMAIL='"
-          <> authorEmail
-          <> "' GIT_COMMITTER_DATE='"
-          <> dateString
-          <> "' GIT_COMMITTER_NAME='"
-          <> committerName
-          <> "' GIT_COMMITTER_EMAIL='"
-          <> committerEmail
-          <> "' git commit --allow-empty -m \""
-          <> message
-          <> "\""
 
         commitInfo = CommitInfo
           { author: Author $ UserInfo
@@ -122,24 +130,27 @@ createCommit gitDirPath { authorName, committerName, date, message } =
           , message: unsafeCommitMessage message
           }
 
-      void $ executeCommand gitDirPath cmd
-      cmdOutput ← executeCommand gitDirPath "git rev-parse HEAD"
+        commandString = "GIT_AUTHOR_DATE='"
+          <> dateString
+          <> "' GIT_AUTHOR_NAME='"
+          <> authorName
+          <> "' GIT_AUTHOR_EMAIL='"
+          <> authorEmail
+          <> "' GIT_COMMITTER_DATE='"
+          <> dateString
+          <> "' GIT_COMMITTER_NAME='"
+          <> committerName
+          <> "' GIT_COMMITTER_EMAIL='"
+          <> committerEmail
+          <> "' git "
+          <> cmd
 
-      let
-        commitRef = unsafeCommitRef $ trim cmdOutput
+      pure $ commandString /\ commitInfo
 
-      pure $ commitRef /\ commitInfo
-
-appendNotes ∷ FilePath → CommitRef → String → Aff Unit
-appendNotes gitDirPath commitRef message =
-  let
-    cmd = "git notes append -m '"
-      <> message
-      <> "' "
-      <> (asHex commitRef)
-
-  in
-    void $ executeCommand gitDirPath cmd
+formatCommitDate ∷ DateTime → Either String String
+formatCommitDate d = do
+  dateFormat ← parseFormatString "ddd MMM D HH:mm:ss UTC YYYY"
+  pure $ format dateFormat d
 
 unsafeCharFromCharCode ∷ Int → Char
 unsafeCharFromCharCode i =

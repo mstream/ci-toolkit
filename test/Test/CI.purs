@@ -49,27 +49,28 @@ spec = describe "Git" do
     around withGitRepo do
       it "builds a repository model" $ \gitDirPath → do
         let
+          testCommitInfo message =
+            { authorName: "user1"
+            , committerName: "user2"
+            , date: DateTime date time
+            , message
+            }
+
           createExampleCommit message =
             createCommit
               gitDirPath
-              { authorName: "user1"
-              , committerName: "user2"
-              , date: DateTime date time
-              , message
-              }
+              (testCommitInfo message)
+
+          appendExampleNotes commitRef message =
+            appendNotes
+              gitDirPath
+              (testCommitInfo message)
+              commitRef
 
         commitRef1 /\ commitInfo1 ← createExampleCommit "commit1"
         commitRef2 /\ commitInfo2 ← createExampleCommit "commit2"
-
-        appendNotes
-          gitDirPath
-          commitRef1
-          "aaa\nbbb\n"
-
-        appendNotes
-          gitDirPath
-          commitRef2
-          "aaa\nci-one\nbbb\nci-two\nccc"
+        appendExampleNotes commitRef1 "aaa\nbbb\n"
+        appendExampleNotes commitRef2 "aaa\nci-one\nbbb\nci-two\nccc"
 
         let
           expected = Repo $ fromFoldable
