@@ -2,10 +2,11 @@ name: CI
 
 on:
   push:
-    branches: [master]
+    branches: 
+      - master
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-20.04
 
     steps:
@@ -31,12 +32,20 @@ jobs:
       - name: Set up git user name for testing
         run: git config --global user.name "Test User"
 
+      - name: Verify formatting
+        run: npm run format:check
+      
       - name: Test source
         run: npm run test
 
+      - name: Set up git user email for releasing 
+        run: git config --global user.email "ci@github.com"
+
+      - name: Set up git user name for releasing
+        run: git config --global user.name "CI"
+      
+      - name: Release source
+        run: 'npm run release && git push --follow-tags origin $(git branch)'
+
       - name: Build source
         run: npm run bundle
-
-      - name: Verify formatting
-        run: npm run format:check
-
