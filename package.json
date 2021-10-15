@@ -1,12 +1,17 @@
 {
   "name": "@mstream/ci-toolkit",
   "version": "0.1.6",
+  "private": false,
   "description": "A collection of tools supporting continuous integration",
   "files": [
     "dist/index.js"
   ],
   "bin": {
     "ci-toolkit": "dist/index.js"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
     "bundle": "spago bundle-app --to dist/index.js",
