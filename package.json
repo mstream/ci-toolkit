@@ -1,5 +1,5 @@
 {
-  "name": "@mstream/ci-toolkit",
+  "name": "@ci-tools/ci-toolkit",
   "version": "0.1.7",
   "private": false,
   "description": "A collection of tools supporting continuous integration",
