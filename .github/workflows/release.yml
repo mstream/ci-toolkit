@@ -53,4 +53,4 @@ jobs:
       - name: Create GitHub release
         run: 'npm run release:gh'
         env: 
-          CONVENTIONAL_GITHUB_RELEASER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONVENTIONAL_GITHUB_RELEASER_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
