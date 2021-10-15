@@ -1,6 +1,5 @@
-# Changelog
-
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+Changelog
+### 0.1.10 (2021-10-15)
 
 ### 0.1.9 (2021-10-15)
 
