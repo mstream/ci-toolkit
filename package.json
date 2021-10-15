@@ -1,6 +1,6 @@
 {
   "name": "@mstream/ci-toolkit",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "A collection of tools supporting continuous integration",
   "files": [
     "dist/index.js"
