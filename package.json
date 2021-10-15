@@ -7,7 +7,7 @@
     "dist/index.js"
   ],
   "bin": {
-    "ci-toolkit": "dist/index.js"
+    "ci-toolkit": "bin/cli"
   },
   "publishConfig": {
     "access": "public",
