@@ -13,7 +13,7 @@
     "format": "purs-tidy format-in-place 'src/**/*.purs' 'test/**/*.purs'",
     "format:check": "purs-tidy check 'src/**/*.purs'",
     "release": "standard-version",
-    "release:gh": "",
+    "release:gh": "conventional-github-releaser",
     "test": "spago test"
   },
   "repository": {
