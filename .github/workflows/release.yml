@@ -1,4 +1,4 @@
-name: CI
+name: Release
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  test:
+  release:
     runs-on: ubuntu-20.04
 
     steps:
@@ -24,31 +24,33 @@ jobs:
           node-version: '14'
 
       - name: Install dependencies
-        run: npm install
+        run: 'npm install'
 
       - name: Set up git user email for testing 
-        run: git config --global user.email "test@example.com"
+        run: 'git config --global user.email "test@example.com"'
 
       - name: Set up git user name for testing
-        run: git config --global user.name "Test User"
+        run: 'git config --global user.name "Test User"'
 
       - name: Verify formatting
-        run: npm run format:check
+        run: 'npm run format:check'
       
       - name: Test source
-        run: npm run test
+        run: 'npm run test'
 
       - name: Set up git user email for releasing 
-        run: git config --global user.email "ci@github.com"
+        run: 'git config --global user.email "ci@github.com"'
 
       - name: Set up git user name for releasing
-        run: git config --global user.name "CI"
+        run: 'git config --global user.name "CI"'
       
       - name: Release source
-        run: npm run release
+        run: 'npm run release'
 
       - name: Push the release commit
         run: 'git push --follow-tags origin master'
 
-      - name: Build source
-        run: npm run bundle
+      - name: Create GitHub release
+        run: 'npm run release:gh'
+        env: 
+          CONVENTIONAL_GITHUB_RELEASER_TOKEN: ${{ secrets.GITHUB_TOKEN }}

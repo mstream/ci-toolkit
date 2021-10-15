@@ -2,11 +2,18 @@
   "name": "ci-toolkit",
   "version": "0.1.1",
   "description": "A collection of tools supporting continuous integration",
+  "files": [
+    "dist/index.js"
+  ],
+  "bin": {
+    "ci-toolkit": "dist/index.js"
+  },
   "scripts": {
     "bundle": "spago bundle-app --to dist/index.js",
     "format": "purs-tidy format-in-place 'src/**/*.purs' 'test/**/*.purs'",
     "format:check": "purs-tidy check 'src/**/*.purs'",
     "release": "standard-version",
+    "release:gh": "",
     "test": "spago test"
   },
   "repository": {
@@ -14,12 +21,13 @@
     "url": "git+https://github.com/mstream/ci-toolkit.git"
   },
   "author": "Maciej Laciak <maciej.laciak@gmail.com> (https://github.com/mstream/)",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/mstream/ci-toolkit/issues"
   },
   "homepage": "https://github.com/mstream/ci-toolkit#readme",
   "devDependencies": {
+    "conventional-github-releaser": "^3",
     "purescript": "~0.14",
     "purs-tidy": "~0.5",
     "spago": "~0.20",
