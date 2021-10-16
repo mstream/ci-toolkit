@@ -1,4 +1,11 @@
 Changelog
+### 0.1.11 (2021-10-16)
+
+
+### Features
+
+* add rendering commits as text ([ed95835](https://github.com/mstream/ci-toolkit/commit/ed95835e3ccfecdf79ed813b2f491baf54b46027))
+
 ### 0.1.10 (2021-10-15)
 
 ### 0.1.9 (2021-10-15)
