@@ -1,6 +1,7 @@
 module Test.Utils
   ( appendNotes
   , createCommit
+  , toResult
   , unsafeCharFromCharCode
   , unsafeInstantFromSeconds
   , unsafeNonEmptyString
@@ -43,6 +44,7 @@ import Node.OS (tmpdir)
 import Node.Path (FilePath, concat)
 import Partial.Unsafe (unsafePartial)
 import Shell (executeCommand)
+import Test.QuickCheck (Result, (<?>))
 
 type TestCommitInfo =
   { authorName ∷ String
@@ -50,6 +52,24 @@ type TestCommitInfo =
   , date ∷ DateTime
   , message ∷ String
   }
+
+toResult
+  ∷ ∀ a i
+  . Eq a
+  ⇒ Show a
+  ⇒ Show i
+  ⇒ i
+  → { actual ∷ a, expected ∷ a }
+  → Result
+toResult info { actual, expected } =
+  (actual == expected) <?>
+    ( "Info: "
+        <> show info
+        <> "\nExpected: "
+        <> show expected
+        <> "\nActual: "
+        <> show actual
+    )
 
 withGitRepo ∷ (FilePath → Aff Unit) → Aff Unit
 withGitRepo = bracket initGitRepo cleanUpGitRepo

@@ -1,7 +1,12 @@
 module Program (execute) where
 
 import Prelude
-import CI (CIStage(CIStage), CIStagePrefix(CIStagePrefix), loadRepo)
+import CI
+  ( CIStage(CIStage)
+  , CIStagePrefix(CIStagePrefix)
+  , PrintRepoOpts(PrintRepoOpts)
+  , loadRepo
+  )
 import Data.Argonaut (encodeJson)
 import Data.List (List(Nil), (:))
 import Data.String.NonEmpty as NES
@@ -19,7 +24,7 @@ import ProgramInput
   , GetLastOptions(GetLastOptions)
   , MarkCommitOptions(MarkCommitOptions)
   , ProgramInput(ProgramInput)
-  , RenderFormat(JSON)
+  , RenderFormat(JSON, Text)
   , RenderOptions(RenderOptions)
   )
 import ProgramOutput (ProgramOutput)
@@ -28,11 +33,14 @@ import Update (Update(MarkWithCIStage), markCommit)
 
 execute ∷ ProgramInput → Aff ProgramOutput
 execute (ProgramInput (CommonOptions commonOpts) command) = do
-  repo ← loadRepo commonOpts.gitDirectory commonOpts.ciPrefix
+  repo ← loadRepo
+    commonOpts.gitDirectory
+    commonOpts.ciPrefix
+
   case command of
 
-    GetLast (GetLastOptions cmdOpts) →
-      case findLastCommit cmdOpts.ciStages repo of
+    GetLast (GetLastOptions _) →
+      case findLastCommit commonOpts.ciStages repo of
         Just (commitRef /\ _) →
           pure $ ProgramOutput.Text $ asHex commitRef
         Nothing → pure $ ProgramOutput.Text $ "Not found."
@@ -48,7 +56,7 @@ execute (ProgramInput (CommonOptions commonOpts) command) = do
               commonOpts.ciPrefix
               update
 
-          pure $ ProgramOutput.Text $ showToHuman update
+          pure $ ProgramOutput.Text $ showToHuman unit update
 
         Nothing → do
           let
@@ -60,9 +68,16 @@ execute (ProgramInput (CommonOptions commonOpts) command) = do
               <> NES.toString stage
               <> "'"
 
-    Render (RenderOptions cmdOpts) → do
-      case cmdOpts.format of
+    Render (RenderOptions { format, limit }) → do
+      case format of
         JSON → pure $ ProgramOutput.JSON $ encodeJson repo
+        Text → pure $ ProgramOutput.Text $ showToHuman
+          ( PrintRepoOpts
+              { ciStagesOrder: commonOpts.ciStages
+              , commitsLimit: limit
+              }
+          )
+          repo
 
 executeUpdate ∷ FilePath → CIStagePrefix → Update → Aff Unit
 executeUpdate gitDirectory (CIStagePrefix prefix) update =

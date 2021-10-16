@@ -85,12 +85,15 @@ renderNoStagesJsonSpec = around withGitRepo do
       actual ← execute $ ProgramInput
         ( CommonOptions
             { ciPrefix: CIStagePrefix $ unsafeNonEmptyString "ci-"
+            , ciStages: Nil
             , dryRun: false
             , gitDirectory: gitDirPath
             , isVerbose: false
             }
         )
-        (Render $ RenderOptions { format: JSON })
+        ( Render $ RenderOptions
+            { format: JSON, limit: 0 }
+        )
 
       actual `shouldEqual` expected
 
@@ -129,6 +132,7 @@ markCommitAndRenderJsonSpec = around withGitRepo do
       output ← execute $ ProgramInput
         ( CommonOptions
             { ciPrefix: CIStagePrefix $ unsafeNonEmptyString "ci-"
+            , ciStages: Nil
             , dryRun: false
             , gitDirectory: gitDirPath
             , isVerbose: false
@@ -143,12 +147,15 @@ markCommitAndRenderJsonSpec = around withGitRepo do
       actual ← execute $ ProgramInput
         ( CommonOptions
             { ciPrefix: CIStagePrefix $ unsafeNonEmptyString "ci-"
+            , ciStages: fromFoldable []
             , dryRun: false
             , gitDirectory: gitDirPath
             , isVerbose: false
             }
         )
-        (Render $ RenderOptions { format: JSON })
+        ( Render $ RenderOptions
+            { format: JSON, limit: 0 }
+        )
 
       output `shouldEqual`
         ( ProgramOutput.Text $ "Marking commit " <> asHex commitRef1
@@ -183,6 +190,7 @@ markCommitAndGetLastCommitSpec = around withGitRepo do
       output ← execute $ ProgramInput
         ( CommonOptions
             { ciPrefix: CIStagePrefix $ unsafeNonEmptyString "ci-"
+            , ciStages: Nil
             , dryRun: false
             , gitDirectory: gitDirPath
             , isVerbose: false
@@ -197,15 +205,14 @@ markCommitAndGetLastCommitSpec = around withGitRepo do
       actual ← execute $ ProgramInput
         ( CommonOptions
             { ciPrefix: CIStagePrefix $ unsafeNonEmptyString "ci-"
+            , ciStages: fromFoldable
+                [ CIStage $ unsafeNonEmptyString stageNameToMark ]
             , dryRun: false
             , gitDirectory: gitDirPath
             , isVerbose: false
             }
         )
-        ( GetLast $ GetLastOptions
-            { ciStages: fromFoldable
-                [ CIStage $ unsafeNonEmptyString stageNameToMark ]
-            }
+        ( GetLast $ GetLastOptions {}
         )
 
       output `shouldEqual`
@@ -240,6 +247,7 @@ markCommitWithTheSameStageTwiceSpec = around withGitRepo do
       void $ execute $ ProgramInput
         ( CommonOptions
             { ciPrefix: CIStagePrefix $ unsafeNonEmptyString "ci-"
+            , ciStages: Nil
             , dryRun: false
             , gitDirectory: gitDirPath
             , isVerbose: false
@@ -254,6 +262,7 @@ markCommitWithTheSameStageTwiceSpec = around withGitRepo do
       output ← execute $ ProgramInput
         ( CommonOptions
             { ciPrefix: CIStagePrefix $ unsafeNonEmptyString "ci-"
+            , ciStages: Nil
             , dryRun: false
             , gitDirectory: gitDirPath
             , isVerbose: false

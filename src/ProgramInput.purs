@@ -46,6 +46,7 @@ instance Show Command where
 
 newtype CommonOptions = CommonOptions
   { ciPrefix ∷ CIStagePrefix
+  , ciStages ∷ List CIStage
   , dryRun ∷ Boolean
   , gitDirectory ∷ FilePath
   , isVerbose ∷ Boolean
@@ -56,9 +57,7 @@ derive instance Generic CommonOptions _
 instance Show CommonOptions where
   show = genericShow
 
-newtype GetLastOptions = GetLastOptions
-  { ciStages ∷ List CIStage
-  }
+newtype GetLastOptions = GetLastOptions {}
 
 newtype MarkCommitOptions = MarkCommitOptions
   { ciStage ∷ CIStage
@@ -77,6 +76,7 @@ instance Show GetLastOptions where
 
 newtype RenderOptions = RenderOptions
   { format ∷ RenderFormat
+  , limit ∷ Int
   }
 
 derive instance Generic RenderOptions _
@@ -84,8 +84,9 @@ derive instance Generic RenderOptions _
 instance Show RenderOptions where
   show = genericShow
 
-data RenderFormat =
-  JSON
+data RenderFormat
+  = JSON
+  | Text
 
 derive instance Generic RenderFormat _
 
@@ -126,18 +127,19 @@ commonOptions = ado
     ( Opts.long "ci-prefix" <>
         (Opts.value $ CIStagePrefix (nes (Proxy ∷ Proxy "ci-")))
     )
+  ciStages ← Opts.many $ Opts.option parseCIStage
+    (Opts.long "ci-stage" <> Opts.help "passed stage")
   dryRun ← Opts.switch (Opts.long "dry-run")
   gitDirectory ← Opts.strOption
     (Opts.long "git-directory" <> Opts.value ".")
   isVerbose ← Opts.switch
     (Opts.long "verbose" <> Opts.short 'v')
-  in CommonOptions { ciPrefix, dryRun, gitDirectory, isVerbose }
+  in
+    CommonOptions
+      { ciPrefix, ciStages, dryRun, gitDirectory, isVerbose }
 
 getLastOptions ∷ Opts.Parser GetLastOptions
-getLastOptions = ado
-  ciStages ← Opts.many $ Opts.option parseCIStage
-    (Opts.long "ci-stage" <> Opts.help "stage passed by a commit")
-  in GetLastOptions { ciStages }
+getLastOptions = pure $ GetLastOptions {}
 
 getMarkCommitOptions ∷ Opts.Parser MarkCommitOptions
 getMarkCommitOptions = ado
@@ -152,7 +154,9 @@ renderOptions = ado
   format ← Opts.option
     parseRenderFormat
     (Opts.long "format" <> Opts.value JSON)
-  in RenderOptions { format }
+  limit ← Opts.option Opts.int
+    (Opts.long "limit" <> Opts.value 0)
+  in RenderOptions { format, limit }
 
 parseCIPrefix ∷ Opts.ReadM CIStagePrefix
 parseCIPrefix = Opts.eitherReader $ \s →
@@ -176,4 +180,5 @@ parseRenderFormat ∷ Opts.ReadM RenderFormat
 parseRenderFormat = Opts.eitherReader $ \s →
   case s of
     "json" → pure JSON
+    "text" → pure Text
     _ → Left "unsupported format"

@@ -30,8 +30,8 @@ instance EncodeJson Update where
 instance Eq Update where
   eq = genericEq
 
-instance Printable Update where
-  showToHuman = case _ of
+instance Printable Update Unit where
+  showToHuman _ = case _ of
     MarkWithCIStage commitRef (CIStage stage) →
       "Marking commit "
         <> asHex commitRef

@@ -63,6 +63,7 @@ import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NES
 import Data.String.NonEmpty.CodeUnits (fromNonEmptyCharArray)
 import Math (abs)
+import Print (class Printable)
 import Partial.Unsafe (unsafePartial)
 import Text.Parsing.StringParser (ParseError, Parser, fail, runParser)
 import Text.Parsing.StringParser.CodePoints
@@ -306,6 +307,9 @@ instance EncodeJson CommitRef where
 
 instance Eq CommitRef where
   eq = genericEq
+
+instance Printable CommitRef Unit where
+  showToHuman _ = asHex
 
 newtype Notes =
   Notes (List String)

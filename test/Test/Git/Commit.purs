@@ -43,7 +43,11 @@ import Test.QuickCheck ((<?>), quickCheckGen')
 import Test.QuickCheck.Gen (Gen, arrayOf1, elements, suchThat)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
-import Test.Utils (unsafeInstantFromSeconds, unsafeNonEmptyString)
+import Test.Utils
+  ( toResult
+  , unsafeInstantFromSeconds
+  , unsafeNonEmptyString
+  )
 import Text.Parsing.StringParser (Parser, runParser)
 import Type.Proxy (Proxy(Proxy))
 
@@ -314,11 +318,6 @@ quickCheckGitObjectComponent generate parser =
       componentString = showInGitObject component
       actual = runParser parser componentString
 
-    pure $ (actual == pure component) <?>
-      ( "unable to parse the following component string:\n"
-          <> "===\n>>>"
-          <> componentString
-          <> "<<<\n==="
-          <> "Problem:\n"
-          <> show actual
-      )
+    pure $ toResult
+      { componentString }
+      { actual, expected: pure component }
