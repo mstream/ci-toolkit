@@ -18,10 +18,10 @@ import Git.Commit
   ( CommitInfo
   , CommitRef
   , Notes(..)
-  , asHex
   , commitInfoParser
   , commitRefsParser
   , notesParser
+  , showInGitObject
   )
 import Node.Path (FilePath)
 import Shell (executeCommand)
@@ -43,8 +43,7 @@ appendCommitNotes gitDirPath commitRef (Notes notes) = do
     cmd = "git notes append -m '"
       <> (joinWith "\n" (fromFoldable notes))
       <> "' "
-      <> asHex
-        commitRef
+      <> showInGitObject commitRef
   void $ executeCommand
     gitDirPath
     cmd
@@ -59,14 +58,14 @@ getCommitNotes gitDirPath commitRef =
   run = do
     cmdOutput ← executeCommand
       gitDirPath
-      ("git notes show " <> asHex commitRef)
+      ("git notes show " <> showInGitObject commitRef)
     pure $ hush $ runParser notesParser cmdOutput
 
 getCommitInfo ∷ FilePath → CommitRef → Aff CommitInfo
 getCommitInfo gitDirPath commitRef = do
   cmdOutput ← executeCommand
     gitDirPath
-    ("git cat-file -p " <> asHex commitRef)
+    ("git cat-file -p " <> showInGitObject commitRef)
   either
     (throwError <<< error <<< (_.error))
     pure

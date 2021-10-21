@@ -8,3 +8,9 @@ in  upstream
     , repo = "https://github.com/Thimoteus/purescript-node-os"
     , version = "v3.1.0"
     }
+  with dotlang =
+    { dependencies =
+      [ "colors", "console", "effect", "prelude", "psci-support", "strings" ]
+    , repo = "https://github.com/csicar/purescript-dotlang"
+    , version = "4d7bedc91c8510f102188c97b0c50b475b0beb64"
+    }

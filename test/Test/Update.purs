@@ -3,19 +3,21 @@ module Test.Update (spec) where
 import Prelude
 
 import CI (CIStage(CIStage), Repo(Repo))
-import Data.List (fromFoldable)
+import Data.List (List(Nil), fromFoldable)
 import Data.Maybe (Maybe(Nothing))
 import Git.Commit
   ( Author(Author)
   , CommitInfo(CommitInfo)
   , Committer(Committer)
   , Timestamp(Timestamp)
+  , Tree(Tree)
   , UserInfo(UserInfo)
   , Username(Username)
   , unsafeCommitMessage
   , unsafeCommitRef
   , unsafeEmail
   , unsafeTimezone
+  , unsafeTreeRef
   )
 import Update (Update(MarkWithCIStage), markCommit)
 import Test.Spec (Spec, describe, it)
@@ -42,6 +44,8 @@ dummyCommitInfo = CommitInfo
       , username: Username $ unsafeNonEmptyString "user2"
       }
   , message: unsafeCommitMessage "commit message"
+  , parents: Nil
+  , tree: Tree $ unsafeTreeRef "dummy"
   }
 
 markCommitSpec ∷ Spec Unit

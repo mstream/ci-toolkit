@@ -4,7 +4,7 @@ import Prelude
 
 import CI (CIStage(CIStage), Repo(Repo))
 import Control.Monad.Error.Class (class MonadThrow)
-import Data.List (fromFoldable)
+import Data.List (List(Nil), fromFoldable)
 import Data.Tuple.Nested ((/\))
 import Data.String.NonEmpty as NES
 import Effect.Exception (Error)
@@ -12,14 +12,18 @@ import Git.Commit
   ( Author(Author)
   , CommitInfo(CommitInfo)
   , CommitMessage
+  , CommitParent
+  , CommitRef
   , Committer(Committer)
   , Timestamp(Timestamp)
+  , Tree(Tree)
   , UserInfo(UserInfo)
   , Username(Username)
   , unsafeCommitRef
   , unsafeCommitMessage
   , unsafeEmail
   , unsafeTimezone
+  , unsafeTreeRef
   )
 import Query (findLastCommit)
 import Test.Spec (Spec, SpecT, describe, it)
@@ -35,7 +39,10 @@ dummyCommitInfoData ∷
   { author ∷ Author
   , committer ∷ Committer
   , message ∷ CommitMessage
+  , parents ∷ List CommitParent
+  , tree ∷ Tree
   }
+
 dummyCommitInfoData =
   { author: Author $ UserInfo
       { email: unsafeEmail "user1@email.com"
@@ -51,6 +58,8 @@ dummyCommitInfoData =
       , username: Username $ NES.nes (Proxy ∷ Proxy "user2")
       }
   , message: unsafeCommitMessage "commit message"
+  , parents: Nil
+  , tree: Tree $ unsafeTreeRef "dummy"
   }
 
 findLastCommitSpec ∷ Spec Unit

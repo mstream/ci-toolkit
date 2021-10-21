@@ -9,17 +9,16 @@ module CI
   ) where
 
 import Prelude
-import Prettier.Printer
-  ( (<+>)
-  , (</>)
-  , below
-  , beside
-  , folddoc
-  , pretty
-  , text
-  )
 import Data.Argonaut.Encode (class EncodeJson)
 import Data.Argonaut.Encode.Generic (genericEncodeJson)
+import Data.Array (fromFoldable)
+import Data.DotLang (class GraphRepr, Graph(DiGraph), (==>), node)
+import Data.DotLang.Attr.Node
+  ( Attr(Shape)
+  , ShapeType(Record)
+  , recordLabel
+  , subLabel
+  )
 import Data.Eq.Generic
   ( genericEq
   )
@@ -46,8 +45,22 @@ import Data.String.NonEmpty as NES
 import Data.Traversable (traverse)
 import Effect.Aff (Aff)
 import Git (getCommitInfo, getCommitNotes, getCommitRefs)
-import Git.Commit (CommitInfo, CommitRef, Notes(Notes))
+import Git.Commit
+  ( CommitInfo(CommitInfo)
+  , CommitParent(CommitParent)
+  , CommitRef
+  , Notes(Notes)
+  )
 import Node.Path (FilePath)
+import Prettier.Printer
+  ( (<+>)
+  , (</>)
+  , below
+  , beside
+  , folddoc
+  , pretty
+  , text
+  )
 import Print (class Printable, showToHuman, stringInColumn)
 import Text.Parsing.StringParser (Parser, fail)
 import Text.Parsing.StringParser.CodePoints (regex)
@@ -94,11 +107,41 @@ instance Show Repo where
 instance EncodeJson Repo where
   encodeJson = genericEncodeJson
 
+instance GraphRepr Repo where
+  toGraph = repoToGraph
+
 instance Eq Repo where
   eq = genericEq
 
 instance Printable Repo PrintRepoOpts where
   showToHuman = printRepo
+
+repoToGraph ∷ Repo → Graph
+repoToGraph (Repo commits) =
+  let
+    showRef ref = (show $ showToHuman unit ref)
+    commitToNode { info, ref } =
+      let
+        (CommitInfo { message }) = info
+
+      in
+        node
+          (showRef ref)
+          [ Shape Record
+          , recordLabel
+              [ subLabel $ showRef ref
+              , subLabel $ showToHuman unit message
+              ]
+          ]
+    commitToEdges { info, ref } =
+      let
+        (CommitInfo { parents }) = info
+      in
+        parents <#> \(CommitParent parentRef) →
+          showRef ref ==> showRef parentRef
+  in
+    DiGraph $ (fromFoldable $ commitToNode <$> commits) <>
+      (fromFoldable $ foldMap commitToEdges commits)
 
 printRepo ∷ PrintRepoOpts → Repo → String
 printRepo (PrintRepoOpts { ciStagesOrder, commitsLimit }) (Repo commits) =

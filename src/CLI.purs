@@ -2,6 +2,7 @@ module CLI (run) where
 
 import Prelude
 import Data.Argonaut (stringify)
+import Data.DotLang.Class (toText)
 import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
 import Effect.Console (log)
@@ -16,6 +17,7 @@ run = do
   args ← liftEffect $ Opts.execParser options
   output ← execute args
   liftEffect $ log $ case output of
+    ProgramOutput.DOT graph → toText graph
     ProgramOutput.JSON json → stringify json
     ProgramOutput.Text s → s
 

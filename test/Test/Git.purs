@@ -7,9 +7,10 @@ import Data.Date as Date
 import Data.DateTime (DateTime(DateTime))
 import Data.Enum (toEnum)
 import Data.List (fromFoldable)
-import Data.Maybe (fromJust)
+import Data.Maybe (Maybe(Nothing), fromJust)
 import Data.Time (Time)
 import Data.Time as Time
+import Data.Tuple.Nested ((/\))
 import Git (getCommitRefs)
 import Git.Commit (unsafeCommitRef)
 import Partial.Unsafe (unsafePartial)
@@ -37,17 +38,23 @@ spec = describe "Git" do
     around withGitRepo do
       it "retrieves all commit refs" $ \gitDirPath → do
         let
-          createExampleCommit message =
+          createExampleCommit parentRef message =
             createCommit
               gitDirPath
               { authorName: "user1"
               , committerName: "user2"
               , date: DateTime date time
               , message
+              , parentRef
               }
 
-        void $ createExampleCommit "commit1"
-        void $ createExampleCommit "commit2"
+        refs1 /\ _ ← createExampleCommit
+          Nothing
+          "commit1"
+
+        void $ createExampleCommit
+          (pure refs1.commitRef)
+          "commit2"
 
         let
           expected = fromFoldable

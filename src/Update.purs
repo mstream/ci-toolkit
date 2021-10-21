@@ -12,8 +12,8 @@ import Data.Generic.Rep (class Generic)
 import Data.Show.Generic (genericShow)
 import Data.String.NonEmpty as NES
 import Data.Tuple.Nested ((/\))
-import Git.Commit (CommitRef, asHex)
-import Print (class Printable)
+import Git.Commit (CommitRef, asHex, showInGitObject)
+import Print (class Printable, showToHuman)
 import Query (findCommit)
 
 data Update =
@@ -34,7 +34,7 @@ instance Printable Update Unit where
   showToHuman _ = case _ of
     MarkWithCIStage commitRef (CIStage stage) →
       "Marking commit "
-        <> asHex commitRef
+        <> (showToHuman unit commitRef)
         <> " with CI stage '"
         <> NES.toString stage
         <> "'"

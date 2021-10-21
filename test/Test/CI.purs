@@ -13,8 +13,7 @@ import Data.Date as Date
 import Data.DateTime (DateTime(DateTime))
 import Data.Enum (toEnum)
 import Data.List (List(Nil), fromFoldable)
-import Data.Maybe (fromJust)
-import Data.String.NonEmpty (nes)
+import Data.Maybe (Maybe(Nothing), fromJust)
 import Data.Time (Time)
 import Data.Time as Time
 import Data.Tuple.Nested ((/\))
@@ -27,7 +26,6 @@ import Test.Utils
   , withGitRepo
   )
 import Test.Spec.Assertions (shouldEqual)
-import Type.Proxy (Proxy(Proxy))
 
 time ∷ Time
 time = unsafePartial $ fromJust $ do
@@ -49,28 +47,40 @@ spec = describe "Git" do
     around withGitRepo do
       it "builds a repository model" $ \gitDirPath → do
         let
-          testCommitInfo message =
+          testCommitInfo parentRef message =
             { authorName: "user1"
             , committerName: "user2"
             , date: DateTime date time
             , message
+            , parentRef
             }
 
-          createExampleCommit message =
+          createExampleCommit parentRef message =
             createCommit
               gitDirPath
-              (testCommitInfo message)
+              (testCommitInfo parentRef message)
 
           appendExampleNotes commitRef message =
             appendNotes
               gitDirPath
-              (testCommitInfo message)
+              (testCommitInfo Nothing message)
               commitRef
 
-        commitRef1 /\ commitInfo1 ← createExampleCommit "commit1"
-        commitRef2 /\ commitInfo2 ← createExampleCommit "commit2"
-        appendExampleNotes commitRef1 "aaa\nbbb\n"
-        appendExampleNotes commitRef2 "aaa\nci-one\nbbb\nci-two\nccc"
+        refs1 /\ commitInfo1 ← createExampleCommit
+          Nothing
+          "commit1"
+
+        refs2 /\ commitInfo2 ← createExampleCommit
+          (pure refs1.commitRef)
+          "commit2"
+
+        appendExampleNotes
+          refs1.commitRef
+          "aaa\nbbb\n"
+
+        appendExampleNotes
+          refs2.commitRef
+          "aaa\nci-one\nbbb\nci-two\nccc"
 
         let
           expected = Repo $ fromFoldable
@@ -79,11 +89,11 @@ spec = describe "Git" do
                   [ CIStage $ unsafeNonEmptyString "one"
                   , CIStage $ unsafeNonEmptyString "two"
                   ]
-              , ref: commitRef2
+              , ref: refs2.commitRef
               }
             , { info: commitInfo1
               , passedStages: Nil
-              , ref: commitRef1
+              , ref: refs1.commitRef
               }
             ]
 

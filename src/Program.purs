@@ -8,13 +8,14 @@ import CI
   , loadRepo
   )
 import Data.Argonaut (encodeJson)
+import Data.DotLang (toGraph)
 import Data.List (List(Nil), (:))
 import Data.String.NonEmpty as NES
 import Data.Maybe (Maybe(Just, Nothing))
 import Data.Tuple.Nested ((/\))
 import Effect.Aff (Aff)
 import Git (appendCommitNotes)
-import Git.Commit (Notes(Notes), asHex)
+import Git.Commit (Notes(Notes))
 import Node.Path (FilePath)
 import Query (findLastCommit)
 import Print (showToHuman)
@@ -24,7 +25,7 @@ import ProgramInput
   , GetLastOptions(GetLastOptions)
   , MarkCommitOptions(MarkCommitOptions)
   , ProgramInput(ProgramInput)
-  , RenderFormat(JSON, Text)
+  , RenderFormat(DOT, JSON, Text)
   , RenderOptions(RenderOptions)
   )
 import ProgramOutput (ProgramOutput)
@@ -42,7 +43,7 @@ execute (ProgramInput (CommonOptions commonOpts) command) = do
     GetLast (GetLastOptions _) →
       case findLastCommit commonOpts.ciStages repo of
         Just (commitRef /\ _) →
-          pure $ ProgramOutput.Text $ asHex commitRef
+          pure $ ProgramOutput.Text $ showToHuman unit commitRef
         Nothing → pure $ ProgramOutput.Text $ "Not found."
 
     MarkCommit (MarkCommitOptions { ciStage, commitRef }) →
@@ -63,13 +64,14 @@ execute (ProgramInput (CommonOptions commonOpts) command) = do
             (CIStage stage) = ciStage
 
           pure $ ProgramOutput.Text $
-            "Commit '" <> asHex commitRef
+            "Commit '" <> (showToHuman unit commitRef)
               <> "' is already marked with CI stage '"
               <> NES.toString stage
               <> "'"
 
     Render (RenderOptions { format, limit }) → do
       case format of
+        DOT → pure $ ProgramOutput.DOT $ toGraph repo
         JSON → pure $ ProgramOutput.JSON $ encodeJson repo
         Text → pure $ ProgramOutput.Text $ showToHuman
           ( PrintRepoOpts

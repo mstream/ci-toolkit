@@ -9,12 +9,12 @@ import Data.Date as Date
 import Data.DateTime (DateTime(DateTime))
 import Data.Enum (toEnum)
 import Data.List (List(Nil), fromFoldable)
-import Data.Maybe (fromJust)
+import Data.Maybe (Maybe(Nothing), fromJust)
 import Data.Time (Time)
 import Data.Time as Time
 import Data.Tuple.Nested ((/\))
-import Git.Commit (asHex)
 import Partial.Unsafe (unsafePartial)
+import Print (showToHuman)
 import Program (execute)
 import ProgramInput
   ( ProgramInput(ProgramInput)
@@ -45,7 +45,7 @@ date = unsafePartial $ fromJust $ do
   Date.exactDate year Date.January day
 
 spec ∷ Spec Unit
-spec = describe "Git" do
+spec = describe "Program" do
   describe "execute" do
     markCommitAndGetLastCommitSpec
     markCommitAndRenderJsonSpec
@@ -57,28 +57,34 @@ renderNoStagesJsonSpec = around withGitRepo do
   it "renders two commits with no stages in JSON" $
     \gitDirPath → do
       let
-        createExampleCommit message =
+        createExampleCommit parentRef message =
           createCommit
             gitDirPath
             { authorName: "user1"
             , committerName: "user2"
             , date: DateTime date time
             , message
+            , parentRef
             }
 
-      commitRef1 /\ commitInfo1 ← createExampleCommit "commit1"
-      commitRef2 /\ commitInfo2 ← createExampleCommit "commit2"
+      refs1 /\ commitInfo1 ← createExampleCommit
+        Nothing
+        "commit1"
+
+      refs2 /\ commitInfo2 ← createExampleCommit
+        (pure refs1.commitRef)
+        "commit2"
 
       let
         expected = ProgramOutput.JSON $ encodeJson $ Repo $
           fromFoldable
             [ { info: commitInfo2
               , passedStages: Nil
-              , ref: commitRef2
+              , ref: refs2.commitRef
               }
             , { info: commitInfo1
               , passedStages: Nil
-              , ref: commitRef1
+              , ref: refs1.commitRef
               }
             ]
 
@@ -102,17 +108,23 @@ markCommitAndRenderJsonSpec = around withGitRepo do
   it "marks a commit and renders two commits in JSON" $
     \gitDirPath → do
       let
-        createExampleCommit message =
+        createExampleCommit parentRef message =
           createCommit
             gitDirPath
             { authorName: "user1"
             , committerName: "user2"
             , date: DateTime date time
             , message
+            , parentRef
             }
 
-      commitRef1 /\ commitInfo1 ← createExampleCommit "commit1"
-      commitRef2 /\ commitInfo2 ← createExampleCommit "commit2"
+      refs1 /\ commitInfo1 ← createExampleCommit
+        Nothing
+        "commit1"
+
+      refs2 /\ commitInfo2 ← createExampleCommit
+        (pure refs1.commitRef)
+        "commit2"
 
       let
         stageNameToMark = "one"
@@ -120,12 +132,12 @@ markCommitAndRenderJsonSpec = around withGitRepo do
           fromFoldable
             [ { info: commitInfo2
               , passedStages: Nil
-              , ref: commitRef2
+              , ref: refs2.commitRef
               }
             , { info: commitInfo1
               , passedStages: fromFoldable
                   [ CIStage $ unsafeNonEmptyString stageNameToMark ]
-              , ref: commitRef1
+              , ref: refs1.commitRef
               }
             ]
 
@@ -140,7 +152,7 @@ markCommitAndRenderJsonSpec = around withGitRepo do
         )
         ( MarkCommit $ MarkCommitOptions
             { ciStage: CIStage $ unsafeNonEmptyString stageNameToMark
-            , commitRef: commitRef1
+            , commitRef: refs1.commitRef
             }
         )
 
@@ -158,7 +170,8 @@ markCommitAndRenderJsonSpec = around withGitRepo do
         )
 
       output `shouldEqual`
-        ( ProgramOutput.Text $ "Marking commit " <> asHex commitRef1
+        ( ProgramOutput.Text $ "Marking commit "
+            <> (showToHuman unit refs1.commitRef)
             <> " with CI stage '"
             <> stageNameToMark
             <> "'"
@@ -171,21 +184,27 @@ markCommitAndGetLastCommitSpec = around withGitRepo do
   it "marks a commit and gets the last commit" $
     \gitDirPath → do
       let
-        createExampleCommit message =
+        createExampleCommit parentRef message =
           createCommit
             gitDirPath
             { authorName: "user1"
             , committerName: "user2"
             , date: DateTime date time
             , message
+            , parentRef
             }
 
-      commitRef1 /\ _ ← createExampleCommit "commit1"
-      _ ← createExampleCommit "commit2"
+      refs1 /\ _ ← createExampleCommit
+        Nothing
+        "commit1"
+
+      _ ← createExampleCommit
+        (pure refs1.commitRef)
+        "commit2"
 
       let
         stageNameToMark = "one"
-        expected = ProgramOutput.Text $ asHex commitRef1
+        expected = ProgramOutput.Text $ showToHuman unit refs1.commitRef
 
       output ← execute $ ProgramInput
         ( CommonOptions
@@ -198,7 +217,7 @@ markCommitAndGetLastCommitSpec = around withGitRepo do
         )
         ( MarkCommit $ MarkCommitOptions
             { ciStage: CIStage $ unsafeNonEmptyString stageNameToMark
-            , commitRef: commitRef1
+            , commitRef: refs1.commitRef
             }
         )
 
@@ -216,7 +235,8 @@ markCommitAndGetLastCommitSpec = around withGitRepo do
         )
 
       output `shouldEqual`
-        ( ProgramOutput.Text $ "Marking commit " <> asHex commitRef1
+        ( ProgramOutput.Text $ "Marking commit "
+            <> (showToHuman unit refs1.commitRef)
             <> " with CI stage '"
             <> stageNameToMark
             <> "'"
@@ -229,17 +249,23 @@ markCommitWithTheSameStageTwiceSpec = around withGitRepo do
   it "marks a commit with the same stage name twice" $
     \gitDirPath → do
       let
-        createExampleCommit message =
+        createExampleCommit parentRef message =
           createCommit
             gitDirPath
             { authorName: "user1"
             , committerName: "user2"
             , date: DateTime date time
             , message
+            , parentRef
             }
 
-      commitRef1 /\ _ ← createExampleCommit "commit1"
-      _ ← createExampleCommit "commit2"
+      refs1 /\ _ ← createExampleCommit
+        Nothing
+        "commit1"
+
+      void $ createExampleCommit
+        (pure refs1.commitRef)
+        "commit2"
 
       let
         stageNameToMark = "one"
@@ -255,7 +281,7 @@ markCommitWithTheSameStageTwiceSpec = around withGitRepo do
         )
         ( MarkCommit $ MarkCommitOptions
             { ciStage: CIStage $ unsafeNonEmptyString stageNameToMark
-            , commitRef: commitRef1
+            , commitRef: refs1.commitRef
             }
         )
 
@@ -270,12 +296,13 @@ markCommitWithTheSameStageTwiceSpec = around withGitRepo do
         )
         ( MarkCommit $ MarkCommitOptions
             { ciStage: CIStage $ unsafeNonEmptyString stageNameToMark
-            , commitRef: commitRef1
+            , commitRef: refs1.commitRef
             }
         )
 
       output `shouldEqual`
-        ( ProgramOutput.Text $ "Commit '" <> asHex commitRef1
+        ( ProgramOutput.Text $ "Commit '"
+            <> (showToHuman unit refs1.commitRef)
             <> "' is already marked with CI stage '"
             <> stageNameToMark
             <> "'"

@@ -2,11 +2,12 @@ module Test.Git.Commit (spec) where
 
 import Prelude
 
-import Data.Array.NonEmpty (fromNonEmpty)
+import Data.Array.NonEmpty as NEA
 import Data.Char.Gen (genAsciiChar)
-import Data.List (fromFoldable)
+import Data.List (List(Nil), fromFoldable)
 import Data.NonEmpty ((:|))
 import Data.String (joinWith)
+import Data.String.CodeUnits (fromCharArray)
 import Data.String.Gen (genString)
 import Data.String.NonEmpty as NES
 import Effect.Aff (Aff)
@@ -15,15 +16,25 @@ import Git.Commit
   ( class GitObjectComponent
   , Author(Author)
   , CommitInfo(CommitInfo)
+  , CommitLine
+      ( MessageLine
+      , UnknownLine
+      , ParentLine
+      , CommitterLine
+      , AuthorLine
+      )
   , CommitMessage(CommitMessage)
+  , CommitParent(CommitParent)
   , Committer(Committer)
   , Email
   , Notes(Notes)
   , Timestamp(Timestamp)
   , Timezone
+  , Tree(Tree)
   , UserInfo(UserInfo)
   , Username(Username)
   , commitInfoParser
+  , commitLinesParser
   , commitMessageParser
   , commitRefParser
   , commitRefsParser
@@ -37,10 +48,18 @@ import Git.Commit
   , unsafeCommitRef
   , unsafeEmail
   , unsafeTimezone
+  , unsafeTreeRef
   , usernameParser
   )
-import Test.QuickCheck ((<?>), quickCheckGen')
-import Test.QuickCheck.Gen (Gen, arrayOf1, elements, suchThat)
+import Test.QuickCheck (quickCheckGen')
+import Test.QuickCheck.Gen
+  ( Gen
+  , arrayOf
+  , arrayOf1
+  , elements
+  , suchThat
+  , vectorOf
+  )
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 import Test.Utils
@@ -54,6 +73,7 @@ import Type.Proxy (Proxy(Proxy))
 spec ∷ Spec Unit
 spec = describe "Git.Commit" do
   commitInfoParserSpec
+  commitLinesParserSpec
   commitMessageParserSpec
   commitRefParserSpec
   commitRefsParserSpec
@@ -70,8 +90,9 @@ commitInfoParserSpec = describe "commitInfoParser" do
     let
       commitObject = "author user1 <user1@email.com> 1111111111 -0500"
         <> "\n"
-        <>
-          "committer user2 <user2@email.com> 0123456789 +0500"
+        <> "committer user2 <user2@email.com> 0123456789 +0500"
+        <> "\n"
+        <> "tree b68df892a0d8571d1d1c4618be5d36641f4a5d9b"
         <> "\n"
         <> "\n"
         <> "commit message"
@@ -93,6 +114,9 @@ commitInfoParserSpec = describe "commitInfoParser" do
               , username: Username $ NES.nes (Proxy ∷ Proxy "user2")
               }
           , message: unsafeCommitMessage "commit message"
+          , parents: Nil
+          , tree: Tree $ unsafeTreeRef
+              "b68df892a0d8571d1d1c4618be5d36641f4a5d9b"
           }
     let
       actual = runParser commitInfoParser commitObject
@@ -101,11 +125,59 @@ commitInfoParserSpec = describe "commitInfoParser" do
   it "parses any valid commit object" do
     quickCheckGitObjectComponent genCommitObject commitInfoParser
 
+commitLinesParserSpec ∷ Spec Unit
+commitLinesParserSpec = describe "commitLinesParser" do
+  it "parses valid message lines" do
+    let
+      s = "author user1 <user1@email.com> 1111111111 -0500"
+        <> "\n"
+        <> "committer user2 <user2@email.com> 1111111111 -0500"
+        <> "\n"
+        <> "parent b68df892a0d8571d1d1c4618be5d36641f4a5d9b"
+        <> "\n"
+        <> "parent f6e6e2206876c8ecc4479ac33b022fcea587d7c0"
+        <> "\n"
+        <> "\n"
+        <> "commit line 1"
+        <> "\n"
+        <> "commit line 2"
+        <> "\n"
+        <> "commit line 3"
+    let
+      expected = pure $ fromFoldable
+        [ AuthorLine $ Author $ UserInfo
+            { email: unsafeEmail "user1@email.com"
+            , timestamp:
+                Timestamp $ unsafeInstantFromSeconds 1111111111
+            , timezone: unsafeTimezone (-5)
+            , username: Username $ NES.nes (Proxy ∷ Proxy "user1")
+            }
+        , CommitterLine $ Committer $ UserInfo
+            { email: unsafeEmail "user2@email.com"
+            , timestamp:
+                Timestamp $ unsafeInstantFromSeconds 1111111111
+            , timezone: unsafeTimezone (-5)
+            , username: Username $ NES.nes (Proxy ∷ Proxy "user2")
+            }
+        , ParentLine $ CommitParent $ unsafeCommitRef
+            "b68df892a0d8571d1d1c4618be5d36641f4a5d9b"
+        , ParentLine $ CommitParent $ unsafeCommitRef
+            "f6e6e2206876c8ecc4479ac33b022fcea587d7c0"
+        , UnknownLine
+        , MessageLine $ CommitMessage "commit line 1"
+        , MessageLine $ CommitMessage "commit line 2"
+        , MessageLine $ CommitMessage "commit line 3"
+        ]
+    let
+      actual = runParser commitLinesParser s
+
+    actual `shouldEqual` expected
+
 commitMessageParserSpec ∷ Spec Unit
 commitMessageParserSpec = describe "commitMessageParser" do
   it "parses a valid message string" do
     let
-      s = "aaa" <> "\n" <> "bbb" <> "\n\n" <> "commit message"
+      s = "commit message"
     let
       expected = pure $ unsafeCommitMessage "commit message"
     let
@@ -148,7 +220,6 @@ commitRefsParserSpec = describe "commitRefsParser" do
 
 emailParserSpec ∷ Spec Unit
 emailParserSpec = describe "emailParser" do
-
   it "parses a specific valid email string" do
     let
       s = "aaa.bbb@example.com"
@@ -238,9 +309,17 @@ genCommitObject ∷ Gen CommitInfo
 genCommitObject = ado
   author ← genAuthor
   committer ← genCommitter
+  parents ← fromFoldable <$> arrayOf
+    (CommitParent <$> genGitObjectRef unsafeCommitRef)
+  tree ← (Tree <$> genGitObjectRef unsafeTreeRef)
   in
     CommitInfo
-      { author, committer, message: CommitMessage "commit message" }
+      { author
+      , committer
+      , message: CommitMessage "commit message"
+      , parents
+      , tree
+      }
 
 genAuthor ∷ Gen Author
 genAuthor = ado
@@ -263,6 +342,27 @@ genUserInfo = ado
   in
     UserInfo { username, email, timestamp, timezone }
 
+genGitObjectRef ∷ ∀ a. (String → a) → Gen a
+genGitObjectRef refFromString = ado
+  chars ← vectorOf 40 $ elements $ NEA.fromNonEmpty $ '0' :|
+    [ '1'
+    , '2'
+    , '3'
+    , '4'
+    , '5'
+    , '6'
+    , '7'
+    , '8'
+    , '9'
+    , 'a'
+    , 'b'
+    , 'c'
+    , 'd'
+    , 'e'
+    , 'f'
+    ]
+  in refFromString $ fromCharArray chars
+
 genTimestamp ∷ Gen Timestamp
 genTimestamp =
   pure $ Timestamp $ unsafeInstantFromSeconds 1603432894
@@ -280,10 +380,10 @@ genEmail = do
       (unsafeNonEmptyString ".")
       localPartSegments
 
-  domain ← elements $ fromNonEmpty $
+  domain ← elements $ NEA.fromNonEmpty $
     "example1" :| [ "example2" ]
 
-  tld ← elements $ fromNonEmpty $
+  tld ← elements $ NEA.fromNonEmpty $
     "com" :| [ "org" ]
 
   pure $ unsafeEmail $ joinWith

@@ -85,7 +85,8 @@ instance Show RenderOptions where
   show = genericShow
 
 data RenderFormat
-  = JSON
+  = DOT
+  | JSON
   | Text
 
 derive instance Generic RenderFormat _
@@ -179,6 +180,7 @@ parseCommitRef = Opts.eitherReader $ \s →
 parseRenderFormat ∷ Opts.ReadM RenderFormat
 parseRenderFormat = Opts.eitherReader $ \s →
   case s of
+    "dot" → pure DOT
     "json" → pure JSON
     "text" → pure Text
     _ → Left "unsupported format"

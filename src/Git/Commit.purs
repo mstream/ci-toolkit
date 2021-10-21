@@ -3,16 +3,22 @@ module Git.Commit
   , Author(..)
   , Committer(..)
   , CommitInfo(..)
+  , CommitLine(..)
   , CommitMessage(..)
+  , CommitParent(..)
   , CommitRef
   , Email
+  , GitObjectRef
   , Notes(..)
   , Timestamp(..)
   , Timezone
+  , Tree(..)
+  , TreeRef
   , UserInfo(..)
   , Username(..)
   , asHex
   , commitInfoParser
+  , commitLinesParser
   , commitMessageParser
   , commitRefParser
   , commitRefsParser
@@ -25,20 +31,20 @@ module Git.Commit
   , usernameParser
   , unsafeCommitMessage
   , unsafeCommitRef
+  , unsafeTreeRef
   , unsafeEmail
   , unsafeTimezone
   ) where
 
-import Prelude
+import Prelude hiding (between)
 
+import Control.Alt ((<|>))
 import Data.Argonaut.Encode (class EncodeJson)
 import Data.Argonaut.Encode.Encoders (encodeInt, encodeNumber)
 import Data.Argonaut.Encode.Generic (genericEncodeJson)
 import Data.Array (fromFoldable)
-import Data.Array.NonEmpty (fromFoldable1)
 import Data.DateTime.Instant (Instant, fromDateTime, instant, unInstant)
 import Data.Eq.Generic (genericEq)
-import Data.Int as Int
 import Data.Either
   ( Either(Left, Right)
   , either
@@ -46,12 +52,13 @@ import Data.Either
   , note
   )
 import Data.Either.Nested (type (\/))
-import Data.Foldable (oneOf, foldMap)
+import Data.Foldable (foldr, oneOf, foldMap)
 import Data.Generic.Rep (class Generic)
-import Data.Maybe (fromJust, maybe)
-import Data.Number.Format (fixed, toStringWith)
-import Data.List (List(Nil), filter)
+import Data.Int as Int
+import Data.List (List(Nil), (:), filter, last, reverse, singleton)
 import Data.List.NonEmpty as NEL
+import Data.Maybe (Maybe(Just, Nothing), fromJust, maybe)
+import Data.Number.Format (fixed, toStringWith)
 import Data.Time.Duration
   ( Milliseconds(Milliseconds)
   , Seconds(Seconds)
@@ -59,27 +66,37 @@ import Data.Time.Duration
   )
 import Data.Show.Generic (genericShow)
 import Data.String (Pattern(Pattern), joinWith, length, split, trim)
+import Data.String.CodeUnits (fromCharArray)
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NES
 import Data.String.NonEmpty.CodeUnits (fromNonEmptyCharArray)
 import Math (abs)
 import Print (class Printable)
 import Partial.Unsafe (unsafePartial)
-import Text.Parsing.StringParser (ParseError, Parser, fail, runParser)
+import Text.Parsing.StringParser
+  ( ParseError
+  , Parser
+  , fail
+  , runParser
+  )
 import Text.Parsing.StringParser.CodePoints
   ( anyChar
   , eof
+  , noneOf
   , regex
   , skipSpaces
   , string
   )
 import Text.Parsing.StringParser.Combinators
   ( between
+  , choice
   , endBy
   , endBy1
   , many
+  , many1
   , many1Till
   , manyTill
+  , optional
   , sepBy
   )
 
@@ -124,6 +141,42 @@ instance GitObjectComponent Committer where
   gitObjectParser = committerParser
   showInGitObject (Committer userInfo) =
     "committer " <> showInGitObject userInfo
+
+newtype CommitParent = CommitParent CommitRef
+
+derive instance Generic CommitParent _
+
+instance Show CommitParent where
+  show = genericShow
+
+instance EncodeJson CommitParent where
+  encodeJson = genericEncodeJson
+
+instance Eq CommitParent where
+  eq = genericEq
+
+instance GitObjectComponent CommitParent where
+  gitObjectParser = commitParentParser
+  showInGitObject (CommitParent commitRef) =
+    "parent " <> showInGitObject commitRef
+
+newtype Tree = Tree TreeRef
+
+derive instance Generic Tree _
+
+instance Show Tree where
+  show = genericShow
+
+instance EncodeJson Tree where
+  encodeJson = genericEncodeJson
+
+instance Eq Tree where
+  eq = genericEq
+
+instance GitObjectComponent Tree where
+  gitObjectParser = treeParser
+  showInGitObject (Tree treeRef) =
+    "tree " <> showInGitObject treeRef
 
 newtype UserInfo =
   UserInfo
@@ -255,6 +308,8 @@ newtype CommitInfo =
     { author ∷ Author
     , committer ∷ Committer
     , message ∷ CommitMessage
+    , parents ∷ List CommitParent
+    , tree ∷ Tree
     }
 
 derive instance Generic CommitInfo _
@@ -271,7 +326,14 @@ instance Eq CommitInfo where
 instance GitObjectComponent CommitInfo where
   gitObjectParser = commitInfoParser
   showInGitObject (CommitInfo info) =
-    showInGitObject info.author <> "\n"
+    showInGitObject info.tree
+      <> "\n"
+      <> joinWith
+        "\n"
+        (fromFoldable $ showInGitObject <$> info.parents)
+      <> "\n"
+      <> showInGitObject info.author
+      <> "\n"
       <> showInGitObject info.committer
       <> "\n\n"
       <> showInGitObject info.message
@@ -294,8 +356,32 @@ instance GitObjectComponent CommitMessage where
   gitObjectParser = commitMessageParser
   showInGitObject (CommitMessage msg) = msg
 
+instance Printable CommitMessage Unit where
+  showToHuman _ (CommitMessage msg) = msg
+
+newtype GitObjectRef =
+  GitObjectRef String
+
+derive instance Generic GitObjectRef _
+
+instance Show GitObjectRef where
+  show = genericShow
+
+instance EncodeJson GitObjectRef where
+  encodeJson = genericEncodeJson
+
+instance Eq GitObjectRef where
+  eq = genericEq
+
+instance GitObjectComponent GitObjectRef where
+  gitObjectParser = gitObjectRefParser
+  showInGitObject = asHex
+
+instance Printable GitObjectRef Unit where
+  showToHuman _ = asHex
+
 newtype CommitRef =
-  CommitRef String
+  CommitRef GitObjectRef
 
 derive instance Generic CommitRef _
 
@@ -308,8 +394,33 @@ instance EncodeJson CommitRef where
 instance Eq CommitRef where
   eq = genericEq
 
+instance GitObjectComponent CommitRef where
+  gitObjectParser = commitRefParser
+  showInGitObject (CommitRef gitObjectRef) = asHex gitObjectRef
+
 instance Printable CommitRef Unit where
-  showToHuman _ = asHex
+  showToHuman _ = showInGitObject
+
+newtype TreeRef =
+  TreeRef GitObjectRef
+
+derive instance Generic TreeRef _
+
+instance Show TreeRef where
+  show = genericShow
+
+instance EncodeJson TreeRef where
+  encodeJson = genericEncodeJson
+
+instance Eq TreeRef where
+  eq = genericEq
+
+instance GitObjectComponent TreeRef where
+  gitObjectParser = treeRefParser
+  showInGitObject (TreeRef gitObjectRef) = asHex gitObjectRef
+
+instance Printable TreeRef Unit where
+  showToHuman _ = showInGitObject
 
 newtype Notes =
   Notes (List String)
@@ -325,14 +436,85 @@ instance EncodeJson Notes where
 instance Eq Notes where
   eq = genericEq
 
-newLineParser ∷ Parser Unit
-newLineParser = void $ string "\n"
+data CommitLine
+  = AuthorLine Author
+  | CommitterLine Committer
+  | MessageLine CommitMessage
+  | ParentLine CommitParent
+  | TreeLine Tree
+  | UnknownLine
+
+derive instance Generic CommitLine _
+
+instance Show CommitLine where
+  show = genericShow
+
+instance EncodeJson CommitLine where
+  encodeJson = genericEncodeJson
+
+instance Eq CommitLine where
+  eq = genericEq
+
+commitInfoParser ∷ Parser CommitInfo
+commitInfoParser = do
+  let
+    r line acc = case line of
+      AuthorLine author → acc { author = pure author }
+      CommitterLine committer → acc { committer = pure committer }
+      MessageLine (CommitMessage msgLine) → acc
+        { messageLines = msgLine : acc.messageLines }
+      ParentLine parent → acc { parents = parent : acc.parents }
+      TreeLine tree → acc { tree = pure tree }
+      UnknownLine → acc
+
+  commitLines ← commitLinesParser
+
+  let
+    info = foldr
+      r
+      { author: Nothing
+      , committer: Nothing
+      , messageLines: Nil
+      , parents: Nil
+      , tree: Nothing
+      }
+      commitLines
+
+  case info.author, info.committer, info.tree of
+    Nothing, _, _ → fail "no author"
+    _, Nothing, _ → fail "no committer"
+    _, _, Nothing → fail "no tree"
+    Just author, Just committer, Just tree → pure $ CommitInfo
+      { author
+      , committer
+      , message: CommitMessage $ joinWith
+          "\n"
+          (fromFoldable $ reverse info.messageLines)
+      , parents: info.parents
+      , tree
+      }
+
+commitLinesParser ∷ Parser (List CommitLine)
+commitLinesParser = commitLineParser `sepBy` eolParser
+
+commitLineParser ∷ Parser CommitLine
+commitLineParser = choice
+  [ AuthorLine <$> authorParser
+  , CommitterLine <$> committerParser
+  , ParentLine <$> commitParentParser
+  , TreeLine <$> treeParser
+  , MessageLine <$> commitMessageParser
+  , UnknownLine <$ (many $ noneOf [ '\n' ])
+  ]
+
+eolParser ∷ Parser Unit
+eolParser = void $ string "\n"
 
 fullStringParser ∷ Parser String
 fullStringParser = regex ".*"
 
 linesParser ∷ Parser (List String)
-linesParser = fullStringParser `sepBy` newLineParser
+linesParser = fullStringParser `sepBy` eolParser
 
 wordParser ∷ Parser NonEmptyString
 wordParser = do
@@ -419,60 +601,58 @@ committerParser = do
   userInfo ← gitObjectParser
   pure $ Committer userInfo
 
-commitInfoParser ∷ Parser CommitInfo
-commitInfoParser = do
-  lines ← linesParser
-  let
-    result = ado
-      author ← note
-        "no valid author line"
-        (oneOf $ hush <<< runParser authorParser <$> lines)
-
-      committer ← note "no valid committer line"
-        (oneOf $ hush <<< runParser committerParser <$> lines)
-
-      message ← note
-        "no commit message"
-        ( hush $ runParser commitMessageParser
-            (joinWith "\n" (fromFoldable lines))
-        )
-
-      in { author, committer, message }
-  case result of
-    Left errMsg → fail errMsg
-    Right { author, committer, message } → pure $ CommitInfo
-      { author, committer, message }
-
 notesParser ∷ Parser Notes
 notesParser = do
   lines ← linesParser
   pure $ Notes lines
 
+commitParentParser ∷ Parser CommitParent
+commitParentParser = do
+  void $ string "parent"
+  skipSpaces
+  commitRef ← commitRefParser
+  pure $ CommitParent commitRef
+
+treeParser ∷ Parser Tree
+treeParser = do
+  void $ string "tree"
+  skipSpaces
+  treeRef ← treeRefParser
+  pure $ Tree treeRef
+
 commitMessageParser ∷ Parser CommitMessage
 commitMessageParser = do
-  void $ manyTill (manyTill anyChar newLineParser) newLineParser
-  messageString ← fullStringParser
-  pure $ CommitMessage messageString
+  chars ← many1 $ noneOf [ '\n' ]
+  pure $ CommitMessage $ fromCharArray $ fromFoldable chars
 
 commitRefParser ∷ Parser CommitRef
-commitRefParser = do
-  fullString ← fullStringParser
-  if length fullString == 40 then pure $ CommitRef fullString
-  else fail "not a 40-character long hex string"
+commitRefParser = CommitRef <$> gitObjectRefParser
+
+treeRefParser ∷ Parser TreeRef
+treeRefParser = TreeRef <$> gitObjectRefParser
 
 commitRefsParser ∷ Parser (List CommitRef)
 commitRefsParser = do
-  refs ← commitRefParser `endBy` newLineParser
+  refs ← commitRefParser `endBy` eolParser
   pure refs
 
-asHex ∷ CommitRef → String
-asHex (CommitRef commitRefString) = commitRefString
+gitObjectRefParser ∷ Parser GitObjectRef
+gitObjectRefParser = do
+  fullString ← fullStringParser
+  if length fullString == 40 then pure $ GitObjectRef fullString
+  else fail "not a 40-character long hex string"
+
+asHex ∷ GitObjectRef → String
+asHex (GitObjectRef gitObjectRefString) = gitObjectRefString
 
 unsafeCommitMessage ∷ String → CommitMessage
 unsafeCommitMessage = CommitMessage
 
 unsafeCommitRef ∷ String → CommitRef
-unsafeCommitRef = CommitRef
+unsafeCommitRef = CommitRef <<< GitObjectRef
+
+unsafeTreeRef ∷ String → TreeRef
+unsafeTreeRef = TreeRef <<< GitObjectRef
 
 unsafeEmail ∷ String → Email
 unsafeEmail = Email <<< unsafeNonEmptyString

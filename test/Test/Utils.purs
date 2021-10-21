@@ -16,7 +16,8 @@ import Data.DateTime.Instant (Instant, fromDateTime, instant)
 import Data.Either (Either(Left, Right))
 import Data.Formatter.DateTime (format, parseFormatString)
 import Data.Int (toNumber)
-import Data.Maybe (fromJust)
+import Data.List (List(Nil), singleton)
+import Data.Maybe (Maybe, fromJust, maybe)
 import Data.String (trim)
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NES
@@ -28,16 +29,20 @@ import Effect.Random (randomInt)
 import Git.Commit
   ( Author(Author)
   , CommitInfo(CommitInfo)
+  , CommitParent(CommitParent)
   , CommitRef
   , Committer(Committer)
   , Timestamp(Timestamp)
+  , Tree(Tree)
+  , TreeRef
   , UserInfo(UserInfo)
   , Username(Username)
-  , asHex
+  , showInGitObject
   , unsafeCommitMessage
   , unsafeCommitRef
   , unsafeEmail
   , unsafeTimezone
+  , unsafeTreeRef
   )
 import Node.FS.Aff (mkdir, rmdir)
 import Node.OS (tmpdir)
@@ -51,6 +56,12 @@ type TestCommitInfo =
   , committerName ∷ String
   , date ∷ DateTime
   , message ∷ String
+  , parentRef ∷ Maybe CommitRef
+  }
+
+type TestCommitRefs =
+  { commitRef ∷ CommitRef
+  , treeRef ∷ TreeRef
   }
 
 toResult
@@ -91,7 +102,8 @@ mkRandomDir = do
   mkdir dir
   pure dir
 
-createCommit ∷ FilePath → TestCommitInfo → Aff (CommitRef /\ CommitInfo)
+createCommit
+  ∷ FilePath → TestCommitInfo → Aff (TestCommitRefs /\ CommitInfo)
 createCommit gitDirPath testCommitInfo = do
   cmd /\ commitInfo ← commitCommand
     testCommitInfo
@@ -101,12 +113,20 @@ createCommit gitDirPath testCommitInfo = do
     )
 
   void $ executeCommand gitDirPath cmd
-  cmdOutput ← executeCommand gitDirPath "git rev-parse HEAD"
 
-  let
-    commitRef = unsafeCommitRef $ trim cmdOutput
+  commitRef ← (unsafeCommitRef <<< trim) <$> executeCommand
+    gitDirPath
+    "git rev-parse HEAD"
 
-  pure $ commitRef /\ commitInfo
+  treeRef ← (unsafeTreeRef <<< trim) <$> executeCommand
+    gitDirPath
+    "git rev-parse HEAD^{tree}"
+
+  let (CommitInfo info) = commitInfo
+
+  -- TODO handle treeRef better
+  pure $ { commitRef, treeRef } /\
+    (CommitInfo $ info { tree = Tree treeRef })
 
 appendNotes ∷ FilePath → TestCommitInfo → CommitRef → Aff Unit
 appendNotes gitDirPath testCommitInfo commitRef = do
@@ -115,13 +135,15 @@ appendNotes gitDirPath testCommitInfo commitRef = do
     ( "notes append -m '"
         <> testCommitInfo.message
         <> "' "
-        <> (asHex commitRef)
+        <> (showInGitObject commitRef)
     )
 
   void $ executeCommand gitDirPath cmd
 
 commitCommand ∷ TestCommitInfo → String → Aff (String /\ CommitInfo)
-commitCommand { authorName, committerName, date, message } cmd =
+commitCommand
+  { authorName, committerName, date, message, parentRef }
+  cmd =
   case formatCommitDate date of
     Left errMsg → throwError $ error errMsg
     Right dateString → do
@@ -148,6 +170,8 @@ commitCommand { authorName, committerName, date, message } cmd =
                   NES.fromString committerName
               }
           , message: unsafeCommitMessage message
+          , parents: maybe Nil (singleton <<< CommitParent) parentRef
+          , tree: Tree $ unsafeTreeRef "dummy"
           }
 
         commandString = "GIT_AUTHOR_DATE='"
