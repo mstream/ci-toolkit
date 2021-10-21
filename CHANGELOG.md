@@ -1,4 +1,11 @@
 Changelog
+### 0.1.12 (2021-10-21)
+
+
+### Features
+
+* add DOT render format ([ddd5e7c](https://github.com/mstream/ci-toolkit/commit/ddd5e7cd81926a910f9c94e18f051c454138d92a))
+
 ### 0.1.11 (2021-10-16)
 
 
