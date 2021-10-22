@@ -9,13 +9,21 @@ module CI
   ) where
 
 import Prelude
+import Color.Scheme.MaterialDesign (blueGrey, yellow)
 import Data.Argonaut.Encode (class EncodeJson)
 import Data.Argonaut.Encode.Generic (genericEncodeJson)
 import Data.Array (fromFoldable)
-import Data.DotLang (class GraphRepr, Graph(DiGraph), (==>), node)
+import Data.DotLang
+  ( class GraphRepr
+  , Definition
+  , Graph(DiGraph)
+  , (==>)
+  , node
+  )
 import Data.DotLang.Attr.Node
-  ( Attr(Shape)
-  , ShapeType(Record)
+  ( Attr(FillColor, Shape)
+  , ShapeType(Oval, Record)
+  , label
   , recordLabel
   , subLabel
   )
@@ -28,29 +36,47 @@ import Data.Generic.Rep
   )
 import Data.List
   ( List(Nil)
+  , (:)
   , concatMap
   , elemIndex
   , nubEq
   , singleton
   , sortBy
   , take
+  , zip
   )
 import Data.Maybe (Maybe(Just, Nothing), fromMaybe, maybe)
 import Data.Show.Generic
   ( genericShow
   )
-import Data.String (Pattern(Pattern), stripPrefix)
+import Data.String
+  ( Pattern(Pattern)
+  , Replacement(Replacement)
+  , length
+  , replaceAll
+  , stripPrefix
+  )
+import Data.String as String
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NES
 import Data.Traversable (traverse)
+import Data.Tuple.Nested ((/\))
 import Effect.Aff (Aff)
-import Git (getCommitInfo, getCommitNotes, getCommitRefs)
+import Git
+  ( getCommitInfo
+  , getCommitNotes
+  , getCommitRefs
+  , getTagInfo
+  , getTags
+  )
 import Git.Commit
   ( CommitInfo(CommitInfo)
   , CommitParent(CommitParent)
   , CommitRef
+  , GitObjectRefFormat(FullHex, ShortHex)
   , Notes(Notes)
   )
+import Git.Tag (Tag, getTagCommitRef)
 import Node.Path (FilePath)
 import Prettier.Printer
   ( (<+>)
@@ -61,9 +87,10 @@ import Prettier.Printer
   , pretty
   , text
   )
-import Print (class Printable, showToHuman, stringInColumn)
+import Print (stringInColumn)
 import Text.Parsing.StringParser (Parser, fail)
 import Text.Parsing.StringParser.CodePoints (regex)
+import Text.SerDe (class Serializable, serialize)
 
 newtype PrintRepoOpts = PrintRepoOpts
   { ciStagesOrder ∷ List CIStage, commitsLimit ∷ Int }
@@ -96,6 +123,7 @@ newtype Repo = Repo
       { info ∷ CommitInfo
       , passedStages ∷ List CIStage
       , ref ∷ CommitRef
+      , tags ∷ List Tag
       }
   )
 
@@ -113,35 +141,82 @@ instance GraphRepr Repo where
 instance Eq Repo where
   eq = genericEq
 
-instance Printable Repo PrintRepoOpts where
-  showToHuman = printRepo
+instance Serializable Repo PrintRepoOpts where
+  serialize = printRepo
+
+sanitizeNodeId ∷ String → String
+sanitizeNodeId =
+  replaceAll (Pattern ".") (Replacement "_")
+    <<< replaceAll (Pattern "-") (Replacement "_")
+
+sanitizeCommitMessage ∷ String → String
+sanitizeCommitMessage msg =
+  if length msg > 97 then String.take 97 msg <> "..." else msg
+
+sanitizeRecordLabel ∷ String → String
+sanitizeRecordLabel =
+  replaceAll (Pattern "|") (Replacement " ")
+    <<< replaceAll (Pattern "{") (Replacement " ")
+    <<< replaceAll (Pattern "}") (Replacement " ")
+
+commitRefToNodeId ∷ CommitRef → String
+commitRefToNodeId commitRef = sanitizeNodeId $ "commit_" <> serialize
+  FullHex
+  commitRef
+
+tagToNodeId ∷ Tag → String
+tagToNodeId tag = sanitizeNodeId $ "tag_" <> serialize unit tag
+
+commitToNodes
+  ∷ ∀ r
+  . { info ∷ CommitInfo, ref ∷ CommitRef, tags ∷ List Tag | r }
+  → Array Definition
+commitToNodes { info, ref, tags } =
+  let
+    (CommitInfo { message }) = info
+  in
+    [ node
+        (commitRefToNodeId ref)
+        [ FillColor yellow
+        , Shape Record
+        , recordLabel
+            [ subLabel $ sanitizeRecordLabel $ serialize ShortHex ref
+            , subLabel $ sanitizeRecordLabel $ sanitizeCommitMessage $
+                serialize unit message
+            ]
+        ]
+    ] <> (fromFoldable $ tagToNode <$> tags)
+
+tagToNode
+  ∷ Tag → Definition
+tagToNode tag =
+  node
+    (tagToNodeId tag)
+    [ FillColor blueGrey
+    , Shape Oval
+    , label $ serialize unit tag
+    ]
+
+commitToEdges
+  ∷ ∀ r
+  . { info ∷ CommitInfo, ref ∷ CommitRef, tags ∷ List Tag | r }
+  → Array Definition
+commitToEdges { info, ref, tags } =
+  let
+    (CommitInfo { parents }) = info
+  in
+    fromFoldable $
+      ( tags <#> \tag →
+          tagToNodeId tag ==> commitRefToNodeId ref
+      ) <>
+        ( parents <#> \(CommitParent parentRef) →
+            commitRefToNodeId ref ==> commitRefToNodeId parentRef
+        )
 
 repoToGraph ∷ Repo → Graph
 repoToGraph (Repo commits) =
-  let
-    showRef ref = (show $ showToHuman unit ref)
-    commitToNode { info, ref } =
-      let
-        (CommitInfo { message }) = info
-
-      in
-        node
-          (showRef ref)
-          [ Shape Record
-          , recordLabel
-              [ subLabel $ showRef ref
-              , subLabel $ showToHuman unit message
-              ]
-          ]
-    commitToEdges { info, ref } =
-      let
-        (CommitInfo { parents }) = info
-      in
-        parents <#> \(CommitParent parentRef) →
-          showRef ref ==> showRef parentRef
-  in
-    DiGraph $ (fromFoldable $ commitToNode <$> commits) <>
-      (fromFoldable $ foldMap commitToEdges commits)
+  DiGraph $ (foldMap commitToNodes commits) <>
+    (foldMap commitToEdges commits)
 
 printRepo ∷ PrintRepoOpts → Repo → String
 printRepo (PrintRepoOpts { ciStagesOrder, commitsLimit }) (Repo commits) =
@@ -176,7 +251,7 @@ printRepo (PrintRepoOpts { ciStagesOrder, commitsLimit }) (Repo commits) =
 
     commitRefToDoc = text
       <<< stringInCommitRefColumn
-      <<< showToHuman unit
+      <<< serialize FullHex
 
     stagesToDoc = folddoc beside <<< map stageToDoc
 
@@ -230,21 +305,33 @@ passedStagesFromNotes (CIStagePrefix prefix) (Notes noteLines) =
 loadRepo ∷ FilePath → CIStagePrefix → Aff Repo
 loadRepo gitDirectory ciPrefix = do
   commitRefs ← getCommitRefs gitDirectory
-  commitRefsWithNotes ← traverse
-    ( \ref → getCommitNotes gitDirectory ref >>= \notes →
-        pure { ref, notes }
-    )
-    commitRefs
-  commitRefsWithNotesAndInfo ← traverse
-    ( \commit → do
-        commitInfo ← getCommitInfo gitDirectory commit.ref
+  tagAndInfos ← do
+    tags ← getTags gitDirectory
+    infos ← traverse (getTagInfo gitDirectory) tags
+    pure $ zip tags infos
+
+  commits ← traverse
+    ( \commitRef → do
+        commitInfo ← getCommitInfo gitDirectory commitRef
+        notes ← getCommitNotes gitDirectory commitRef
+
+        let
+          commitTags = foldMap
+            ( \(tag /\ tagInfo) →
+                if getTagCommitRef tagInfo == commitRef then tag : Nil
+                else Nil
+            )
+            tagAndInfos
+
         pure
           { info: commitInfo
           , passedStages: fromMaybe
               Nil
-              (passedStagesFromNotes ciPrefix <$> commit.notes)
-          , ref: commit.ref
+              (passedStagesFromNotes ciPrefix <$> notes)
+          , ref: commitRef
+          , tags: commitTags
           }
     )
-    commitRefsWithNotes
-  pure $ Repo commitRefsWithNotesAndInfo
+    commitRefs
+
+  pure $ Repo commits

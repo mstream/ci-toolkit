@@ -13,8 +13,8 @@ import Data.Maybe (Maybe(Nothing), fromJust)
 import Data.Time (Time)
 import Data.Time as Time
 import Data.Tuple.Nested ((/\))
+import Git.Commit (GitObjectRefFormat(FullHex))
 import Partial.Unsafe (unsafePartial)
-import Print (showToHuman)
 import Program (execute)
 import ProgramInput
   ( ProgramInput(ProgramInput)
@@ -29,6 +29,7 @@ import ProgramOutput as ProgramOutput
 import Test.Spec (Spec, around, describe, it)
 import Test.Utils (createCommit, unsafeNonEmptyString, withGitRepo)
 import Test.Spec.Assertions (shouldEqual)
+import Text.SerDe (serialize)
 
 time ∷ Time
 time = unsafePartial $ fromJust $ do
@@ -81,10 +82,12 @@ renderNoStagesJsonSpec = around withGitRepo do
             [ { info: commitInfo2
               , passedStages: Nil
               , ref: refs2.commitRef
+              , tags: Nil
               }
             , { info: commitInfo1
               , passedStages: Nil
               , ref: refs1.commitRef
+              , tags: Nil
               }
             ]
 
@@ -133,11 +136,13 @@ markCommitAndRenderJsonSpec = around withGitRepo do
             [ { info: commitInfo2
               , passedStages: Nil
               , ref: refs2.commitRef
+              , tags: Nil
               }
             , { info: commitInfo1
               , passedStages: fromFoldable
                   [ CIStage $ unsafeNonEmptyString stageNameToMark ]
               , ref: refs1.commitRef
+              , tags: Nil
               }
             ]
 
@@ -171,7 +176,7 @@ markCommitAndRenderJsonSpec = around withGitRepo do
 
       output `shouldEqual`
         ( ProgramOutput.Text $ "Marking commit "
-            <> (showToHuman unit refs1.commitRef)
+            <> (serialize FullHex refs1.commitRef)
             <> " with CI stage '"
             <> stageNameToMark
             <> "'"
@@ -204,7 +209,8 @@ markCommitAndGetLastCommitSpec = around withGitRepo do
 
       let
         stageNameToMark = "one"
-        expected = ProgramOutput.Text $ showToHuman unit refs1.commitRef
+        expected = ProgramOutput.Text $ serialize FullHex
+          refs1.commitRef
 
       output ← execute $ ProgramInput
         ( CommonOptions
@@ -236,7 +242,7 @@ markCommitAndGetLastCommitSpec = around withGitRepo do
 
       output `shouldEqual`
         ( ProgramOutput.Text $ "Marking commit "
-            <> (showToHuman unit refs1.commitRef)
+            <> (serialize FullHex refs1.commitRef)
             <> " with CI stage '"
             <> stageNameToMark
             <> "'"
@@ -302,7 +308,7 @@ markCommitWithTheSameStageTwiceSpec = around withGitRepo do
 
       output `shouldEqual`
         ( ProgramOutput.Text $ "Commit '"
-            <> (showToHuman unit refs1.commitRef)
+            <> (serialize FullHex refs1.commitRef)
             <> "' is already marked with CI stage '"
             <> stageNameToMark
             <> "'"

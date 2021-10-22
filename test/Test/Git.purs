@@ -11,11 +11,12 @@ import Data.Maybe (Maybe(Nothing), fromJust)
 import Data.Time (Time)
 import Data.Time as Time
 import Data.Tuple.Nested ((/\))
-import Git (getCommitRefs)
+import Git (getCommitRefs, getTags)
 import Git.Commit (unsafeCommitRef)
+import Git.Tag (unsafeTag)
 import Partial.Unsafe (unsafePartial)
 import Test.Spec (Spec, around, describe, it)
-import Test.Utils (createCommit, withGitRepo)
+import Test.Utils (createCommit, createTag, withGitRepo)
 import Test.Spec.Assertions (shouldEqual)
 
 time ∷ Time
@@ -34,33 +35,77 @@ date = unsafePartial $ fromJust $ do
 
 spec ∷ Spec Unit
 spec = describe "Git" do
-  describe "getCommitRefs" do
-    around withGitRepo do
-      it "retrieves all commit refs" $ \gitDirPath → do
-        let
-          createExampleCommit parentRef message =
-            createCommit
-              gitDirPath
-              { authorName: "user1"
-              , committerName: "user2"
-              , date: DateTime date time
-              , message
-              , parentRef
-              }
+  getCommitRefsSpec
+  getTagsSpec
 
-        refs1 /\ _ ← createExampleCommit
-          Nothing
-          "commit1"
+getCommitRefsSpec ∷ Spec Unit
+getCommitRefsSpec = describe "getCommitRefs" do
+  around withGitRepo do
+    it "retrieves all commit refs" $ \gitDirPath → do
+      let
+        createExampleCommit parentRef message =
+          createCommit
+            gitDirPath
+            { authorName: "user1"
+            , committerName: "user2"
+            , date: DateTime date time
+            , message
+            , parentRef
+            }
 
-        void $ createExampleCommit
-          (pure refs1.commitRef)
-          "commit2"
+      refs1 /\ _ ← createExampleCommit
+        Nothing
+        "commit1"
 
-        let
-          expected = fromFoldable
-            [ unsafeCommitRef "8a5b31da784c58bbe495381b12e0a8785ae66ddd"
-            , unsafeCommitRef "951f1b6d05208893909fcc21badbc901ee8543b4"
-            ]
+      void $ createExampleCommit
+        (pure refs1.commitRef)
+        "commit2"
 
-        actual ← getCommitRefs gitDirPath
-        actual `shouldEqual` expected
+      let
+        expected = fromFoldable
+          [ unsafeCommitRef "8a5b31da784c58bbe495381b12e0a8785ae66ddd"
+          , unsafeCommitRef "951f1b6d05208893909fcc21badbc901ee8543b4"
+          ]
+
+      actual ← getCommitRefs gitDirPath
+      actual `shouldEqual` expected
+
+getTagsSpec ∷ Spec Unit
+getTagsSpec = describe "getTags" do
+  around withGitRepo do
+    it "retrieves all tags" $ \gitDirPath → do
+      let
+        createExampleCommit parentRef message =
+          createCommit
+            gitDirPath
+            { authorName: "user1"
+            , committerName: "user2"
+            , date: DateTime date time
+            , message
+            , parentRef
+            }
+
+        createExampleTag = createTag gitDirPath
+
+      refs1 /\ _ ← createExampleCommit
+        Nothing
+        "commit1"
+
+      createExampleTag "tag_1a"
+      createExampleTag "tag_1b"
+
+      void $ createExampleCommit
+        (pure refs1.commitRef)
+        "commit2"
+
+      createExampleTag "tag_2"
+
+      let
+        expected = fromFoldable
+          [ unsafeTag "tag_1a"
+          , unsafeTag "tag_1b"
+          , unsafeTag "tag_2"
+          ]
+
+      actual ← getTags gitDirPath
+      actual `shouldEqual` expected

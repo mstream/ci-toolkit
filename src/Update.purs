@@ -12,9 +12,9 @@ import Data.Generic.Rep (class Generic)
 import Data.Show.Generic (genericShow)
 import Data.String.NonEmpty as NES
 import Data.Tuple.Nested ((/\))
-import Git.Commit (CommitRef, asHex, showInGitObject)
-import Print (class Printable, showToHuman)
+import Git.Commit (CommitRef, GitObjectRefFormat(FullHex))
 import Query (findCommit)
+import Text.SerDe (class Serializable, serialize)
 
 data Update =
   MarkWithCIStage CommitRef CIStage
@@ -30,11 +30,11 @@ instance EncodeJson Update where
 instance Eq Update where
   eq = genericEq
 
-instance Printable Update Unit where
-  showToHuman _ = case _ of
+instance Serializable Update Unit where
+  serialize _ = case _ of
     MarkWithCIStage commitRef (CIStage stage) →
       "Marking commit "
-        <> (showToHuman unit commitRef)
+        <> (serialize FullHex commitRef)
         <> " with CI stage '"
         <> NES.toString stage
         <> "'"

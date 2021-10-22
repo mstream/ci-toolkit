@@ -1,6 +1,7 @@
 module Test.Utils
   ( appendNotes
   , createCommit
+  , createTag
   , toResult
   , unsafeCharFromCharCode
   , unsafeInstantFromSeconds
@@ -127,6 +128,11 @@ createCommit gitDirPath testCommitInfo = do
   -- TODO handle treeRef better
   pure $ { commitRef, treeRef } /\
     (CommitInfo $ info { tree = Tree treeRef })
+
+createTag
+  ∷ FilePath → String → Aff Unit
+createTag gitDirPath tagName = do
+  void $ executeCommand gitDirPath ("git tag " <> tagName)
 
 appendNotes ∷ FilePath → TestCommitInfo → CommitRef → Aff Unit
 appendNotes gitDirPath testCommitInfo commitRef = do

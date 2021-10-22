@@ -7,6 +7,7 @@ import Effect.Aff (launchAff_)
 import Test.CI as CI
 import Test.Git as Git
 import Test.Git.Commit as GitCommit
+import Test.Git.Tag as GitTag
 import Test.Print as Print
 import Test.Program as Program
 import Test.Query as Query
@@ -18,8 +19,9 @@ main ∷ Effect Unit
 main = do
   void $ launchAff_ $ runSpec [ consoleReporter ] do
     CI.spec
-    GitCommit.spec
     Git.spec
+    GitCommit.spec
+    GitTag.spec
     Print.spec
     Program.spec
     Query.spec

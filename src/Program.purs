@@ -15,10 +15,9 @@ import Data.Maybe (Maybe(Just, Nothing))
 import Data.Tuple.Nested ((/\))
 import Effect.Aff (Aff)
 import Git (appendCommitNotes)
-import Git.Commit (Notes(Notes))
+import Git.Commit (GitObjectRefFormat(FullHex), Notes(Notes))
 import Node.Path (FilePath)
 import Query (findLastCommit)
-import Print (showToHuman)
 import ProgramInput
   ( Command(Render, MarkCommit, GetLast)
   , CommonOptions(CommonOptions)
@@ -30,6 +29,7 @@ import ProgramInput
   )
 import ProgramOutput (ProgramOutput)
 import ProgramOutput as ProgramOutput
+import Text.SerDe (serialize)
 import Update (Update(MarkWithCIStage), markCommit)
 
 execute ∷ ProgramInput → Aff ProgramOutput
@@ -43,7 +43,7 @@ execute (ProgramInput (CommonOptions commonOpts) command) = do
     GetLast (GetLastOptions _) →
       case findLastCommit commonOpts.ciStages repo of
         Just (commitRef /\ _) →
-          pure $ ProgramOutput.Text $ showToHuman unit commitRef
+          pure $ ProgramOutput.Text $ serialize FullHex commitRef
         Nothing → pure $ ProgramOutput.Text $ "Not found."
 
     MarkCommit (MarkCommitOptions { ciStage, commitRef }) →
@@ -57,14 +57,14 @@ execute (ProgramInput (CommonOptions commonOpts) command) = do
               commonOpts.ciPrefix
               update
 
-          pure $ ProgramOutput.Text $ showToHuman unit update
+          pure $ ProgramOutput.Text $ serialize unit update
 
         Nothing → do
           let
             (CIStage stage) = ciStage
 
           pure $ ProgramOutput.Text $
-            "Commit '" <> (showToHuman unit commitRef)
+            "Commit '" <> (serialize FullHex commitRef)
               <> "' is already marked with CI stage '"
               <> NES.toString stage
               <> "'"
@@ -73,7 +73,7 @@ execute (ProgramInput (CommonOptions commonOpts) command) = do
       case format of
         DOT → pure $ ProgramOutput.DOT $ toGraph repo
         JSON → pure $ ProgramOutput.JSON $ encodeJson repo
-        Text → pure $ ProgramOutput.Text $ showToHuman
+        Text → pure $ ProgramOutput.Text $ serialize
           ( PrintRepoOpts
               { ciStagesOrder: commonOpts.ciStages
               , commitsLimit: limit

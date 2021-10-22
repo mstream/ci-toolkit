@@ -17,11 +17,13 @@ import Data.Maybe (Maybe(Nothing), fromJust)
 import Data.Time (Time)
 import Data.Time as Time
 import Data.Tuple.Nested ((/\))
+import Git.Tag (unsafeTag)
 import Partial.Unsafe (unsafePartial)
 import Test.Spec (Spec, around, describe, it)
 import Test.Utils
   ( appendNotes
   , createCommit
+  , createTag
   , unsafeNonEmptyString
   , withGitRepo
   )
@@ -60,6 +62,8 @@ spec = describe "Git" do
               gitDirPath
               (testCommitInfo parentRef message)
 
+          createExampleTag = createTag gitDirPath
+
           appendExampleNotes commitRef message =
             appendNotes
               gitDirPath
@@ -70,9 +74,14 @@ spec = describe "Git" do
           Nothing
           "commit1"
 
+        createExampleTag "tag_1a"
+        createExampleTag "tag_1b"
+
         refs2 /\ commitInfo2 ← createExampleCommit
           (pure refs1.commitRef)
           "commit2"
+
+        createExampleTag "tag_2"
 
         appendExampleNotes
           refs1.commitRef
@@ -90,10 +99,13 @@ spec = describe "Git" do
                   , CIStage $ unsafeNonEmptyString "two"
                   ]
               , ref: refs2.commitRef
+              , tags: fromFoldable [ unsafeTag "tag_2" ]
               }
             , { info: commitInfo1
               , passedStages: Nil
               , ref: refs1.commitRef
+              , tags: fromFoldable
+                  [ unsafeTag "tag_1a", unsafeTag "tag_1b" ]
               }
             ]
 

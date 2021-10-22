@@ -85,6 +85,7 @@ findLastCommitSpec = describe "findLastCommit" do
               [ CIStage $ unsafeNonEmptyString "one"
               ]
           , ref: commitRef3
+          , tags: Nil
           }
         , { info: commitInfo2
           , passedStages: fromFoldable
@@ -92,6 +93,7 @@ findLastCommitSpec = describe "findLastCommit" do
               , CIStage $ unsafeNonEmptyString "two"
               ]
           , ref: commitRef2
+          , tags: Nil
           }
         , { info: commitInfo1
           , passedStages: fromFoldable
@@ -99,6 +101,7 @@ findLastCommitSpec = describe "findLastCommit" do
               , CIStage $ unsafeNonEmptyString "two"
               ]
           , ref: commitRef1
+          , tags: Nil
           }
         ]
 

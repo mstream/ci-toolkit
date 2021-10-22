@@ -61,6 +61,7 @@ markCommitSpec = describe "markCommit" do
         , passedStages: fromFoldable
             [ CIStage $ unsafeNonEmptyString "one" ]
         , ref: commitRef1
+        , tags: Nil
         }
       , { info: dummyCommitInfo
         , passedStages: fromFoldable
@@ -68,6 +69,7 @@ markCommitSpec = describe "markCommit" do
             , CIStage $ unsafeNonEmptyString "two"
             ]
         , ref: commitRef2
+        , tags: Nil
         }
       ]
 

@@ -9,6 +9,7 @@ module Git.Commit
   , CommitRef
   , Email
   , GitObjectRef
+  , GitObjectRefFormat(..)
   , Notes(..)
   , Timestamp(..)
   , Timezone
@@ -16,7 +17,6 @@ module Git.Commit
   , TreeRef
   , UserInfo(..)
   , Username(..)
-  , asHex
   , commitInfoParser
   , commitLinesParser
   , commitMessageParser
@@ -65,13 +65,25 @@ import Data.Time.Duration
   , convertDuration
   )
 import Data.Show.Generic (genericShow)
-import Data.String (Pattern(Pattern), joinWith, length, split, trim)
+import Data.String
+  ( Pattern(Pattern)
+  , joinWith
+  , length
+  , split
+  , take
+  , trim
+  )
 import Data.String.CodeUnits (fromCharArray)
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NES
 import Data.String.NonEmpty.CodeUnits (fromNonEmptyCharArray)
+import Git.Parsing
+  ( eolParser
+  , fullStringParser
+  , linesParser
+  , wordParser
+  )
 import Math (abs)
-import Print (class Printable)
 import Partial.Unsafe (unsafePartial)
 import Text.Parsing.StringParser
   ( ParseError
@@ -99,10 +111,15 @@ import Text.Parsing.StringParser.Combinators
   , optional
   , sepBy
   )
+import Text.SerDe (class Serializable, serialize)
 
 class GitObjectComponent a where
   gitObjectParser ∷ Parser a
   showInGitObject ∷ a → String
+
+data GitObjectRefFormat
+  = FullHex
+  | ShortHex
 
 newtype Author =
   Author UserInfo
@@ -356,8 +373,8 @@ instance GitObjectComponent CommitMessage where
   gitObjectParser = commitMessageParser
   showInGitObject (CommitMessage msg) = msg
 
-instance Printable CommitMessage Unit where
-  showToHuman _ (CommitMessage msg) = msg
+instance Serializable CommitMessage Unit where
+  serialize _ (CommitMessage msgStr) = msgStr
 
 newtype GitObjectRef =
   GitObjectRef String
@@ -375,10 +392,12 @@ instance Eq GitObjectRef where
 
 instance GitObjectComponent GitObjectRef where
   gitObjectParser = gitObjectRefParser
-  showInGitObject = asHex
+  showInGitObject = serialize FullHex
 
-instance Printable GitObjectRef Unit where
-  showToHuman _ = asHex
+instance Serializable GitObjectRef GitObjectRefFormat where
+  serialize format (GitObjectRef hexStr) = case format of
+    FullHex → hexStr
+    ShortHex → take 8 hexStr
 
 newtype CommitRef =
   CommitRef GitObjectRef
@@ -396,10 +415,11 @@ instance Eq CommitRef where
 
 instance GitObjectComponent CommitRef where
   gitObjectParser = commitRefParser
-  showInGitObject (CommitRef gitObjectRef) = asHex gitObjectRef
+  showInGitObject (CommitRef gitObjectRef) = serialize FullHex
+    gitObjectRef
 
-instance Printable CommitRef Unit where
-  showToHuman _ = showInGitObject
+instance Serializable CommitRef GitObjectRefFormat where
+  serialize format (CommitRef ref) = serialize format ref
 
 newtype TreeRef =
   TreeRef GitObjectRef
@@ -417,10 +437,8 @@ instance Eq TreeRef where
 
 instance GitObjectComponent TreeRef where
   gitObjectParser = treeRefParser
-  showInGitObject (TreeRef gitObjectRef) = asHex gitObjectRef
-
-instance Printable TreeRef Unit where
-  showToHuman _ = showInGitObject
+  showInGitObject (TreeRef gitObjectRef) = serialize FullHex
+    gitObjectRef
 
 newtype Notes =
   Notes (List String)
@@ -506,23 +524,6 @@ commitLineParser = choice
   , MessageLine <$> commitMessageParser
   , UnknownLine <$ (many $ noneOf [ '\n' ])
   ]
-
-eolParser ∷ Parser Unit
-eolParser = void $ string "\n"
-
-fullStringParser ∷ Parser String
-fullStringParser = regex ".*"
-
-linesParser ∷ Parser (List String)
-linesParser = fullStringParser `sepBy` eolParser
-
-wordParser ∷ Parser NonEmptyString
-wordParser = do
-  word ← regex "[^ ]+"
-  maybe
-    (fail "empty word")
-    pure
-    (NES.fromString word)
 
 emailParser ∷ Parser Email
 emailParser =
@@ -641,9 +642,6 @@ gitObjectRefParser = do
   fullString ← fullStringParser
   if length fullString == 40 then pure $ GitObjectRef fullString
   else fail "not a 40-character long hex string"
-
-asHex ∷ GitObjectRef → String
-asHex (GitObjectRef gitObjectRefString) = gitObjectRefString
 
 unsafeCommitMessage ∷ String → CommitMessage
 unsafeCommitMessage = CommitMessage

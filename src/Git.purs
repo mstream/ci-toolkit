@@ -3,6 +3,8 @@ module Git
   , getCommitInfo
   , getCommitNotes
   , getCommitRefs
+  , getTagInfo
+  , getTags
   ) where
 
 import Prelude
@@ -19,13 +21,16 @@ import Git.Commit
   , CommitRef
   , Notes(..)
   , commitInfoParser
+  , commitRefParser
   , commitRefsParser
   , notesParser
   , showInGitObject
   )
+import Git.Tag (Tag, TagInfo, tagInfoParser, tagsParser)
 import Node.Path (FilePath)
 import Shell (executeCommand)
 import Text.Parsing.StringParser (runParser)
+import Text.SerDe (serialize)
 
 getCommitRefs ∷ FilePath → Aff (List CommitRef)
 getCommitRefs gitDirPath = do
@@ -36,6 +41,16 @@ getCommitRefs gitDirPath = do
     (throwError $ error "cannot parse commit refs")
     pure
     (hush $ runParser commitRefsParser cmdOutput)
+
+getTags ∷ FilePath → Aff (List Tag)
+getTags gitDirPath = do
+  cmdOutput ← executeCommand
+    gitDirPath
+    "git tag"
+  maybe
+    (throwError $ error "cannot parse tags")
+    pure
+    (hush $ runParser tagsParser cmdOutput)
 
 appendCommitNotes ∷ FilePath → CommitRef → Notes → Aff Unit
 appendCommitNotes gitDirPath commitRef (Notes notes) = do
@@ -70,3 +85,13 @@ getCommitInfo gitDirPath commitRef = do
     (throwError <<< error <<< (_.error))
     pure
     (runParser commitInfoParser cmdOutput)
+
+getTagInfo ∷ FilePath → Tag → Aff TagInfo
+getTagInfo gitDirPath tag = do
+  cmdOutput ← executeCommand
+    gitDirPath
+    ("git rev-parse " <> serialize unit tag)
+  either
+    (throwError <<< error <<< (_.error))
+    pure
+    (runParser tagInfoParser cmdOutput)
