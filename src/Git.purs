@@ -21,7 +21,6 @@ import Git.Commit
   , CommitRef
   , Notes(..)
   , commitInfoParser
-  , commitRefParser
   , commitRefsParser
   , notesParser
   , showInGitObject
@@ -90,7 +89,7 @@ getTagInfo ∷ FilePath → Tag → Aff TagInfo
 getTagInfo gitDirPath tag = do
   cmdOutput ← executeCommand
     gitDirPath
-    ("git rev-parse " <> serialize unit tag)
+    ("git rev-list " <> serialize unit tag <> " | head -n 1")
   either
     (throwError <<< error <<< (_.error))
     pure
