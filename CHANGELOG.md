@@ -1,4 +1,11 @@
 Changelog
+### 0.1.13 (2021-10-22)
+
+
+### Features
+
+* add rendering of annotated tags ([e0e2e1b](https://github.com/mstream/ci-toolkit/commit/e0e2e1bada15a8fc6c2aaaccc1650b6efbf9a313))
+
 ### 0.1.12 (2021-10-21)
 
 
