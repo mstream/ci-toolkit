@@ -1,0 +1,26 @@
+{
+  "name": "@ci-toolkit/pipeline",
+  "version": "0.1.13",
+  "private": false,
+  "description": "A tool for keeping a continuous delivery pipeline state in a Git repository",
+  "files": [
+    "dist/index.js"
+  ],
+  "bin": {
+    "pipeline": "bin/cli"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mstream/ci-toolkit.git"
+  },
+  "author": "Maciej Laciak <maciej.laciak@gmail.com> (https://github.com/mstream/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mstream/ci-toolkit/issues"
+  },
+  "homepage": "https://github.com/mstream/ci-toolkit#readme"
+}

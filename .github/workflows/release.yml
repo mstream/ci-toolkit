@@ -45,7 +45,7 @@ jobs:
         run: 'git config --global user.name "CI"'
       
       - name: Release source
-        run: 'npm run release'
+        run: 'npm run release:git'
 
       - name: Push the release commit
         run: 'git push --follow-tags origin master'

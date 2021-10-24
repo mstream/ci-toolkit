@@ -1,0 +1,26 @@
+{
+  "name": "@ci-toolkit/version",
+  "version": "0.1.13",
+  "private": false,
+  "description": "A tool for determining a codebase version",
+  "files": [
+    "dist/index.js"
+  ],
+  "bin": {
+    "version": "bin/cli"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mstream/ci-toolkit.git"
+  },
+  "author": "Maciej Laciak <maciej.laciak@gmail.com> (https://github.com/mstream/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mstream/ci-toolkit/issues"
+  },
+  "homepage": "https://github.com/mstream/ci-toolkit#readme"
+}

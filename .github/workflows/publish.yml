@@ -20,10 +20,20 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Bundle source
+      - name: Bundle sources
         run: npm run bundle
 
-      - name: Publish package
-        run: npm publish
+      - name: Publish 'pipeline' package
+        run: npm publish:pipeline
+        env: 
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish 'render' package
+        run: npm publish:render
+        env: 
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish 'version' package
+        run: npm publish:version
         env: 
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
