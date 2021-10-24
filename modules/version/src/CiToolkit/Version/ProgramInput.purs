@@ -2,6 +2,8 @@ module CiToolkit.Version.ProgramInput
   ( Command(..)
   , CommonOptions(..)
   , ProgramInput(..)
+  , ShowOptions(..)
+  , VersionFormat(..)
   , programInputParser
   ) where
 
@@ -27,12 +29,29 @@ derive instance Generic ProgramInput _
 instance Show ProgramInput where
   show = genericShow
 
+data VersionFormat
+  = Calendar
+  | Semantic
+
+derive instance Generic VersionFormat _
+
+instance Show VersionFormat where
+  show = genericShow
+
 data Command
-  = TODO
+  = Show ShowOptions
 
 derive instance Generic Command _
 
 instance Show Command where
+  show = genericShow
+
+newtype ShowOptions = ShowOptions
+  { format ∷ VersionFormat }
+
+derive instance Generic ShowOptions _
+
+instance Show ShowOptions where
   show = genericShow
 
 newtype CommonOptions = CommonOptions
@@ -51,12 +70,21 @@ programInputParser ∷ Opts.Parser ProgramInput
 programInputParser = ado
   opts ← commonOptionsParser
   cmd ← Opts.hsubparser $
-    Opts.command "todo"
-      (Opts.info todoCommandParser (Opts.progDesc "TODO"))
+    Opts.command "show"
+      (Opts.info showCommandParser (Opts.progDesc "show version"))
   in ProgramInput opts cmd
 
-todoCommandParser ∷ Opts.Parser Command
-todoCommandParser = pure TODO
+showCommandParser ∷ Opts.Parser Command
+showCommandParser = ado
+  opts ← showOptionsParser
+  in Show opts
+
+showOptionsParser ∷ Opts.Parser ShowOptions
+showOptionsParser = ado
+  format ← Opts.option parseVersionFormat
+    (Opts.long "format" <> Opts.value Semantic)
+  in
+    ShowOptions { format }
 
 commonOptionsParser ∷ Opts.Parser CommonOptions
 commonOptionsParser = ado
@@ -78,6 +106,13 @@ commonOptionsParser = ado
       , isVerbose
       , versionPrefix
       }
+
+parseVersionFormat ∷ Opts.ReadM VersionFormat
+parseVersionFormat = Opts.eitherReader $ \s →
+  case s of
+    "calendar" → pure Calendar
+    "semantic" → pure Semantic
+    _ → Left "unsupported format"
 
 parseVersionPrefix ∷ Opts.ReadM VersionTagPrefix
 parseVersionPrefix = Opts.eitherReader $ \s →

@@ -33,10 +33,10 @@
     "release:git": "standard-version",
     "release:gh": "conventional-github-releaser",
     "test": "npm run test:common && npm run test:pipeline && npm run test:pipeline && npm run test:version",
-    "test:common": "cd modules/common && spago test",
-    "test:pipeline": "cd modules/pipeline && spago test",
-    "test:render": "cd modules/render && spago test",
-    "test:version": "cd modules/version && spago test"
+    "test:common": "cd modules/common && nyc spago test --source-maps",
+    "test:pipeline": "cd modules/pipeline && spago test --source-maps",
+    "test:render": "cd modules/render && spago test --source-maps",
+    "test:version": "cd modules/version && spago test --source-maps"
   },
   "repository": {
     "type": "git",
@@ -50,6 +50,7 @@
   "homepage": "https://github.com/mstream/ci-toolkit#readme",
   "devDependencies": {
     "conventional-github-releaser": "^3",
+    "nyc": "^15",
     "pscid": "^2",
     "purescript": "~0.14",
     "purs-tidy": "~0.6",

@@ -4,9 +4,11 @@ import Prelude
 
 import CiToolkit.Common.ProgramOutput (ProgramOutput(TextOutput))
 import CiToolkit.Version.ProgramInput
-  ( Command(TODO)
+  ( Command(Show)
   , CommonOptions(CommonOptions)
   , ProgramInput(ProgramInput)
+  , ShowOptions(ShowOptions)
+  , VersionFormat(Calendar, Semantic)
   )
 import Data.Argonaut (encodeJson)
 import Data.DotLang (toGraph)
@@ -20,5 +22,7 @@ import Node.Path (FilePath)
 execute ∷ ProgramInput → Aff ProgramOutput
 execute (ProgramInput (CommonOptions commonOpts) command) = do
   case command of
-
-    TODO → pure $ TextOutput $ "TODO"
+    Show (ShowOptions { format }) →
+      case format of
+        Calendar → pure $ TextOutput $ "TODO"
+        Semantic → pure $ TextOutput $ "TODO"
