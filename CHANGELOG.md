@@ -1,4 +1,11 @@
 Changelog
+### 0.2.1 (2021-10-24)
+
+
+### Features
+
+* add version format options ([bf85c71](https://github.com/mstream/ci-toolkit/commit/bf85c719e3c1f2bd826e1e12720172d2e9e71486))
+
 ## 0.2.0 (2021-10-24)
 
 
