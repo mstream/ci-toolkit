@@ -1,4 +1,16 @@
 Changelog
+## 0.2.0 (2021-10-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* change of the organisation name
+* split into 3 separate executables
+
+### Features
+
+* convert to a monorepo ([f1e60f1](https://github.com/mstream/ci-toolkit/commit/f1e60f1a0bf3bd5899cd17509149996abd732b53))
+
 ### 0.1.13 (2021-10-22)
 
 
