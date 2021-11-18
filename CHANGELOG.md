@@ -1,4 +1,11 @@
 Changelog
+### 0.2.3 (2021-11-18)
+
+
+### Features
+
+* **version:** add calendar version calculation ([098453b](https://github.com/mstream/ci-toolkit/commit/098453bd4d8d11990e36dc6573804791a894af58))
+
 ### 0.2.2 (2021-11-16)
 
 ### 0.2.1 (2021-10-24)
