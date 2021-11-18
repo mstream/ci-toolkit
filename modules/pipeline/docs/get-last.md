@@ -13,7 +13,7 @@ npx @ci-toolkit/pipeline get-last \
 
 ## Description
 
-Get the last commit which passed given CI stage(s) 
+Get the last commit which passed given CI stage(s).
 
 ## Options
 
@@ -27,10 +27,7 @@ Get the last commit which passed given CI stage(s)
 
 ## Examples
 
-```shell
-npx @ci-toolkit/pipeline get-last \
-  --ci-stage functional-testing
-```
+### Getting an ID of the last commit with multiple passed CI stages
 
 ```shell
 npx @ci-toolkit/pipeline get-last \ 

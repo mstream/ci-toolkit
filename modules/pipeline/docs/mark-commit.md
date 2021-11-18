@@ -10,7 +10,7 @@ npx @ci-toolkit/pipeline mark-commit \
 
 ## Description
 
-Mark a commit as passed given CI stage 
+Mark a commit as passed given CI stage.
 
 ## Options
 
@@ -24,6 +24,8 @@ Mark a commit as passed given CI stage
 | --verbose         | -v         | false         | include more logs | 
 
 ## Examples
+
+### Marking the current commit
 
 ```shell
 npx @ci-toolkit/pipeline mark-commit \

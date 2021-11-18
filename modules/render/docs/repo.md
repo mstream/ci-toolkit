@@ -14,7 +14,7 @@ npx @ci-toolkit/render repo \
 
 ## Description
 
-Renders the entire repository
+Renders the entire repository.
 
 ## Options
 
@@ -23,19 +23,15 @@ Renders the entire repository
 | --ci-prefix       | <NONE>     | "ci-"         | CI prefix |
 | --ci-stage        | <NONE>     | <NONE>        | order of the CI stages | 
 | --dry-run         | <NONE>     | false         | make no changes to the repository | 
-| --format          | <NONE>     | "JSON"        | format of the output |
+| --format          | <NONE>     | "json"        | format of the output |
 | --git-directory   | <NONE>     | "."           | path to the repository | 
 | --verbose         | -v         | false         | include more logs | 
 
 ## Examples
 
-```shell
-npx @ci-toolkit/pipeline get-last \ 
-  --format JSON
-```
+### Generating a picture with a repository visualization
 
 ```shell
-npx @ci-toolkit/pipeline get-last \ 
-  --format DOT
+npx @ci-tools/ci-toolkit render --format dot | dot -Tpng > /tmp/output.png
 ```
 

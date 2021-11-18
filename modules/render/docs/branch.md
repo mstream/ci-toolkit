@@ -23,7 +23,7 @@ TODO
 | --ci-prefix       | <NONE>     | "ci-"         | CI prefix |
 | --ci-stage        | <NONE>     | <NONE>        | order of the CI stages | 
 | --dry-run         | <NONE>     | false         | make no changes to the repository | 
-| --format          | <NONE>     | "JSON"        | format of the output |
+| --format          | <NONE>     | "json"        | format of the output |
 | --git-directory   | <NONE>     | "."           | path to the repository | 
 | --verbose         | -v         | false         | include more logs | 
 

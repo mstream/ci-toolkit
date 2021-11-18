@@ -13,7 +13,7 @@ npx @ci-toolkit/version show \
 
 ## Description
 
-Calculate a version of the current commit
+Calculate a version of the current commit.
 
 ## Options
 
@@ -21,20 +21,15 @@ Calculate a version of the current commit
 | :---              | :---       | :---          | :--- |
 | --ci-prefix       | <NONE>     | "ci-"         | CI prefix |
 | --dry-run         | <NONE>     | false         | make no changes to the repository | 
-| --format          | <NONE>     | semantic      | format of the version |
+| --format          | <NONE>     | "semantic"    | format of the version |
 | --git-directory   | <NONE>     | "."           | path to the repository | 
 | --verbose         | -v         | false         | include more logs | 
 | --version-prefix  | <NONE>     | "v"           | version prefix |
 
 ## Examples
 
-```shell
-npx @ci-toolkit/version show \ 
-  --format semantic
-  --version-prefix v
-```
+### Creating a release tag
 
 ```shell
-npx @ci-toolkit/version show \ 
-  --format calendar
+git tag $(npx @ci-toolkit/version show)
 ```
