@@ -3,8 +3,7 @@ module Test.CiToolkit.Common.Git.Commit (spec) where
 import Prelude
 
 import CiToolkit.Common.Git.Commit
-  ( class GitObjectComponent
-  , Author(Author)
+  ( Author(Author)
   , CommitInfo(CommitInfo)
   , CommitLine
       ( MessageLine
@@ -16,58 +15,39 @@ import CiToolkit.Common.Git.Commit
   , CommitMessage(CommitMessage)
   , CommitParent(CommitParent)
   , Committer(Committer)
-  , Email
   , Notes(Notes)
-  , Timestamp(Timestamp)
-  , Timezone
   , Tree(Tree)
-  , UserInfo(UserInfo)
-  , Username(Username)
   , commitInfoParser
   , commitLinesParser
   , commitMessageParser
   , commitRefParser
   , commitRefsParser
-  , emailParser
-  , gitObjectParser
   , notesParser
-  , showInGitObject
-  , timestampParser
-  , timezoneParser
   , unsafeCommitMessage
   , unsafeCommitRef
-  , unsafeEmail
-  , unsafeTimezone
   , unsafeTreeRef
+  )
+import CiToolkit.Common.Git.Commit.UserInfo
+  ( UserInfo(UserInfo)
+  , Username(Username)
+  , timestampParser
+  , unsafeEmail
+  , unsafeTimestamp
   , usernameParser
   )
-import Data.Array.NonEmpty as NEA
-import Data.Char.Gen (genAsciiChar)
-import Data.List (List(Nil), fromFoldable)
-import Data.NonEmpty ((:|))
-import Data.String (joinWith)
-import Data.String.CodeUnits (fromCharArray)
-import Data.String.Gen (genString)
+import CiToolkit.Common.Git.Object (gitObjectParser)
+import CiToolkit.Common.Utils (unsafeNonEmptyString)
+import Data.List (fromFoldable)
 import Data.String.NonEmpty as NES
-import Effect.Aff (Aff)
-import Effect.Class (liftEffect)
-import Test.CiToolkit.Common.Utils
-  ( toResult
-  , unsafeInstantFromSeconds
-  , unsafeNonEmptyString
-  )
-import Test.QuickCheck (quickCheckGen')
-import Test.QuickCheck.Gen
-  ( Gen
-  , arrayOf
-  , arrayOf1
-  , elements
-  , suchThat
-  , vectorOf
+import Test.CiToolkit.Common.TestUtils
+  ( genCommitObject
+  , genTimestamp
+  , genUsername
+  , quickCheckGitObjectComponent
   )
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
-import Text.Parsing.StringParser (Parser, runParser)
+import Text.Parsing.StringParser (runParser)
 import Type.Proxy (Proxy(Proxy))
 
 spec ∷ Spec Unit
@@ -77,12 +57,7 @@ spec = describe "Git.Commit" do
   commitMessageParserSpec
   commitRefParserSpec
   commitRefsParserSpec
-  emailParserSpec
   notesParserSpec
-  timestampParserSpec
-  timezoneParserSpec
-  userInfoParserSpec
-  usernameParserSpec
 
 commitInfoParserSpec ∷ Spec Unit
 commitInfoParserSpec = describe "commitInfoParser" do
@@ -101,20 +76,16 @@ commitInfoParserSpec = describe "commitInfoParser" do
         pure $ CommitInfo
           { author: Author $ UserInfo
               { email: unsafeEmail "user1@email.com"
-              , timestamp:
-                  Timestamp $ unsafeInstantFromSeconds 1111111111
-              , timezone: unsafeTimezone (-5)
+              , timestamp: unsafeTimestamp { ins: 1111111111, tz: -5 }
               , username: Username $ NES.nes (Proxy ∷ Proxy "user1")
               }
           , committer: Committer $ UserInfo
               { email: unsafeEmail "user2@email.com"
-              , timestamp:
-                  Timestamp $ unsafeInstantFromSeconds 123456789
-              , timezone: unsafeTimezone 5
+              , timestamp: unsafeTimestamp { ins: 123456789, tz: 5 }
               , username: Username $ NES.nes (Proxy ∷ Proxy "user2")
               }
           , message: unsafeCommitMessage "commit message"
-          , parents: Nil
+          , parents: mempty
           , tree: Tree $ unsafeTreeRef
               "b68df892a0d8571d1d1c4618be5d36641f4a5d9b"
           }
@@ -144,19 +115,16 @@ commitLinesParserSpec = describe "commitLinesParser" do
         <> "\n"
         <> "commit line 3"
     let
+      timestamp = unsafeTimestamp { ins: 1111111111, tz: -5 }
       expected = pure $ fromFoldable
         [ AuthorLine $ Author $ UserInfo
             { email: unsafeEmail "user1@email.com"
-            , timestamp:
-                Timestamp $ unsafeInstantFromSeconds 1111111111
-            , timezone: unsafeTimezone (-5)
+            , timestamp
             , username: Username $ NES.nes (Proxy ∷ Proxy "user1")
             }
         , CommitterLine $ Committer $ UserInfo
             { email: unsafeEmail "user2@email.com"
-            , timestamp:
-                Timestamp $ unsafeInstantFromSeconds 1111111111
-            , timezone: unsafeTimezone (-5)
+            , timestamp
             , username: Username $ NES.nes (Proxy ∷ Proxy "user2")
             }
         , ParentLine $ CommitParent $ unsafeCommitRef
@@ -218,19 +186,6 @@ commitRefsParserSpec = describe "commitRefsParser" do
 
     actual `shouldEqual` expected
 
-emailParserSpec ∷ Spec Unit
-emailParserSpec = describe "emailParser" do
-  it "parses a specific valid email string" do
-    let
-      s = "aaa.bbb@example.com"
-      expected = pure $ unsafeEmail s
-      actual = runParser emailParser s
-
-    actual `shouldEqual` expected
-
-  it "parses any valid email string" do
-    quickCheckGitObjectComponent genEmail emailParser
-
 notesParserSpec ∷ Spec Unit
 notesParserSpec = describe "notesParser" do
   it "parses a valid notes string" do
@@ -242,182 +197,3 @@ notesParserSpec = describe "notesParser" do
       actual = runParser notesParser s
 
     actual `shouldEqual` expected
-
-timezoneParserSpec ∷ Spec Unit
-timezoneParserSpec = describe "timezoneParser" do
-
-  it "parses a specific valid timezone string" do
-    let
-      s = "+0900"
-      expected = pure $ unsafeTimezone 9
-      actual = runParser gitObjectParser s
-
-    actual `shouldEqual` expected
-
-  it "parses any valid timezone string" do
-    quickCheckGitObjectComponent genTimezone timezoneParser
-
-timestampParserSpec ∷ Spec Unit
-timestampParserSpec = describe "timestampParser" do
-
-  it "parses a specific valid timestamp string" do
-    let
-      s = "0123456789"
-      expected = pure $ Timestamp $ unsafeInstantFromSeconds 123456789
-      actual = runParser gitObjectParser s
-
-    actual `shouldEqual` expected
-
-  it "parses any valid timestamp string" do
-    quickCheckGitObjectComponent genTimestamp timestampParser
-
-usernameParserSpec ∷ Spec Unit
-usernameParserSpec = describe "usernameParser" do
-
-  it "parses a specific valid username string" do
-    let
-      s = "0123456789"
-      expected = pure $ Username $ unsafeNonEmptyString s
-      actual = runParser gitObjectParser s
-
-    actual `shouldEqual` expected
-
-  it "parses any valid username string" do
-    quickCheckGitObjectComponent genUsername usernameParser
-
-userInfoParserSpec ∷ Spec Unit
-userInfoParserSpec = describe "userInfo" do
-
-  it "parses a specific valid user info string" do
-    let
-      s =
-        "firstname lastname <firstname.lastname@example.com> 1234567890 +0500"
-      expected = pure $ UserInfo
-        { email: unsafeEmail "firstname.lastname@example.com"
-        , timestamp: Timestamp $ unsafeInstantFromSeconds 1234567890
-        , timezone: unsafeTimezone 5
-        , username: Username $ unsafeNonEmptyString "firstname lastname"
-        }
-      actual = runParser gitObjectParser s
-
-    actual `shouldEqual` expected
-
-  it "parses any valid username string" do
-    quickCheckGitObjectComponent genUsername usernameParser
-
-genCommitObject ∷ Gen CommitInfo
-genCommitObject = ado
-  author ← genAuthor
-  committer ← genCommitter
-  parents ← fromFoldable <$> arrayOf
-    (CommitParent <$> genGitObjectRef unsafeCommitRef)
-  tree ← (Tree <$> genGitObjectRef unsafeTreeRef)
-  in
-    CommitInfo
-      { author
-      , committer
-      , message: CommitMessage "commit message"
-      , parents
-      , tree
-      }
-
-genAuthor ∷ Gen Author
-genAuthor = ado
-  userInfo ← genUserInfo
-  in
-    Author userInfo
-
-genCommitter ∷ Gen Committer
-genCommitter = ado
-  userInfo ← genUserInfo
-  in
-    Committer userInfo
-
-genUserInfo ∷ Gen UserInfo
-genUserInfo = ado
-  username ← genUsername
-  email ← genEmail
-  timestamp ← genTimestamp
-  timezone ← genTimezone
-  in
-    UserInfo { username, email, timestamp, timezone }
-
-genGitObjectRef ∷ ∀ a. (String → a) → Gen a
-genGitObjectRef refFromString = ado
-  chars ← vectorOf 40 $ elements $ NEA.fromNonEmpty $ '0' :|
-    [ '1'
-    , '2'
-    , '3'
-    , '4'
-    , '5'
-    , '6'
-    , '7'
-    , '8'
-    , '9'
-    , 'a'
-    , 'b'
-    , 'c'
-    , 'd'
-    , 'e'
-    , 'f'
-    ]
-  in refFromString $ fromCharArray chars
-
-genTimestamp ∷ Gen Timestamp
-genTimestamp =
-  pure $ Timestamp $ unsafeInstantFromSeconds 1603432894
-
-genTimezone ∷ Gen Timezone
-genTimezone =
-  pure $ unsafeTimezone 9
-
-genEmail ∷ Gen Email
-genEmail = do
-  localPartSegments ← arrayOf1 genUsernameSegment
-
-  let
-    localPart = NES.joinWith1
-      (unsafeNonEmptyString ".")
-      localPartSegments
-
-  domain ← elements $ NEA.fromNonEmpty $
-    "example1" :| [ "example2" ]
-
-  tld ← elements $ NEA.fromNonEmpty $
-    "com" :| [ "org" ]
-
-  pure $ unsafeEmail $ joinWith
-    "@"
-    [ NES.toString localPart, domain <> "." <> tld ]
-
-genUsername ∷ Gen Username
-genUsername = do
-  nameSegments ← arrayOf1 genUsernameSegment
-
-  let s = NES.joinWith1 (unsafeNonEmptyString " ") nameSegments
-
-  pure $ Username s
-
-genUsernameSegment ∷ Gen String
-genUsernameSegment = genString $ genAsciiChar `suchThat` \c →
-  c /= ' ' && c /= '<' && c /= '>' && c /= '\n'
-
-quickCheckGitObjectComponent
-  ∷ ∀ a
-  . Eq a
-  ⇒ GitObjectComponent a
-  ⇒ Show a
-  ⇒ Gen a
-  → Parser a
-  → Aff Unit
-quickCheckGitObjectComponent generate parser =
-  liftEffect $ quickCheckGen' 200 $ do
-    component ← generate
-
-    let
-      componentString = showInGitObject component
-      actual = runParser parser componentString
-
-    pure $ toResult
-      { componentString }
-      { actual, expected: pure component }

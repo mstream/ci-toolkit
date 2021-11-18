@@ -9,21 +9,20 @@ import CiToolkit.Common.CI
   , loadRepo
   )
 import CiToolkit.Common.Git.Tag (unsafeTag)
+import CiToolkit.Common.Utils (unsafeNonEmptyString)
 import Data.Date (Date)
 import Data.Date as Date
 import Data.DateTime (DateTime(DateTime))
 import Data.Enum (toEnum)
 import Data.List (List(Nil), fromFoldable)
 import Data.Maybe (Maybe(Nothing), fromJust)
-import Data.Time (Time)
-import Data.Time as Time
+import Data.Time (Time(Time))
 import Data.Tuple.Nested ((/\))
 import Partial.Unsafe (unsafePartial)
-import Test.CiToolkit.Common.Utils
+import Test.CiToolkit.Common.TestUtils
   ( appendNotes
   , createCommit
   , createTag
-  , unsafeNonEmptyString
   , withGitRepo
   )
 import Test.Spec (Spec, around, describe, it)
@@ -35,7 +34,7 @@ time = unsafePartial $ fromJust $ do
   minutes ← toEnum 0
   seconds ← toEnum 0
   millis ← toEnum 0
-  pure $ Time.Time hours minutes seconds millis
+  pure $ Time hours minutes seconds millis
 
 date ∷ Date
 date = unsafePartial $ fromJust $ do

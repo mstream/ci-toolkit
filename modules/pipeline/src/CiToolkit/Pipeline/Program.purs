@@ -12,16 +12,18 @@ import CiToolkit.Common.Git.Commit
   ( GitObjectRefFormat(FullHex)
   , Notes(Notes)
   )
+import CiToolkit.Common.ProgramInput
+  ( CommonOptions(CommonOptions)
+  , ProgramInput(ProgramInput)
+  )
 import CiToolkit.Common.ProgramOutput (ProgramOutput(TextOutput))
 import CiToolkit.Common.Query (findLastCommit)
 import CiToolkit.Common.Text.SerDe (serialize)
 import CiToolkit.Common.Update (Update(MarkWithCIStage), markCommit)
 import CiToolkit.Pipeline.ProgramInput
   ( Command(MarkCommit, GetLast)
-  , CommonOptions(CommonOptions)
   , GetLastOptions(GetLastOptions)
   , MarkCommitOptions(MarkCommitOptions)
-  , ProgramInput(ProgramInput)
   )
 import Data.List (List(Nil), (:))
 import Data.Maybe (Maybe(Just, Nothing))
@@ -30,7 +32,7 @@ import Data.Tuple.Nested ((/\))
 import Effect.Aff (Aff)
 import Node.Path (FilePath)
 
-execute ∷ ProgramInput → Aff ProgramOutput
+execute ∷ ProgramInput Command → Aff ProgramOutput
 execute (ProgramInput (CommonOptions commonOpts) command) = do
   repo ← loadRepo
     commonOpts.gitDirectory

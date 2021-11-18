@@ -3,6 +3,7 @@ module CiToolkit.Common.Git
   , getCommitInfo
   , getCommitNotes
   , getCommitRefs
+  , getHeadRef
   , getTagInfo
   , getTags
   ) where
@@ -14,10 +15,11 @@ import CiToolkit.Common.Git.Commit
   , CommitRef
   , Notes(..)
   , commitInfoParser
+  , commitRefParser
   , commitRefsParser
   , notesParser
-  , showInGitObject
   )
+import CiToolkit.Common.Git.Object (showInGitObject)
 import CiToolkit.Common.Git.Tag
   ( Tag
   , TagInfo
@@ -35,6 +37,16 @@ import Effect.Aff (Aff, catchError, throwError)
 import Effect.Exception (error)
 import Node.Path (FilePath)
 import Text.Parsing.StringParser (runParser)
+
+getHeadRef ∷ FilePath → Aff CommitRef
+getHeadRef gitDirPath = do
+  cmdOutput ← executeCommand
+    gitDirPath
+    "git rev-parse HEAD"
+  maybe
+    (throwError $ error "cannot parse commit ref")
+    pure
+    (hush $ runParser commitRefParser cmdOutput)
 
 getCommitRefs ∷ FilePath → Aff (List CommitRef)
 getCommitRefs gitDirPath = do

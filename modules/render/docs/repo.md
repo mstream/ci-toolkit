@@ -1,39 +1,41 @@
-# get-last
+# repo
 
 ## Synopsis
 
 ```shell
-npx @ci-toolkit/pipeline get-last \ 
+npx @ci-toolkit/render repo \ 
   [--ci-prefix ARG] 
   [--ci-stage ARG]
   [--dry-run] 
+  [--format ARG] 
   [--git-directory ARG]
   [-v|--verbose]
 ```
 
 ## Description
 
-Get the last commit which passed given CI stage(s) 
+Renders the entire repository
 
 ## Options
 
 | Long Form         | Short Form | Default Value | Description |
 | :---              | :---       | :---          | :--- |
 | --ci-prefix       | <NONE>     | "ci-"         | CI prefix |
-| --ci-stage        | <NONE>     | <NONE>        | name of the CI stage | 
+| --ci-stage        | <NONE>     | <NONE>        | order of the CI stages | 
 | --dry-run         | <NONE>     | false         | make no changes to the repository | 
+| --format          | <NONE>     | "JSON"        | format of the output |
 | --git-directory   | <NONE>     | "."           | path to the repository | 
 | --verbose         | -v         | false         | include more logs | 
 
 ## Examples
 
 ```shell
-npx @ci-toolkit/pipeline get-last \
-  --ci-stage functional-testing
+npx @ci-toolkit/pipeline get-last \ 
+  --format JSON
 ```
 
 ```shell
 npx @ci-toolkit/pipeline get-last \ 
-  --ci-stage functional-testing \
-  --ci-stage integration-testing
+  --format DOT
 ```
+

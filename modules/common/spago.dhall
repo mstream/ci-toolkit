@@ -2,6 +2,7 @@
 , dependencies =
   [ "aff"
   , "argonaut"
+  , "argonaut-core"
   , "argonaut-codecs"
   , "argonaut-generic"
   , "arrays"

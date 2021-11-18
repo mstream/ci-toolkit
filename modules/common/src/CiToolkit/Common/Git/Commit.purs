@@ -1,43 +1,42 @@
 module CiToolkit.Common.Git.Commit
-  ( class GitObjectComponent
-  , Author(..)
+  ( Author(..)
   , Committer(..)
   , CommitInfo(..)
   , CommitLine(..)
   , CommitMessage(..)
   , CommitParent(..)
   , CommitRef
-  , Email
   , GitObjectRef
   , GitObjectRefFormat(..)
   , Notes(..)
-  , Timestamp(..)
-  , Timezone
   , Tree(..)
   , TreeRef
-  , UserInfo(..)
-  , Username(..)
+  , commitDateTime
   , commitInfoParser
   , commitLinesParser
   , commitMessageParser
   , commitRefParser
   , commitRefsParser
-  , emailParser
-  , gitObjectParser
   , notesParser
-  , showInGitObject
-  , timestampParser
-  , timezoneParser
-  , usernameParser
   , unsafeCommitMessage
   , unsafeCommitRef
   , unsafeTreeRef
-  , unsafeEmail
-  , unsafeTimezone
   ) where
 
 import Prelude hiding (between)
 
+import CiToolkit.Common.Git.Commit.UserInfo
+  ( Timestamp(Timestamp)
+  , TimestampInstant(TimestampInstant)
+  , UserInfo(UserInfo)
+  , timestampToDateTime
+  , userInfoParser
+  )
+import CiToolkit.Common.Git.Object
+  ( class GitObjectComponent
+  , gitObjectParser
+  , showInGitObject
+  )
 import CiToolkit.Common.Git.Parsing
   ( eolParser
   , fullStringParser
@@ -46,11 +45,25 @@ import CiToolkit.Common.Git.Parsing
   )
 import CiToolkit.Common.Text.SerDe (class Serializable, serialize)
 import Control.Alt ((<|>))
-import Data.Argonaut.Encode (class EncodeJson)
-import Data.Argonaut.Encode.Encoders (encodeInt, encodeNumber)
+import Data.Argonaut.Core (jsonEmptyObject)
+import Data.Argonaut.Encode (class EncodeJson, encodeJson, (:=), (~>))
+import Data.Argonaut.Encode.Encoders
+  ( encodeInt
+  , encodeNumber
+  , encodeString
+  )
 import Data.Argonaut.Encode.Generic (genericEncodeJson)
 import Data.Array (fromFoldable)
-import Data.DateTime.Instant (Instant, fromDateTime, instant, unInstant)
+import Data.Date (Date)
+import Data.Date as Date
+import Data.DateTime (DateTime(DateTime), adjust)
+import Data.DateTime.Instant
+  ( Instant
+  , fromDateTime
+  , instant
+  , toDateTime
+  , unInstant
+  )
 import Data.Either
   ( Either(Left, Right)
   , either
@@ -60,12 +73,15 @@ import Data.Either
 import Data.Either.Nested (type (\/))
 import Data.Eq.Generic (genericEq)
 import Data.Foldable (foldMap, foldr, oneOf)
+import Data.Formatter.DateTime (FormatterCommand(UnixTimestamp), format)
 import Data.Generic.Rep (class Generic)
 import Data.Int as Int
 import Data.List (List(Nil), filter, last, reverse, singleton, (:))
 import Data.List.NonEmpty as NEL
 import Data.Maybe (Maybe(Just, Nothing), fromJust, maybe)
 import Data.Number.Format (fixed, toStringWith)
+import Data.Ord (class Ord)
+import Data.Ord.Generic (genericCompare)
 import Data.Show.Generic (genericShow)
 import Data.String
   ( Pattern(Pattern)
@@ -79,8 +95,12 @@ import Data.String.CodeUnits (fromCharArray)
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NES
 import Data.String.NonEmpty.CodeUnits (fromNonEmptyCharArray)
+import Data.Time (Time(Time))
+import Data.Time as Time
+import Data.Time.Duration (Hours)
 import Data.Time.Duration
-  ( Milliseconds(Milliseconds)
+  ( Hours(Hours)
+  , Milliseconds(Milliseconds)
   , Seconds(Seconds)
   , convertDuration
   )
@@ -112,10 +132,6 @@ import Text.Parsing.StringParser.Combinators
   , optional
   , sepBy
   )
-
-class GitObjectComponent a where
-  gitObjectParser ∷ Parser a
-  showInGitObject ∷ a → String
 
 data GitObjectRefFormat
   = FullHex
@@ -195,131 +211,6 @@ instance GitObjectComponent Tree where
   showInGitObject (Tree treeRef) =
     "tree " <> showInGitObject treeRef
 
-newtype UserInfo =
-  UserInfo
-    { email ∷ Email
-    , timestamp ∷ Timestamp
-    , timezone ∷ Timezone
-    , username ∷ Username
-    }
-
-derive instance Generic UserInfo _
-
-instance Show UserInfo where
-  show = genericShow
-
-instance EncodeJson UserInfo where
-  encodeJson = genericEncodeJson
-
-instance Eq UserInfo where
-  eq = genericEq
-
-instance GitObjectComponent UserInfo where
-  gitObjectParser = userInfoParser
-  showInGitObject (UserInfo { email, timestamp, timezone, username }) =
-    joinWith
-      " "
-      [ showInGitObject username
-      , "<" <> showInGitObject email <> ">"
-      , showInGitObject timestamp
-      , showInGitObject timezone
-      ]
-
-newtype Email =
-  Email NonEmptyString
-
-derive instance Generic Email _
-
-instance Show Email where
-  show = genericShow
-
-instance EncodeJson Email where
-  encodeJson = genericEncodeJson
-
-instance Eq Email where
-  eq = genericEq
-
-instance GitObjectComponent Email where
-  gitObjectParser = emailParser
-  showInGitObject (Email s) = NES.toString s
-
-newtype Timestamp =
-  Timestamp Instant
-
-derive instance Generic Timestamp _
-
-instance Show Timestamp where
-  show = genericShow
-
-instance EncodeJson Timestamp where
-  encodeJson (Timestamp ins) =
-    let
-      (Milliseconds millis) = unInstant ins
-
-    in
-      encodeNumber millis
-
-instance Eq Timestamp where
-  eq = genericEq
-
-instance GitObjectComponent Timestamp where
-  gitObjectParser = timestampParser
-  showInGitObject (Timestamp ins) =
-    let
-      (Milliseconds millis) = unInstant ins
-
-    in
-      toStringWith
-        (fixed 0)
-        (millis / 1000.0)
-
-newtype Timezone =
-  Timezone Int
-
-derive instance Generic Timezone _
-
-instance Show Timezone where
-  show = genericShow
-
-instance EncodeJson Timezone where
-  encodeJson = genericEncodeJson
-
-instance Eq Timezone where
-  eq = genericEq
-
-instance GitObjectComponent Timezone where
-  gitObjectParser = timezoneParser
-  showInGitObject (Timezone timezoneInt) =
-    case timezoneInt of
-      i
-        | i < (-9) → "-" <> absValStr
-        | i > 9 → "+" <> absValStr
-        | i < 0 → "-0" <> absValStr
-        | i > 0 → "+0" <> absValStr
-        | otherwise → "???"
-    where
-    absValStr = Int.toStringAs
-      Int.decimal
-      (Int.round $ abs $ Int.toNumber $ timezoneInt * 100)
-
-newtype Username =
-  Username NonEmptyString
-
-derive instance Generic Username _
-
-instance Show Username where
-  show = genericShow
-
-instance EncodeJson Username where
-  encodeJson = genericEncodeJson
-
-instance Eq Username where
-  eq = genericEq
-
-instance GitObjectComponent Username where
-  gitObjectParser = usernameParser
-  showInGitObject (Username s) = NES.toString s
-
 newtype CommitInfo =
   CommitInfo
     { author ∷ Author
@@ -390,6 +281,9 @@ instance EncodeJson GitObjectRef where
 instance Eq GitObjectRef where
   eq = genericEq
 
+instance Ord GitObjectRef where
+  compare = genericCompare
+
 instance GitObjectComponent GitObjectRef where
   gitObjectParser = gitObjectRefParser
   showInGitObject = serialize FullHex
@@ -412,6 +306,9 @@ instance EncodeJson CommitRef where
 
 instance Eq CommitRef where
   eq = genericEq
+
+instance Ord CommitRef where
+  compare = genericCompare
 
 instance GitObjectComponent CommitRef where
   gitObjectParser = commitRefParser
@@ -525,83 +422,6 @@ commitLineParser = choice
   , UnknownLine <$ (many $ noneOf [ '\n' ])
   ]
 
-emailParser ∷ Parser Email
-emailParser =
-  do
-    s ← regex "[^<>]+"
-    maybe
-      (fail "empty email")
-      (pure <<< Email)
-      (NES.fromString s)
-
-usernameParser ∷ Parser Username
-usernameParser = do
-  s ← trim <$> regex "[^<>]+"
-  maybe
-    (fail "empty username")
-    (pure <<< Username)
-    (NES.fromString s)
-
-timestampParser ∷ Parser Timestamp
-timestampParser = do
-  timestampString ← wordParser
-
-  let
-    timestamp = do
-      timestampInt ← Int.fromString $ NES.toString timestampString
-
-      let
-        duration = Seconds $ Int.toNumber timestampInt
-
-      Timestamp <$> (instant $ convertDuration duration)
-
-  maybe
-    (fail "unparsable timestamp")
-    pure
-    timestamp
-
-timezoneParser ∷ Parser Timezone
-timezoneParser = do
-  timezoneString ← regex "[+-]\\d{4}"
-  maybe (fail "unparsable timezone")
-    (pure <<< Timezone <<< (_ / 100))
-    (Int.fromString timezoneString)
-
-userInfoParser ∷ Parser UserInfo
-userInfoParser = do
-  let
-    emailStart = string "<"
-    emailEnd = string ">"
-
-  username ← gitObjectParser
-  void $ emailStart
-  email ← gitObjectParser
-  void $ emailEnd
-  skipSpaces
-  timestamp ← gitObjectParser
-  skipSpaces
-  timezone ← gitObjectParser
-  pure $ UserInfo
-    { email
-    , timestamp
-    , timezone
-    , username
-    }
-
-authorParser ∷ Parser Author
-authorParser = do
-  void $ string "author"
-  skipSpaces
-  userInfo ← gitObjectParser
-  pure $ Author userInfo
-
-committerParser ∷ Parser Committer
-committerParser = do
-  void $ string "committer"
-  skipSpaces
-  userInfo ← gitObjectParser
-  pure $ Committer userInfo
-
 notesParser ∷ Parser Notes
 notesParser = do
   lines ← linesParser
@@ -637,11 +457,31 @@ commitRefsParser = do
   refs ← commitRefParser `endBy` eolParser
   pure refs
 
+authorParser ∷ Parser Author
+authorParser = do
+  void $ string "author "
+  userInfo ← userInfoParser
+  pure $ Author userInfo
+
+committerParser ∷ Parser Committer
+committerParser = do
+  void $ string "committer"
+  userInfo ← userInfoParser
+  pure $ Committer userInfo
+
 gitObjectRefParser ∷ Parser GitObjectRef
 gitObjectRefParser = do
   fullString ← fullStringParser
   if length fullString == 40 then pure $ GitObjectRef fullString
   else fail "not a 40-character long hex string"
+
+commitDateTime ∷ CommitInfo → Maybe DateTime
+commitDateTime (CommitInfo { committer }) =
+  let
+    Committer (UserInfo { timestamp }) = committer
+
+  in
+    timestampToDateTime timestamp
 
 unsafeCommitMessage ∷ String → CommitMessage
 unsafeCommitMessage = CommitMessage
@@ -651,13 +491,3 @@ unsafeCommitRef = CommitRef <<< GitObjectRef
 
 unsafeTreeRef ∷ String → TreeRef
 unsafeTreeRef = TreeRef <<< GitObjectRef
-
-unsafeEmail ∷ String → Email
-unsafeEmail = Email <<< unsafeNonEmptyString
-
-unsafeTimezone ∷ Int → Timezone
-unsafeTimezone = Timezone
-
-unsafeNonEmptyString ∷ String → NonEmptyString
-unsafeNonEmptyString s =
-  unsafePartial $ fromJust $ NES.fromString s

@@ -7,6 +7,7 @@ import Effect.Aff (launchAff_)
 import Test.CiToolkit.Common.CI as CI
 import Test.CiToolkit.Common.Git as Git
 import Test.CiToolkit.Common.Git.Commit as GitCommit
+import Test.CiToolkit.Common.Git.Commit.UserInfo as GitCommitUserInfo
 import Test.CiToolkit.Common.Git.Tag as GitTag
 import Test.CiToolkit.Common.Print as Print
 import Test.CiToolkit.Common.Query as Query
@@ -20,6 +21,7 @@ main = do
     CI.spec
     Git.spec
     GitCommit.spec
+    GitCommitUserInfo.spec
     GitTag.spec
     Print.spec
     Query.spec

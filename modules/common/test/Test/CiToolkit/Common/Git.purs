@@ -15,7 +15,7 @@ import Data.Time (Time)
 import Data.Time as Time
 import Data.Tuple.Nested ((/\))
 import Partial.Unsafe (unsafePartial)
-import Test.CiToolkit.Common.Utils
+import Test.CiToolkit.Common.TestUtils
   ( createCommit
   , createTag
   , withGitRepo

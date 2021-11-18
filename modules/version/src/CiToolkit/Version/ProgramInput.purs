@@ -1,14 +1,13 @@
 module CiToolkit.Version.ProgramInput
   ( Command(..)
-  , CommonOptions(..)
-  , ProgramInput(..)
   , ShowOptions(..)
   , VersionFormat(..)
-  , programInputParser
+  , commandParser
   ) where
 
 import Prelude
 
+import CiToolkit.Common.ProgramInput (ProgramInput(ProgramInput))
 import CiToolkit.Common.Version
   ( VersionTagPrefix(VersionTagPrefix)
   , versionTagPrefixParser
@@ -21,13 +20,6 @@ import Node.Path (FilePath)
 import Options.Applicative as Opts
 import Text.Parsing.StringParser (runParser)
 import Type.Proxy (Proxy(Proxy))
-
-data ProgramInput = ProgramInput CommonOptions Command
-
-derive instance Generic ProgramInput _
-
-instance Show ProgramInput where
-  show = genericShow
 
 data VersionFormat
   = Calendar
@@ -54,25 +46,14 @@ derive instance Generic ShowOptions _
 instance Show ShowOptions where
   show = genericShow
 
-newtype CommonOptions = CommonOptions
-  { dryRun ∷ Boolean
-  , gitDirectory ∷ FilePath
-  , isVerbose ∷ Boolean
-  , versionPrefix ∷ VersionTagPrefix
-  }
-
-derive instance Generic CommonOptions _
-
-instance Show CommonOptions where
-  show = genericShow
-
-programInputParser ∷ Opts.Parser ProgramInput
-programInputParser = ado
-  opts ← commonOptionsParser
-  cmd ← Opts.hsubparser $
-    Opts.command "show"
-      (Opts.info showCommandParser (Opts.progDesc "show version"))
-  in ProgramInput opts cmd
+commandParser ∷ Opts.Parser Command
+commandParser =
+  Opts.hsubparser $ Opts.command
+    "show"
+    ( Opts.info
+        showCommandParser
+        (Opts.progDesc "show version")
+    )
 
 showCommandParser ∷ Opts.Parser Command
 showCommandParser = ado
@@ -85,27 +66,6 @@ showOptionsParser = ado
     (Opts.long "format" <> Opts.value Semantic)
   in
     ShowOptions { format }
-
-commonOptionsParser ∷ Opts.Parser CommonOptions
-commonOptionsParser = ado
-  dryRun ← Opts.switch (Opts.long "dry-run")
-  gitDirectory ← Opts.strOption
-    (Opts.long "git-directory" <> Opts.value ".")
-  isVerbose ← Opts.switch
-    (Opts.long "verbose" <> Opts.short 'v')
-  versionPrefix ← Opts.option
-    parseVersionPrefix
-    ( Opts.long "version-prefix" <>
-        (Opts.value $ VersionTagPrefix (nes (Proxy ∷ Proxy "v")))
-    )
-
-  in
-    CommonOptions
-      { dryRun
-      , gitDirectory
-      , isVerbose
-      , versionPrefix
-      }
 
 parseVersionFormat ∷ Opts.ReadM VersionFormat
 parseVersionFormat = Opts.eitherReader $ \s →

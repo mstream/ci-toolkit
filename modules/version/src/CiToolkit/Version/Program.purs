@@ -2,27 +2,40 @@ module CiToolkit.Version.Program (execute) where
 
 import Prelude
 
+import CiToolkit.Common.CI (loadRepo)
+import CiToolkit.Common.Git (getHeadRef)
+import CiToolkit.Common.ProgramInput
+  ( CommonOptions(CommonOptions)
+  , ProgramInput(ProgramInput)
+  )
 import CiToolkit.Common.ProgramOutput (ProgramOutput(TextOutput))
+import CiToolkit.Version.Calendar (showCalendarVersion)
 import CiToolkit.Version.ProgramInput
   ( Command(Show)
-  , CommonOptions(CommonOptions)
-  , ProgramInput(ProgramInput)
   , ShowOptions(ShowOptions)
   , VersionFormat(Calendar, Semantic)
   )
-import Data.Argonaut (encodeJson)
-import Data.DotLang (toGraph)
-import Data.List (List(Nil), (:))
-import Data.Maybe (Maybe(Just, Nothing))
-import Data.String.NonEmpty as NES
+import CiToolkit.Version.Semantic (showSemanticVersion)
+import Control.Monad.Error.Class (throwError)
+import Data.Either (either)
+import Data.Tuple (uncurry)
 import Data.Tuple.Nested ((/\))
 import Effect.Aff (Aff)
+import Effect.Exception (error)
 import Node.Path (FilePath)
 
-execute ∷ ProgramInput → Aff ProgramOutput
+execute ∷ ProgramInput Command → Aff ProgramOutput
 execute (ProgramInput (CommonOptions commonOpts) command) = do
-  case command of
-    Show (ShowOptions { format }) →
-      case format of
-        Calendar → pure $ TextOutput $ "TODO"
-        Semantic → pure $ TextOutput $ "TODO"
+  repo ← loadRepo commonOpts.gitDirectory commonOpts.ciPrefix
+  headRef ← getHeadRef commonOpts.gitDirectory
+  let
+    result = case command of
+      Show (ShowOptions { format }) →
+        case format of
+          Calendar → showCalendarVersion repo headRef
+          Semantic → showSemanticVersion repo headRef
+
+  either
+    (throwError <<< error)
+    (pure <<< TextOutput)
+    result

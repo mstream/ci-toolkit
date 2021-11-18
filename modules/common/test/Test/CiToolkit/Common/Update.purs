@@ -7,23 +7,25 @@ import CiToolkit.Common.Git.Commit
   ( Author(Author)
   , CommitInfo(CommitInfo)
   , Committer(Committer)
-  , Timestamp(Timestamp)
   , Tree(Tree)
-  , UserInfo(UserInfo)
-  , Username(Username)
   , unsafeCommitMessage
   , unsafeCommitRef
-  , unsafeEmail
-  , unsafeTimezone
   , unsafeTreeRef
   )
+import CiToolkit.Common.Git.Commit.UserInfo
+  ( UserInfo(UserInfo)
+  , Username(Username)
+  , unsafeEmail
+  , unsafeTimestamp
+  )
 import CiToolkit.Common.Update (Update(MarkWithCIStage), markCommit)
-import Data.List (List(Nil), fromFoldable)
-import Data.Maybe (Maybe(Nothing))
-import Test.CiToolkit.Common.Utils
-  ( unsafeInstantFromSeconds
+import CiToolkit.Common.Utils
+  ( unsafeDateTimeFromSeconds
+  , unsafeInstantFromSeconds
   , unsafeNonEmptyString
   )
+import Data.List (List(Nil), fromFoldable)
+import Data.Maybe (Maybe(Nothing))
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 
@@ -35,15 +37,12 @@ dummyCommitInfo ∷ CommitInfo
 dummyCommitInfo = CommitInfo
   { author: Author $ UserInfo
       { email: unsafeEmail "user1@email.com"
-      , timestamp:
-          Timestamp $ unsafeInstantFromSeconds 1111111111
-      , timezone: unsafeTimezone (-5)
+      , timestamp: unsafeTimestamp { ins: 1, tz: 0 }
       , username: Username $ unsafeNonEmptyString "user1"
       }
   , committer: Committer $ UserInfo
       { email: unsafeEmail "user2@email.com"
-      , timestamp: Timestamp $ unsafeInstantFromSeconds 123456789
-      , timezone: unsafeTimezone 5
+      , timestamp: unsafeTimestamp { ins: 2, tz: 0 }
       , username: Username $ unsafeNonEmptyString "user2"
       }
   , message: unsafeCommitMessage "commit message"

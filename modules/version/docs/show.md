@@ -1,39 +1,40 @@
-# get-last
+# show
 
 ## Synopsis
 
 ```shell
-npx @ci-toolkit/pipeline get-last \ 
-  [--ci-prefix ARG] 
-  [--ci-stage ARG]
+npx @ci-toolkit/version show \ 
   [--dry-run] 
+  [--format ARG] 
   [--git-directory ARG]
   [-v|--verbose]
+  [--version-prefix ARG]
 ```
 
 ## Description
 
-Get the last commit which passed given CI stage(s) 
+Calculate a version of the current commit
 
 ## Options
 
 | Long Form         | Short Form | Default Value | Description |
 | :---              | :---       | :---          | :--- |
 | --ci-prefix       | <NONE>     | "ci-"         | CI prefix |
-| --ci-stage        | <NONE>     | <NONE>        | name of the CI stage | 
 | --dry-run         | <NONE>     | false         | make no changes to the repository | 
+| --format          | <NONE>     | semantic      | format of the version |
 | --git-directory   | <NONE>     | "."           | path to the repository | 
 | --verbose         | -v         | false         | include more logs | 
+| --version-prefix  | <NONE>     | "v"           | version prefix |
 
 ## Examples
 
 ```shell
-npx @ci-toolkit/pipeline get-last \
-  --ci-stage functional-testing
+npx @ci-toolkit/version show \ 
+  --format semantic
+  --version-prefix v
 ```
 
 ```shell
-npx @ci-toolkit/pipeline get-last \ 
-  --ci-stage functional-testing \
-  --ci-stage integration-testing
+npx @ci-toolkit/version show \ 
+  --format calendar
 ```

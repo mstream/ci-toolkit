@@ -14,8 +14,14 @@ Mark a commit as passed given CI stage
 
 ## Options
 
-`--ci-stage` the name of the stage 
-`--commit-ref` the ID of the commit to be marked
+| Long Form         | Short Form | Default Value | Description | 
+| :---              | :---       | :---          | :--- |
+| --ci-prefix       | <NONE>     | "ci-"         | CI prefix |
+| --ci-stage        | <NONE>     | <NONE>        | name of the CI stage | 
+| --commit-ref      | <NONE>     | <NONE>        | commit ID | 
+| --dry-run         | <NONE>     | false         | make no changes to the repository | 
+| --git-directory   | <NONE>     | "."           | path to the repository | 
+| --verbose         | -v         | false         | include more logs | 
 
 ## Examples
 

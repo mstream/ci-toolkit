@@ -17,6 +17,7 @@ import CiToolkit.Common.Git.Parsing
   , wordParser
   )
 import CiToolkit.Common.Text.SerDe (class Serializable, serialize)
+import CiToolkit.Common.Utils (unsafeNonEmptyString)
 import Control.Alt ((<|>))
 import Data.Argonaut.Encode (class EncodeJson)
 import Data.Argonaut.Encode.Encoders (encodeInt, encodeNumber)
@@ -135,7 +136,3 @@ getTagCommitRef (TagInfo { commitRef }) = commitRef
 
 unsafeTag ∷ String → Tag
 unsafeTag = Tag <<< unsafeNonEmptyString
-
-unsafeNonEmptyString ∷ String → NonEmptyString
-unsafeNonEmptyString s =
-  unsafePartial $ fromJust $ NES.fromString s

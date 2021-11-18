@@ -6,6 +6,10 @@ import CiToolkit.Common.CI
   ( RenderRepoOpts(RenderRepoOpts)
   , loadRepo
   )
+import CiToolkit.Common.ProgramInput
+  ( CommonOptions(CommonOptions)
+  , ProgramInput(ProgramInput)
+  )
 import CiToolkit.Common.ProgramOutput
   ( OutputFormat(DOT, JSON, Text)
   , ProgramOutput(DotOutput, JsonOutput, TextOutput)
@@ -13,14 +17,12 @@ import CiToolkit.Common.ProgramOutput
 import CiToolkit.Common.Text.SerDe (serialize)
 import CiToolkit.Render.ProgramInput
   ( Command(Branch, Commit, Repo)
-  , CommonOptions(CommonOptions)
-  , ProgramInput(ProgramInput)
   )
 import Data.Argonaut (encodeJson)
 import Data.DotLang (toGraph)
 import Effect.Aff (Aff)
 
-execute ∷ ProgramInput → Aff ProgramOutput
+execute ∷ ProgramInput Command → Aff ProgramOutput
 execute (ProgramInput (CommonOptions commonOpts) command) = do
   case command of
     Branch → pure $ TextOutput $ "TODO"
