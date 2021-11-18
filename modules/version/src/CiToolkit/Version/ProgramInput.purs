@@ -30,8 +30,7 @@ derive instance Generic VersionFormat _
 instance Show VersionFormat where
   show = genericShow
 
-data Command
-  = Show ShowOptions
+data Command = Show ShowOptions
 
 derive instance Generic Command _
 
