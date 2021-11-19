@@ -1,6 +1,6 @@
 {
   "name": "@ci-toolkit/website",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "private": true,
   "source": "src/index.html",
   "targets": {
