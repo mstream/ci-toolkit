@@ -20793,8 +20793,13 @@ img {
 }
 
 
+.header {
+  border-bottom: 0.1rem solid grey;
+}
 .social-icon {
   font-size: 4rem;
 }
 
-/*# sourceMappingURL=index.05495e81.css.map */
+
+
+/*# sourceMappingURL=index.83459f5e.css.map */

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="/ci-toolkit/index.05495e81.css">
+    <link rel="stylesheet" href="/ci-toolkit/index.83459f5e.css">
   </head>
   <body>
-    <div class="row">
+    <div class="header row">
       <div class="column column-80">
         <h1>CI Toolbox</h1>
       </div>
@@ -14,10 +14,21 @@
         </span></a>
       </div>
     </div>
-    <h2>version</h2>
-    <h3>show</h3>
-    <pre id="version-show-terminal" class="terminal"></pre>
-    <section id="version-show-documentation"></section>
+    <section class="container">
+      <div class="row">
+        <div class="column column-80">
+          <h2>version</h2>
+        </div>
+        <div class="column social-icon">
+          <a class="float-right" href="https://www.npmjs.com/package/@ci-toolkit/version">
+            <span class="mdi mdi-npm">
+          </span></a>
+        </div>
+      </div>
+      <h3>show</h3>
+      <pre id="version-show-terminal" class="terminal"></pre>
+      <div id="version-show-documentation"></div>
+    </section>
     <script type="module">function $parcel$interopDefault(a) {
   return a && a.__esModule ? a.default : a;
 }
@@ -197,13 +208,13 @@ var $9bfe0c5fd97f784a$exports = {};
 $9bfe0c5fd97f784a$exports = new URL("show.19fc2524.html", import.meta.url).toString();
 
 
-function $8a88b40d91532603$var$loadDocumentation({ name: name , url: url  }) {
+function $a7aeecad1b3b40fb$var$loadDocumentation({ name: name , url: url  }) {
     const containerId = `${name}-documentation`;
     fetch((/*@__PURE__*/$parcel$interopDefault($9bfe0c5fd97f784a$exports))).then((response)=>response.text()
     ).then((data)=>document.getElementById(containerId).innerHTML = data
     );
 }
-function $8a88b40d91532603$var$runTerminal({ name: name , script: script  }) {
+function $a7aeecad1b3b40fb$var$runTerminal({ name: name , script: script  }) {
     const containerId = `${name}-terminal`;
     $bc6716f7ab7e18d4$export$889ea624f2cb2c57({
         containerId: containerId,
@@ -211,11 +222,11 @@ function $8a88b40d91532603$var$runTerminal({ name: name , script: script  }) {
         script: script
     });
 }
-$8a88b40d91532603$var$loadDocumentation({
+$a7aeecad1b3b40fb$var$loadDocumentation({
     name: "version-show",
     url: (/*@__PURE__*/$parcel$interopDefault($9bfe0c5fd97f784a$exports))
 });
-$8a88b40d91532603$var$runTerminal({
+$a7aeecad1b3b40fb$var$runTerminal({
     name: "version-show",
     script: $85794d0cf76e7d8c$export$2e2bcd8739ae039
 });
