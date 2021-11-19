@@ -182,11 +182,12 @@ async function $bc6716f7ab7e18d4$export$889ea624f2cb2c57({ containerId: containe
 }
 
 
+const $85794d0cf76e7d8c$var$today = new Date().toISOString().slice(0, 10).replaceAll('-', '.');
 var $85794d0cf76e7d8c$export$2e2bcd8739ae039 = [
     {
         input: "npx @ci-toolkit/version show --format calendar",
         output: [
-            "2000.01.01_1"
+            `${$85794d0cf76e7d8c$var$today}_1`
         ]
     },
     {
@@ -198,7 +199,7 @@ var $85794d0cf76e7d8c$export$2e2bcd8739ae039 = [
     {
         input: "npx @ci-toolkit/version show --format calendar",
         output: [
-            "2000.01.01_2"
+            `${$85794d0cf76e7d8c$var$today}_2`
         ]
     }, 
 ];
