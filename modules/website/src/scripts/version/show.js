@@ -1,7 +1,9 @@
+const today = new Date().toISOString().slice(0, 10).replaceAll('-','.');
+
 export default [
   {
     input: "npx @ci-toolkit/version show --format calendar",
-    output: ["2000.01.01_1"],
+    output: [`${today}_1`],
   },
   {
     input: "git commit --allow-empty -m 'some message'",
@@ -9,6 +11,6 @@ export default [
   },
   {
     input: "npx @ci-toolkit/version show --format calendar",
-    output: ["2000.01.01_2"],
+    output: [`${today}_2`],
   },
 ]
