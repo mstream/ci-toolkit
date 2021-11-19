@@ -1,11 +1,19 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="/mstream/ci-toolkit/index.00472b46.css">
-    <link rel="stylesheet" href="/mstream/ci-toolkit/index.54e6bbf2.css">
+    <link rel="stylesheet" href="/ci-toolkit/index.05495e81.css">
   </head>
   <body>
-    <h1>CI Toolbox</h1>
+    <div class="row">
+      <div class="column column-80">
+        <h1>CI Toolbox</h1>
+      </div>
+      <div class="column social-icon">
+        <a class="float-right" href="https://github.com/mstream/ci-toolkit">
+          <span class="mdi mdi-github">
+        </span></a>
+      </div>
+    </div>
     <h2>version</h2>
     <h3>show</h3>
     <pre id="version-show-terminal" class="terminal"></pre>
@@ -189,13 +197,13 @@ var $9bfe0c5fd97f784a$exports = {};
 $9bfe0c5fd97f784a$exports = new URL("show.19fc2524.html", import.meta.url).toString();
 
 
-function $4541532762e3e209$var$loadDocumentation({ name: name , url: url  }) {
+function $8a88b40d91532603$var$loadDocumentation({ name: name , url: url  }) {
     const containerId = `${name}-documentation`;
     fetch((/*@__PURE__*/$parcel$interopDefault($9bfe0c5fd97f784a$exports))).then((response)=>response.text()
     ).then((data)=>document.getElementById(containerId).innerHTML = data
     );
 }
-function $4541532762e3e209$var$runTerminal({ name: name , script: script  }) {
+function $8a88b40d91532603$var$runTerminal({ name: name , script: script  }) {
     const containerId = `${name}-terminal`;
     $bc6716f7ab7e18d4$export$889ea624f2cb2c57({
         containerId: containerId,
@@ -203,11 +211,11 @@ function $4541532762e3e209$var$runTerminal({ name: name , script: script  }) {
         script: script
     });
 }
-$4541532762e3e209$var$loadDocumentation({
+$8a88b40d91532603$var$loadDocumentation({
     name: "version-show",
     url: (/*@__PURE__*/$parcel$interopDefault($9bfe0c5fd97f784a$exports))
 });
-$4541532762e3e209$var$runTerminal({
+$8a88b40d91532603$var$runTerminal({
     name: "version-show",
     script: $85794d0cf76e7d8c$export$2e2bcd8739ae039
 });
