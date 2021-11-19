@@ -1,34 +1,53 @@
-# mark-commit
-
-## Synopsis
-
-```shell
-npx @ci-toolkit/pipeline mark-commit \ 
-  --ci-stage ARG \
-  --commit-ref ARG 
-```
-
-## Description
+#### Description
 
 Mark a commit as passed given CI stage.
 
-## Options
+#### How to...
 
-| Long Form         | Short Form | Default Value | Description | 
-| :---              | :---       | :---          | :--- |
-| --ci-prefix       | <NONE>     | "ci-"         | CI prefix |
-| --ci-stage        | <NONE>     | <NONE>        | name of the CI stage | 
-| --commit-ref      | <NONE>     | <NONE>        | commit ID | 
-| --dry-run         | <NONE>     | false         | make no changes to the repository | 
-| --git-directory   | <NONE>     | "."           | path to the repository | 
-| --verbose         | -v         | false         | include more logs | 
-
-## Examples
-
-### Marking the current commit
+##### mark the current commit 
 
 ```shell
 npx @ci-toolkit/pipeline mark-commit \
   --ci-stage functional-testing \ 
   --commit-ref $(git rev-parse HEAD)
 ```
+
+#### Reference
+
+```
+mark-commit  
+  [--ci-prefix ARG] 
+  [--ci-stage ARG]  
+  [--commit-ref] 
+  [--dry-run] 
+  [--git-directory] 
+  [-v|--verbose]
+```
+
+##### ci-prefix
+
+Prefix for stage names to differentiate the from other Git notes entries. 
+Defaults to `ci-`.
+
+
+##### ci-stage
+
+Name of the stage for commit to be marked with.
+
+##### commit-ref
+
+ID of the commit to be marked with CI stage name.
+
+##### dry-run
+
+When enabled, a simulated outcome of the marking is displayed but
+no change to the Git repository is made.
+
+##### git-directory
+
+Git repository path. Defaults to `.` (current directory).
+
+##### verbose
+
+Output the maximum amount of diagnostic information.
+

@@ -12,21 +12,21 @@ git tag $(npx @ci-toolkit/version show)
 
 #### Reference
 
-```shell
-npx @ci-toolkit/version show \ 
+```
+show 
   [--format ARG] 
   [--git-directory ARG]
-  [--version-prefix ARG]
+  [--version-prefix ARG] 
 ```
 
 ##### format
 
-The format of the version. 
+Format of the version. 
 Supported values are `calendar` and `semantic`.
 
 ##### git-directory
 
-The git repository path. Defaults to `.` (current directory).
+Git repository path. Defaults to `.` (current directory).
 
 ##### version-prefix
 
