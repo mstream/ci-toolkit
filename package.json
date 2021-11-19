@@ -1,6 +1,6 @@
 {
   "name": "ci-toolkit",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "private": true,
   "description": "A collection of tools supporting continuous integration",
   "scripts": {
