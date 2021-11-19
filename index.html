@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="/index.00472b46.css">
+    <link rel="stylesheet" href="/index.54e6bbf2.css">
+  </head>
+  <body>
+    <h1>CI Toolbox</h1>
+    <h2>version</h2>
+    <h3>show</h3>
+    <pre id="version-show-terminal" class="terminal"></pre>
+    <section id="version-show-documentation"></section>
+    <script type="module">function $parcel$interopDefault(a) {
+  return a && a.__esModule ? a.default : a;
+}
+class $a82d55ee949d3d2e$export$2e2bcd8739ae039 {
+    /**
+   * Creates a new DemoCLI object.
+   * @constructor
+   * @param {string} containerName - the name of the element to inject the CLI into, e.g. "#cli"
+   * @param {Object} options - the options to use.
+   * @param {string} [options.cursor = '▋'] - The cursor character to use.
+   * @param {string} [options.prompt = '➜ '] - The prompt string to use.
+   */ constructor(containerName, options = {
+    }){
+        this.container = document.querySelector(containerName);
+        this.cursor = options.cursor || '▋';
+        this.prompt = options.prompt || '➜ ';
+        this.reset();
+    }
+    /**
+   * Resets the terminal.  Equivalent to `clear` or CTRL+L.
+   * @returns {undefined}
+   */ reset() {
+        this.container.innerHTML = '';
+    }
+    /**
+   * Print a string to the terminal.  Prints the string inside of a <span> element.
+   * @param {string} string - the string to print.
+   * @param {Object} options - the options to use.
+   * @param {string} className - the className to set for the <span> element. Can be used to control colors, fonts, etc.
+   * @returns {undefined}
+   */ print(string, options1 = {
+    }) {
+        const span = document.createElement('span');
+        if (options1.className) span.className = options1.className;
+        for(const prop in options1)span.setAttribute(prop, options1[prop]);
+        span.innerHTML = string;
+        this.container.appendChild(span);
+    }
+    /**
+   * Print a string to the terminal and hit the enter key.  Prints the string inside of a <span> element.
+   * @param {string} string - the string to print.
+   * @param {Object} options - the options to use.
+   * @param {string} className - the className to set for the <span> element. Can be used to control colors, fonts, etc.
+   * @returns {undefined}
+   */ println(string1, options2 = {
+    }) {
+        this.print(string1, options2);
+        this.enterKey();
+    }
+    /**
+   * Print the prompt to the terminal.
+   * @param {Object} options - the options to use.
+   * @param {string} className - the className to set for the <span> element. Can be used to control colors, fonts, etc.
+   * @returns {undefined}
+   */ printPrompt(options3 = {
+    }) {
+        this.print(this.prompt, options3);
+        this.printCursor();
+    }
+    /**
+   * Print a carraige retun and start a new line.
+   * @returns {undefined}
+   */ enterKey() {
+        this.container.appendChild(document.createElement('br'));
+    }
+    /**
+   * Explicitly print the cursor to the terminal.
+   * @param {Object} options - the options to use.
+   * @param {string} className - the className to set for the <span> element. Can be used to control colors, fonts, etc.
+   * @returns {undefined}
+   */ printCursor(options4 = {
+    }) {
+        this.removeCursor();
+        options4['data-cli-cursor'] = this.cursor;
+        this.print('', options4);
+    }
+    /**
+   * Remove the cursor from the terminal
+   * @returns {undefined}
+   */ removeCursor() {
+        const cursors = this.container.querySelectorAll('[data-cli-cursor]');
+        for (const el of cursors)el.removeAttribute('data-cli-cursor');
+    }
+    /**
+   * Wait a specified time
+   * @param {Integer} time - the time to wait in ms.
+   * @returns {Promise} a promise that resolves in the time specified
+   */ wait(time) {
+        return new Promise((resolve)=>setTimeout(resolve, time)
+        );
+    }
+    /**
+   * Simulate typing characters to the screen
+   * @param {string} string - the string to type.
+   * @param {Object} options - the options to use.
+   * @param {Integer} [options.delay=60] - the delay in ms between typed characters.
+   * @param {Boolean} [options.random=false] - Delay a random amount of time between characters
+   * @param {Float} [options.delayVariability=0.3] - If using `random`, this is the % increase or decrease to delay by.
+   * @returns {undefined}
+   */ async type(string2, options5 = {
+    }) {
+        this.removeCursor();
+        let delayMin = options5.delay || 60;
+        let delayMax = options5.delay || 60;
+        const delayVariability = options5.delayVariability || 0.3;
+        if (options5.random) {
+            delayMin = options5.delay - options5.delay * delayVariability;
+            delayMax = options5.delay + options5.delay * delayVariability;
+        }
+        const span = document.createElement('span');
+        span.setAttribute('data-cli-cursor', this.cursor);
+        this.container.appendChild(span);
+        for (const char of string2){
+            const delay = Math.floor(Math.random() * (delayMax - delayMin + 1)) + delayMin;
+            await this.wait(delay);
+            span.textContent += char;
+        }
+        span.removeAttribute('data-cli-cursor');
+    }
+}
+
+
+async function $bc6716f7ab7e18d4$var$input(t, pauseInMs, cmd) {
+    t.printPrompt();
+    await t.wait(pauseInMs);
+    await t.type(cmd);
+    await t.wait(pauseInMs);
+    t.enterKey();
+}
+async function $bc6716f7ab7e18d4$var$output(t, pauseInMs, lines) {
+    await t.wait(2 * pauseInMs);
+    lines.forEach((line)=>t.println(line, {
+            className: "base09"
+        })
+    );
+    t.println("");
+}
+async function $bc6716f7ab7e18d4$export$889ea624f2cb2c57({ containerId: containerId , pauseInMs: pauseInMs , script: script  }) {
+    const t = new $a82d55ee949d3d2e$export$2e2bcd8739ae039(`#${containerId}`, {
+        cursor: "▋",
+        prompt: "$ "
+    });
+    while(true){
+        for (const step of script){
+            await $bc6716f7ab7e18d4$var$input(t, pauseInMs, step.input);
+            await $bc6716f7ab7e18d4$var$output(t, pauseInMs, step.output);
+        }
+        await t.wait(4 * pauseInMs);
+        t.reset();
+    }
+}
+
+
+var $85794d0cf76e7d8c$export$2e2bcd8739ae039 = [
+    {
+        input: "npx @ci-toolkit/version show --format calendar",
+        output: [
+            "2000.01.01_1"
+        ]
+    },
+    {
+        input: "git commit --allow-empty -m 'some message'",
+        output: [
+            "[master 239f56d] some message"
+        ]
+    },
+    {
+        input: "npx @ci-toolkit/version show --format calendar",
+        output: [
+            "2000.01.01_2"
+        ]
+    }, 
+];
+
+
+var $9bfe0c5fd97f784a$exports = {};
+$9bfe0c5fd97f784a$exports = new URL("show.19fc2524.html", import.meta.url).toString();
+
+
+function $4541532762e3e209$var$loadDocumentation({ name: name , url: url  }) {
+    const containerId = `${name}-documentation`;
+    fetch((/*@__PURE__*/$parcel$interopDefault($9bfe0c5fd97f784a$exports))).then((response)=>response.text()
+    ).then((data)=>document.getElementById(containerId).innerHTML = data
+    );
+}
+function $4541532762e3e209$var$runTerminal({ name: name , script: script  }) {
+    const containerId = `${name}-terminal`;
+    $bc6716f7ab7e18d4$export$889ea624f2cb2c57({
+        containerId: containerId,
+        pauseInMs: 500,
+        script: script
+    });
+}
+$4541532762e3e209$var$loadDocumentation({
+    name: "version-show",
+    url: (/*@__PURE__*/$parcel$interopDefault($9bfe0c5fd97f784a$exports))
+});
+$4541532762e3e209$var$runTerminal({
+    name: "version-show",
+    script: $85794d0cf76e7d8c$export$2e2bcd8739ae039
+});
+
+
+</script>
+  </body>
+</html>

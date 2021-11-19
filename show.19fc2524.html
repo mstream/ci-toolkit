@@ -1,0 +1,20 @@
+<h4>Description</h4>
+<p>Calculate a version of the current commit.</p>
+<h4>How to...</h4>
+<h5>create a release tag</h5>
+<pre><code class="language-shell">git tag $(npx @ci-toolkit/version show)
+</code></pre>
+<h4>Reference</h4>
+<pre><code>show 
+  [--format ARG] 
+  [--git-directory ARG]
+  [--version-prefix ARG] 
+</code></pre>
+<h5>format</h5>
+<p>Format of the version.
+Supported values are <code>calendar</code> and <code>semantic</code>.</p>
+<h5>git-directory</h5>
+<p>Git repository path. Defaults to <code>.</code> (current directory).</p>
+<h5>version-prefix</h5>
+<p>Prefix for version-related Git tags.
+Used only by the <code>semantic</code> version format.</p>
