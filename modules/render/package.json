@@ -20,7 +20,7 @@
   "author": "Maciej Laciak <maciej.laciak@gmail.com> (https://github.com/mstream/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mstream/ci-toolkit/issues"
+    "url": "https://github.com/mstream/ci-toolkit/issues/"
   },
-  "homepage": "https://github.com/mstream/ci-toolkit#readme"
+  "homepage": "https://mstream.github.io/ci-toolkit/"
 }
