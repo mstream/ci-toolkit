@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="index.css" />
   </head>
   <body>
-    <div class="row">
+    <div class="header row">
       <div class="column column-80">
         <h1>CI Toolbox</h1>
       </div>
@@ -14,10 +14,21 @@
         </a>
       </div>
     </div>
-    <h2>version</h2>
-    <h3>show</h3>
-    <pre id="version-show-terminal" class="terminal"></pre>
-    <section id="version-show-documentation"></section>
+    <section class="container">
+      <div class="row">
+        <div class="column column-80">
+          <h2>version</h2>
+        </div>
+        <div class="column social-icon">
+          <a class="float-right" href="https://www.npmjs.com/package/@ci-toolkit/version">
+            <span class="mdi mdi-npm"/>
+          </a>
+        </div>
+      </div>
+      <h3>show</h3>
+      <pre id="version-show-terminal" class="terminal"></pre>
+      <div id="version-show-documentation"></div>
+    </section>
     <script type="module">
       import {run} from "./terminal";
       import versionShowScript from "./scripts/version/show";

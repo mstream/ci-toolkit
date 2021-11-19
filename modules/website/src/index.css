@@ -3,6 +3,12 @@
 @import 'npm:@mdi/font/css/materialdesignicons.css';
 @import 'npm:milligram/dist/milligram.css';
 
+.header {
+  border-bottom: 0.1rem solid grey;
+}
+
 .social-icon {
   font-size: 4rem;
 }
+
+
