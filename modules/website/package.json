@@ -6,14 +6,10 @@
   "targets": {
     "default": {
       "context": "browser",
+      "publicUrl": "/mstream/ci-toolkit",
       "optimize": false,
       "outputFormat": "esmodule"
     }
   },
-  "browserslist": "> 0.5%, last 2 versions, not dead",
-  "devDependencies": {
-    "@artur0prets/parcel-transformer-remark": "0.0.3",
-    "@ssi-hf/parcel-transformer-markdown": "^1.0.0",
-    "parcel": "^2.0.1"
-  }
+  "browserslist": "> 0.5%, last 2 versions, not dead"
 }

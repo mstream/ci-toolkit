@@ -53,7 +53,7 @@
   "homepage": "https://github.com/mstream/ci-toolkit#readme",
   "devDependencies": {
     "@gammons/demo-cli": "0.0.1",
-    "@parcel/transformer-inline-string": "^2.0.1",
+    "@parcel/transformer-inline-string": "^2",
     "conventional-github-releaser": "^3",
     "nyc": "^15",
     "parcel": "^2",
