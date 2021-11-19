@@ -6,7 +6,7 @@
   "targets": {
     "default": {
       "context": "browser",
-      "publicUrl": "/mstream/ci-toolkit",
+      "publicUrl": "/ci-toolkit",
       "optimize": false,
       "outputFormat": "esmodule"
     }

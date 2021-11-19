@@ -1,0 +1,8 @@
+@import 'npm:@gammons/demo-cli/examples/base16-default-dark.css';
+@import 'npm:@gammons/demo-cli/examples/terminal.css';
+@import 'npm:@mdi/font/css/materialdesignicons.css';
+@import 'npm:milligram/dist/milligram.css';
+
+.social-icon {
+  font-size: 4rem;
+}
