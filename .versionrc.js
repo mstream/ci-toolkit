@@ -16,6 +16,10 @@ module.exports = {
             filename: "modules/version/package.json",
             type: "json"
         },
+        {
+            filename: "modules/website/package.json",
+            type: "json"
+        },
     ],
     header: 'Changelog',
     types: [

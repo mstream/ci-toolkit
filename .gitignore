@@ -1,6 +1,7 @@
 *.iml
 .idea
 .nyc_output
+.parcel-cache
 .psa*
 .psc*
 .psc-package/
