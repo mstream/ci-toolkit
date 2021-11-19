@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="npm:@gammons/demo-cli/examples/base16-default-dark.css" />
+    <link rel="stylesheet" href="npm:@gammons/demo-cli/examples/terminal.css" />
+  </head>
+  <body>
+    <h1>CI Toolbox</h1>
+    <h2>version</h2>
+    <h3>show</h3>
+    <pre id="version-show-terminal" class="terminal"></pre>
+    <section id="version-show-documentation"></section>
+    <script type="module">
+      import {run} from "./terminal";
+      import versionShowScript from "./scripts/version/show";
+      import versionShowDocsUrl from "../../../modules/version/docs/show.md";
+     
+      function loadDocumentation({name, url}) {
+        const containerId = `${name}-documentation`;
+        fetch(versionShowDocsUrl)
+          .then(response => response.text())
+          .then(data => document.getElementById(containerId).innerHTML = data)
+      }
+
+      function runTerminal({name,script}) {
+        const containerId = `${name}-terminal`;
+        run({
+          containerId, 
+          pauseInMs: 500,
+          script,
+        }); 
+      }
+
+      loadDocumentation({
+        name: "version-show", 
+        url: versionShowDocsUrl,
+      });
+      
+      runTerminal({
+        name: "version-show", 
+        script: versionShowScript,
+      });
+    </script>
+  </body>
+</html>
