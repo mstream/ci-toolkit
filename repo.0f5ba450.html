@@ -1,0 +1,22 @@
+<h4>Description</h4>
+<p>Renders the entire repository.</p>
+<h4>How to...</h4>
+<h5>generate a graphical repository visualization</h5>
+<pre><code class="language-shell">npx @ci-toolkit/render repo --format dot | dot -Tpng > /tmp/output.png
+</code></pre>
+<h4>Reference</h4>
+<pre><code>repo
+  [--ci-prefix ARG] 
+  [--ci-stage ARG]
+  [--format ARG] 
+  [--git-directory ARG]
+</code></pre>
+<h5>ci-prefix</h5>
+<p>Prefix for stage names to differentiate the from other Git notes entries.
+Defaults to <code>ci-</code>.</p>
+<h5>ci-stage</h5>
+<p>Order in which CI stages should appear.</p>
+<h5>format</h5>
+<p>Format in which the output should be produced.</p>
+<h5>git-directory</h5>
+<p>Git repository path. Defaults to <code>.</code> (current directory).</p>

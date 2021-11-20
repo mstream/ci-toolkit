@@ -36,6 +36,22 @@
     <section class="container">
       <div class="row">
         <div class="column column-80">
+          <h2>render</h2>
+        </div>
+        <div class="column social-icon">
+          <a class="float-right" href="https://www.npmjs.com/package/@ci-toolkit/render">
+            <span class="mdi mdi-npm">
+          </span></a>
+        </div>
+      </div>
+      <h3>repo</h3>
+      <pre id="render-repo-terminal" class="terminal"></pre>
+      <div id="render-repo-documentation"></div>
+    </section>
+    <hr>
+    <section class="container">
+      <div class="row">
+        <div class="column column-80">
           <h2>version</h2>
         </div>
         <div class="column social-icon">
@@ -2186,6 +2202,7 @@ const $b44e57b662a06047$export$7288528807d1b7e2 = [
 ];
 const $b44e57b662a06047$export$37f118f5c5bcd6f0 = "npx @ci-toolkit/pipeline get-last";
 const $b44e57b662a06047$export$4b89f2eb786f1c7c = "npx @ci-toolkit/pipeline mark-commit";
+const $b44e57b662a06047$export$4cd5bb4a0660d88 = "npx @ci-toolkit/render repo";
 const $b44e57b662a06047$export$d2a4193fe94004e2 = "npx @ci-toolkit/version show";
 function $b44e57b662a06047$export$9697678c4c73527(commits) {
     return commits.reduce((acc, commit, idx)=>[
@@ -2295,6 +2312,21 @@ var $5df6e8d1c1f621e0$exports = {};
 $5df6e8d1c1f621e0$exports = new URL("mark-commit.3a2dc4c4.html", import.meta.url).toString();
 
 
+var $caf8f1d5a37aead9$exports = {};
+$caf8f1d5a37aead9$exports = new URL("repo.0f5ba450.html", import.meta.url).toString();
+
+
+
+var $daa5226c750acf04$export$2e2bcd8739ae039 = [
+    {
+        input: `${$b44e57b662a06047$export$4cd5bb4a0660d88} --format dot`,
+        output: [
+            "WIP..."
+        ]
+    }, 
+];
+
+
 
 var $85794d0cf76e7d8c$export$2e2bcd8739ae039 = [
     {
@@ -2341,13 +2373,13 @@ var $9bfe0c5fd97f784a$exports = {};
 $9bfe0c5fd97f784a$exports = new URL("show.19fc2524.html", import.meta.url).toString();
 
 
-function $4601f5e72cf22154$var$loadDocumentation({ name: name , url: url  }) {
+function $edc06c5cb058e93b$var$loadDocumentation({ name: name , url: url  }) {
     const containerId = `${name}-documentation`;
     fetch(url).then((response)=>response.text()
     ).then((data)=>document.getElementById(containerId).innerHTML = data
     );
 }
-function $4601f5e72cf22154$var$runTerminal({ name: name , script: script  }) {
+function $edc06c5cb058e93b$var$runTerminal({ name: name , script: script  }) {
     const containerId = `${name}-terminal`;
     $bc6716f7ab7e18d4$export$889ea624f2cb2c57({
         containerId: containerId,
@@ -2355,27 +2387,35 @@ function $4601f5e72cf22154$var$runTerminal({ name: name , script: script  }) {
         script: script
     });
 }
-$4601f5e72cf22154$var$loadDocumentation({
+$edc06c5cb058e93b$var$loadDocumentation({
     name: "pipeline-get-last",
     url: (/*@__PURE__*/$parcel$interopDefault($4712c847a4d7d412$exports))
 });
-$4601f5e72cf22154$var$loadDocumentation({
+$edc06c5cb058e93b$var$loadDocumentation({
     name: "pipeline-mark-commit",
     url: (/*@__PURE__*/$parcel$interopDefault($5df6e8d1c1f621e0$exports))
 });
-$4601f5e72cf22154$var$loadDocumentation({
+$edc06c5cb058e93b$var$loadDocumentation({
+    name: "render-repo",
+    url: (/*@__PURE__*/$parcel$interopDefault($caf8f1d5a37aead9$exports))
+});
+$edc06c5cb058e93b$var$loadDocumentation({
     name: "version-show",
     url: (/*@__PURE__*/$parcel$interopDefault($9bfe0c5fd97f784a$exports))
 });
-$4601f5e72cf22154$var$runTerminal({
+$edc06c5cb058e93b$var$runTerminal({
     name: "pipeline-get-last",
     script: $440b8387a407120d$export$2e2bcd8739ae039
 });
-$4601f5e72cf22154$var$runTerminal({
+$edc06c5cb058e93b$var$runTerminal({
     name: "pipeline-mark-commit",
     script: $87c90c74e76ef5cc$export$2e2bcd8739ae039
 });
-$4601f5e72cf22154$var$runTerminal({
+$edc06c5cb058e93b$var$runTerminal({
+    name: "render-repo",
+    script: $daa5226c750acf04$export$2e2bcd8739ae039
+});
+$edc06c5cb058e93b$var$runTerminal({
     name: "version-show",
     script: $85794d0cf76e7d8c$export$2e2bcd8739ae039
 });
