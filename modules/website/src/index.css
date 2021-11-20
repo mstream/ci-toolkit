@@ -16,12 +16,16 @@
   margin-bottom: 0;
 }
 
+.subheader {
+  padding: 1rem 2rem
+}
+
 .social-icon {
   font-size: 4rem;
 }
 
 section:first-of-type {
-  padding-top: 8rem;
+  padding-top: 10rem;
 }
 
 

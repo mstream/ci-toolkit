@@ -1,6 +1,10 @@
 #### Description
 
-Mark a commit as passed given CI stage.
+Mark a commit as passed a given CI stage.
+
+That information is preserved in a Git repository in the form of commit
+notes and used by the [get-last](get-last.md) command to query for the
+last commit which passed certain stages. 
 
 #### How to...
 

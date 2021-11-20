@@ -2,9 +2,13 @@
 
 Get the last commit which passed given CI stage(s).
 
+This command uses information produced by the [mark-commit](mark-commit.md) 
+command to retrieve an identifier of the last commit which passed 
+requested ci-stages.
+
 #### How to...
 
-##### getting an ID of the last commit with passed all given CI stages
+##### get an ID of the last commit with passed all given CI stages
 
 ```shell
 npx @ci-toolkit/pipeline get-last \ 
