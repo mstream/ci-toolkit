@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="/ci-toolkit/index.83459f5e.css">
+    <link rel="stylesheet" href="/ci-toolkit/index.8f529849.css">
   </head>
-  <body>
-    <div class="header row">
+  <body class="base06-background">
+    <div class="base05-background header row">
       <div class="column column-80">
         <h1>CI Toolbox</h1>
       </div>
@@ -14,6 +14,22 @@
         </span></a>
       </div>
     </div>
+    <section class="container">
+      <div class="row">
+        <div class="column column-80">
+          <h2>pipeline</h2>
+        </div>
+        <div class="column social-icon">
+          <a class="float-right" href="https://www.npmjs.com/package/@ci-toolkit/pipeline">
+            <span class="mdi mdi-npm">
+          </span></a>
+        </div>
+      </div>
+      <h3>get-last</h3>
+      <pre id="pipeline-get-last-terminal" class="terminal"></pre>
+      <div id="pipeline-get-last-documentation"></div>
+    </section>
+    <hr>
     <section class="container">
       <div class="row">
         <div class="column column-80">
@@ -154,7 +170,11 @@ class $a82d55ee949d3d2e$export$2e2bcd8739ae039 {
 async function $bc6716f7ab7e18d4$var$input(t, pauseInMs, cmd) {
     t.printPrompt();
     await t.wait(pauseInMs);
-    await t.type(cmd);
+    await t.type(cmd, {
+        delay: 50,
+        delayVariability: 0.5,
+        random: true
+    });
     await t.wait(pauseInMs);
     t.enterKey();
 }
@@ -176,13 +196,2000 @@ async function $bc6716f7ab7e18d4$export$889ea624f2cb2c57({ containerId: containe
             await $bc6716f7ab7e18d4$var$input(t, pauseInMs, step.input);
             await $bc6716f7ab7e18d4$var$output(t, pauseInMs, step.output);
         }
-        await t.wait(4 * pauseInMs);
+        await t.wait(12 * pauseInMs);
         t.reset();
     }
 }
 
 
-const $85794d0cf76e7d8c$var$today = new Date().toISOString().slice(0, 10).replaceAll('-', '.');
+function $80da59dc1f1c4b55$export$2e2bcd8739ae039(required, args) {
+    if (args.length < required) throw new TypeError(required + ' argument' + (required > 1 ? 's' : '') + ' required, but only ' + args.length + ' present');
+}
+
+
+function $f7abe1c1e5dd83fd$export$2e2bcd8739ae039(value) {
+    $80da59dc1f1c4b55$export$2e2bcd8739ae039(1, arguments);
+    return value instanceof Date || typeof value === 'object' && Object.prototype.toString.call(value) === '[object Date]';
+}
+
+
+
+function $9a3150cd6bebc019$export$2e2bcd8739ae039(argument) {
+    $80da59dc1f1c4b55$export$2e2bcd8739ae039(1, arguments);
+    var argStr = Object.prototype.toString.call(argument); // Clone the date
+    if (argument instanceof Date || typeof argument === 'object' && argStr === '[object Date]') // Prevent the date to lose the milliseconds when passed to new Date() in IE10
+    return new Date(argument.getTime());
+    else if (typeof argument === 'number' || argStr === '[object Number]') return new Date(argument);
+    else {
+        if ((typeof argument === 'string' || argStr === '[object String]') && typeof console !== 'undefined') {
+            // eslint-disable-next-line no-console
+            console.warn("Starting with v2.0.0-beta.1 date-fns doesn't accept strings as date arguments. Please use `parseISO` to parse strings. See: https://git.io/fjule"); // eslint-disable-next-line no-console
+            console.warn(new Error().stack);
+        }
+        return new Date(NaN);
+    }
+}
+
+
+
+function $27d4df01eb937b72$export$2e2bcd8739ae039(dirtyDate) {
+    $80da59dc1f1c4b55$export$2e2bcd8739ae039(1, arguments);
+    if (!$f7abe1c1e5dd83fd$export$2e2bcd8739ae039(dirtyDate) && typeof dirtyDate !== 'number') return false;
+    var date = $9a3150cd6bebc019$export$2e2bcd8739ae039(dirtyDate);
+    return !isNaN(Number(date));
+}
+
+
+var $f9ef6652a4d32483$var$formatDistanceLocale = {
+    lessThanXSeconds: {
+        one: 'less than a second',
+        other: 'less than {{count}} seconds'
+    },
+    xSeconds: {
+        one: '1 second',
+        other: '{{count}} seconds'
+    },
+    halfAMinute: 'half a minute',
+    lessThanXMinutes: {
+        one: 'less than a minute',
+        other: 'less than {{count}} minutes'
+    },
+    xMinutes: {
+        one: '1 minute',
+        other: '{{count}} minutes'
+    },
+    aboutXHours: {
+        one: 'about 1 hour',
+        other: 'about {{count}} hours'
+    },
+    xHours: {
+        one: '1 hour',
+        other: '{{count}} hours'
+    },
+    xDays: {
+        one: '1 day',
+        other: '{{count}} days'
+    },
+    aboutXWeeks: {
+        one: 'about 1 week',
+        other: 'about {{count}} weeks'
+    },
+    xWeeks: {
+        one: '1 week',
+        other: '{{count}} weeks'
+    },
+    aboutXMonths: {
+        one: 'about 1 month',
+        other: 'about {{count}} months'
+    },
+    xMonths: {
+        one: '1 month',
+        other: '{{count}} months'
+    },
+    aboutXYears: {
+        one: 'about 1 year',
+        other: 'about {{count}} years'
+    },
+    xYears: {
+        one: '1 year',
+        other: '{{count}} years'
+    },
+    overXYears: {
+        one: 'over 1 year',
+        other: 'over {{count}} years'
+    },
+    almostXYears: {
+        one: 'almost 1 year',
+        other: 'almost {{count}} years'
+    }
+};
+var $f9ef6652a4d32483$var$formatDistance = function(token, count, options) {
+    var result;
+    var tokenValue = $f9ef6652a4d32483$var$formatDistanceLocale[token];
+    if (typeof tokenValue === 'string') result = tokenValue;
+    else if (count === 1) result = tokenValue.one;
+    else result = tokenValue.other.replace('{{count}}', count.toString());
+    if (options !== null && options !== void 0 && options.addSuffix) {
+        if (options.comparison && options.comparison > 0) return 'in ' + result;
+        else return result + ' ago';
+    }
+    return result;
+};
+var $f9ef6652a4d32483$export$2e2bcd8739ae039 = $f9ef6652a4d32483$var$formatDistance;
+
+
+function $2a3ce248f8cb061f$export$2e2bcd8739ae039(args) {
+    return function() {
+        var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+        };
+        // TODO: Remove String()
+        var width = options.width ? String(options.width) : args.defaultWidth;
+        var format = args.formats[width] || args.formats[args.defaultWidth];
+        return format;
+    };
+}
+
+
+var $cfa3c8961c816fd5$var$dateFormats = {
+    full: 'EEEE, MMMM do, y',
+    long: 'MMMM do, y',
+    medium: 'MMM d, y',
+    short: 'MM/dd/yyyy'
+};
+var $cfa3c8961c816fd5$var$timeFormats = {
+    full: 'h:mm:ss a zzzz',
+    long: 'h:mm:ss a z',
+    medium: 'h:mm:ss a',
+    short: 'h:mm a'
+};
+var $cfa3c8961c816fd5$var$dateTimeFormats = {
+    full: "{{date}} 'at' {{time}}",
+    long: "{{date}} 'at' {{time}}",
+    medium: '{{date}}, {{time}}',
+    short: '{{date}}, {{time}}'
+};
+var $cfa3c8961c816fd5$var$formatLong = {
+    date: $2a3ce248f8cb061f$export$2e2bcd8739ae039({
+        formats: $cfa3c8961c816fd5$var$dateFormats,
+        defaultWidth: 'full'
+    }),
+    time: $2a3ce248f8cb061f$export$2e2bcd8739ae039({
+        formats: $cfa3c8961c816fd5$var$timeFormats,
+        defaultWidth: 'full'
+    }),
+    dateTime: $2a3ce248f8cb061f$export$2e2bcd8739ae039({
+        formats: $cfa3c8961c816fd5$var$dateTimeFormats,
+        defaultWidth: 'full'
+    })
+};
+var $cfa3c8961c816fd5$export$2e2bcd8739ae039 = $cfa3c8961c816fd5$var$formatLong;
+
+
+var $a72e090828891516$var$formatRelativeLocale = {
+    lastWeek: "'last' eeee 'at' p",
+    yesterday: "'yesterday at' p",
+    today: "'today at' p",
+    tomorrow: "'tomorrow at' p",
+    nextWeek: "eeee 'at' p",
+    other: 'P'
+};
+var $a72e090828891516$var$formatRelative = function(token, _date, _baseDate, _options) {
+    return $a72e090828891516$var$formatRelativeLocale[token];
+};
+var $a72e090828891516$export$2e2bcd8739ae039 = $a72e090828891516$var$formatRelative;
+
+
+function $c5cb9e3442aaa35f$export$2e2bcd8739ae039(args) {
+    return function(dirtyIndex, dirtyOptions) {
+        var options = dirtyOptions || {
+        };
+        var context = options.context ? String(options.context) : 'standalone';
+        var valuesArray;
+        if (context === 'formatting' && args.formattingValues) {
+            var defaultWidth = args.defaultFormattingWidth || args.defaultWidth;
+            var width = options.width ? String(options.width) : defaultWidth;
+            valuesArray = args.formattingValues[width] || args.formattingValues[defaultWidth];
+        } else {
+            var _defaultWidth = args.defaultWidth;
+            var _width = options.width ? String(options.width) : args.defaultWidth;
+            valuesArray = args.values[_width] || args.values[_defaultWidth];
+        }
+        var index = args.argumentCallback ? args.argumentCallback(dirtyIndex) : dirtyIndex; // @ts-ignore: For some reason TypeScript just don't want to match it, no matter how hard we try. I challange you to try to remove it!
+        return valuesArray[index];
+    };
+}
+
+
+var $62081a81bc03ec0c$var$eraValues = {
+    narrow: [
+        'B',
+        'A'
+    ],
+    abbreviated: [
+        'BC',
+        'AD'
+    ],
+    wide: [
+        'Before Christ',
+        'Anno Domini'
+    ]
+};
+var $62081a81bc03ec0c$var$quarterValues = {
+    narrow: [
+        '1',
+        '2',
+        '3',
+        '4'
+    ],
+    abbreviated: [
+        'Q1',
+        'Q2',
+        'Q3',
+        'Q4'
+    ],
+    wide: [
+        '1st quarter',
+        '2nd quarter',
+        '3rd quarter',
+        '4th quarter'
+    ]
+}; // Note: in English, the names of days of the week and months are capitalized.
+// If you are making a new locale based on this one, check if the same is true for the language you're working on.
+// Generally, formatted dates should look like they are in the middle of a sentence,
+// e.g. in Spanish language the weekdays and months should be in the lowercase.
+var $62081a81bc03ec0c$var$monthValues = {
+    narrow: [
+        'J',
+        'F',
+        'M',
+        'A',
+        'M',
+        'J',
+        'J',
+        'A',
+        'S',
+        'O',
+        'N',
+        'D'
+    ],
+    abbreviated: [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
+    ],
+    wide: [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+    ]
+};
+var $62081a81bc03ec0c$var$dayValues = {
+    narrow: [
+        'S',
+        'M',
+        'T',
+        'W',
+        'T',
+        'F',
+        'S'
+    ],
+    short: [
+        'Su',
+        'Mo',
+        'Tu',
+        'We',
+        'Th',
+        'Fr',
+        'Sa'
+    ],
+    abbreviated: [
+        'Sun',
+        'Mon',
+        'Tue',
+        'Wed',
+        'Thu',
+        'Fri',
+        'Sat'
+    ],
+    wide: [
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday'
+    ]
+};
+var $62081a81bc03ec0c$var$dayPeriodValues = {
+    narrow: {
+        am: 'a',
+        pm: 'p',
+        midnight: 'mi',
+        noon: 'n',
+        morning: 'morning',
+        afternoon: 'afternoon',
+        evening: 'evening',
+        night: 'night'
+    },
+    abbreviated: {
+        am: 'AM',
+        pm: 'PM',
+        midnight: 'midnight',
+        noon: 'noon',
+        morning: 'morning',
+        afternoon: 'afternoon',
+        evening: 'evening',
+        night: 'night'
+    },
+    wide: {
+        am: 'a.m.',
+        pm: 'p.m.',
+        midnight: 'midnight',
+        noon: 'noon',
+        morning: 'morning',
+        afternoon: 'afternoon',
+        evening: 'evening',
+        night: 'night'
+    }
+};
+var $62081a81bc03ec0c$var$formattingDayPeriodValues = {
+    narrow: {
+        am: 'a',
+        pm: 'p',
+        midnight: 'mi',
+        noon: 'n',
+        morning: 'in the morning',
+        afternoon: 'in the afternoon',
+        evening: 'in the evening',
+        night: 'at night'
+    },
+    abbreviated: {
+        am: 'AM',
+        pm: 'PM',
+        midnight: 'midnight',
+        noon: 'noon',
+        morning: 'in the morning',
+        afternoon: 'in the afternoon',
+        evening: 'in the evening',
+        night: 'at night'
+    },
+    wide: {
+        am: 'a.m.',
+        pm: 'p.m.',
+        midnight: 'midnight',
+        noon: 'noon',
+        morning: 'in the morning',
+        afternoon: 'in the afternoon',
+        evening: 'in the evening',
+        night: 'at night'
+    }
+};
+var $62081a81bc03ec0c$var$ordinalNumber = function(dirtyNumber, _options) {
+    var number = Number(dirtyNumber); // If ordinal numbers depend on context, for example,
+    // if they are different for different grammatical genders,
+    // use `options.unit`.
+    //
+    // `unit` can be 'year', 'quarter', 'month', 'week', 'date', 'dayOfYear',
+    // 'day', 'hour', 'minute', 'second'.
+    var rem100 = number % 100;
+    if (rem100 > 20 || rem100 < 10) switch(rem100 % 10){
+        case 1:
+            return number + 'st';
+        case 2:
+            return number + 'nd';
+        case 3:
+            return number + 'rd';
+    }
+    return number + 'th';
+};
+var $62081a81bc03ec0c$var$localize = {
+    ordinalNumber: $62081a81bc03ec0c$var$ordinalNumber,
+    era: $c5cb9e3442aaa35f$export$2e2bcd8739ae039({
+        values: $62081a81bc03ec0c$var$eraValues,
+        defaultWidth: 'wide'
+    }),
+    quarter: $c5cb9e3442aaa35f$export$2e2bcd8739ae039({
+        values: $62081a81bc03ec0c$var$quarterValues,
+        defaultWidth: 'wide',
+        argumentCallback: function(quarter) {
+            return quarter - 1;
+        }
+    }),
+    month: $c5cb9e3442aaa35f$export$2e2bcd8739ae039({
+        values: $62081a81bc03ec0c$var$monthValues,
+        defaultWidth: 'wide'
+    }),
+    day: $c5cb9e3442aaa35f$export$2e2bcd8739ae039({
+        values: $62081a81bc03ec0c$var$dayValues,
+        defaultWidth: 'wide'
+    }),
+    dayPeriod: $c5cb9e3442aaa35f$export$2e2bcd8739ae039({
+        values: $62081a81bc03ec0c$var$dayPeriodValues,
+        defaultWidth: 'wide',
+        formattingValues: $62081a81bc03ec0c$var$formattingDayPeriodValues,
+        defaultFormattingWidth: 'wide'
+    })
+};
+var $62081a81bc03ec0c$export$2e2bcd8739ae039 = $62081a81bc03ec0c$var$localize;
+
+
+function $c27fde69a6ebb361$export$2e2bcd8739ae039(args) {
+    return function(string) {
+        var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
+        };
+        var width = options.width;
+        var matchPattern = width && args.matchPatterns[width] || args.matchPatterns[args.defaultMatchWidth];
+        var matchResult = string.match(matchPattern);
+        if (!matchResult) return null;
+        var matchedString = matchResult[0];
+        var parsePatterns = width && args.parsePatterns[width] || args.parsePatterns[args.defaultParseWidth];
+        var key = Array.isArray(parsePatterns) ? $c27fde69a6ebb361$var$findIndex(parsePatterns, function(pattern) {
+            return pattern.test(matchedString);
+        }) : $c27fde69a6ebb361$var$findKey(parsePatterns, function(pattern) {
+            return pattern.test(matchedString);
+        });
+        var value;
+        value = args.valueCallback ? args.valueCallback(key) : key;
+        value = options.valueCallback ? options.valueCallback(value) : value;
+        var rest = string.slice(matchedString.length);
+        return {
+            value: value,
+            rest: rest
+        };
+    };
+}
+function $c27fde69a6ebb361$var$findKey(object, predicate) {
+    for(var key in object){
+        if (object.hasOwnProperty(key) && predicate(object[key])) return key;
+    }
+    return undefined;
+}
+function $c27fde69a6ebb361$var$findIndex(array, predicate) {
+    for(var key = 0; key < array.length; key++){
+        if (predicate(array[key])) return key;
+    }
+    return undefined;
+}
+
+
+function $3ed31fbed68108b0$export$2e2bcd8739ae039(args) {
+    return function(string) {
+        var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
+        };
+        var matchResult = string.match(args.matchPattern);
+        if (!matchResult) return null;
+        var matchedString = matchResult[0];
+        var parseResult = string.match(args.parsePattern);
+        if (!parseResult) return null;
+        var value = args.valueCallback ? args.valueCallback(parseResult[0]) : parseResult[0];
+        value = options.valueCallback ? options.valueCallback(value) : value;
+        var rest = string.slice(matchedString.length);
+        return {
+            value: value,
+            rest: rest
+        };
+    };
+}
+
+
+var $5d6204eb3ea3147d$var$matchOrdinalNumberPattern = /^(\d+)(th|st|nd|rd)?/i;
+var $5d6204eb3ea3147d$var$parseOrdinalNumberPattern = /\d+/i;
+var $5d6204eb3ea3147d$var$matchEraPatterns = {
+    narrow: /^(b|a)/i,
+    abbreviated: /^(b\.?\s?c\.?|b\.?\s?c\.?\s?e\.?|a\.?\s?d\.?|c\.?\s?e\.?)/i,
+    wide: /^(before christ|before common era|anno domini|common era)/i
+};
+var $5d6204eb3ea3147d$var$parseEraPatterns = {
+    any: [
+        /^b/i,
+        /^(a|c)/i
+    ]
+};
+var $5d6204eb3ea3147d$var$matchQuarterPatterns = {
+    narrow: /^[1234]/i,
+    abbreviated: /^q[1234]/i,
+    wide: /^[1234](th|st|nd|rd)? quarter/i
+};
+var $5d6204eb3ea3147d$var$parseQuarterPatterns = {
+    any: [
+        /1/i,
+        /2/i,
+        /3/i,
+        /4/i
+    ]
+};
+var $5d6204eb3ea3147d$var$matchMonthPatterns = {
+    narrow: /^[jfmasond]/i,
+    abbreviated: /^(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/i,
+    wide: /^(january|february|march|april|may|june|july|august|september|october|november|december)/i
+};
+var $5d6204eb3ea3147d$var$parseMonthPatterns = {
+    narrow: [
+        /^j/i,
+        /^f/i,
+        /^m/i,
+        /^a/i,
+        /^m/i,
+        /^j/i,
+        /^j/i,
+        /^a/i,
+        /^s/i,
+        /^o/i,
+        /^n/i,
+        /^d/i
+    ],
+    any: [
+        /^ja/i,
+        /^f/i,
+        /^mar/i,
+        /^ap/i,
+        /^may/i,
+        /^jun/i,
+        /^jul/i,
+        /^au/i,
+        /^s/i,
+        /^o/i,
+        /^n/i,
+        /^d/i
+    ]
+};
+var $5d6204eb3ea3147d$var$matchDayPatterns = {
+    narrow: /^[smtwf]/i,
+    short: /^(su|mo|tu|we|th|fr|sa)/i,
+    abbreviated: /^(sun|mon|tue|wed|thu|fri|sat)/i,
+    wide: /^(sunday|monday|tuesday|wednesday|thursday|friday|saturday)/i
+};
+var $5d6204eb3ea3147d$var$parseDayPatterns = {
+    narrow: [
+        /^s/i,
+        /^m/i,
+        /^t/i,
+        /^w/i,
+        /^t/i,
+        /^f/i,
+        /^s/i
+    ],
+    any: [
+        /^su/i,
+        /^m/i,
+        /^tu/i,
+        /^w/i,
+        /^th/i,
+        /^f/i,
+        /^sa/i
+    ]
+};
+var $5d6204eb3ea3147d$var$matchDayPeriodPatterns = {
+    narrow: /^(a|p|mi|n|(in the|at) (morning|afternoon|evening|night))/i,
+    any: /^([ap]\.?\s?m\.?|midnight|noon|(in the|at) (morning|afternoon|evening|night))/i
+};
+var $5d6204eb3ea3147d$var$parseDayPeriodPatterns = {
+    any: {
+        am: /^a/i,
+        pm: /^p/i,
+        midnight: /^mi/i,
+        noon: /^no/i,
+        morning: /morning/i,
+        afternoon: /afternoon/i,
+        evening: /evening/i,
+        night: /night/i
+    }
+};
+var $5d6204eb3ea3147d$var$match = {
+    ordinalNumber: $3ed31fbed68108b0$export$2e2bcd8739ae039({
+        matchPattern: $5d6204eb3ea3147d$var$matchOrdinalNumberPattern,
+        parsePattern: $5d6204eb3ea3147d$var$parseOrdinalNumberPattern,
+        valueCallback: function(value) {
+            return parseInt(value, 10);
+        }
+    }),
+    era: $c27fde69a6ebb361$export$2e2bcd8739ae039({
+        matchPatterns: $5d6204eb3ea3147d$var$matchEraPatterns,
+        defaultMatchWidth: 'wide',
+        parsePatterns: $5d6204eb3ea3147d$var$parseEraPatterns,
+        defaultParseWidth: 'any'
+    }),
+    quarter: $c27fde69a6ebb361$export$2e2bcd8739ae039({
+        matchPatterns: $5d6204eb3ea3147d$var$matchQuarterPatterns,
+        defaultMatchWidth: 'wide',
+        parsePatterns: $5d6204eb3ea3147d$var$parseQuarterPatterns,
+        defaultParseWidth: 'any',
+        valueCallback: function(index) {
+            return index + 1;
+        }
+    }),
+    month: $c27fde69a6ebb361$export$2e2bcd8739ae039({
+        matchPatterns: $5d6204eb3ea3147d$var$matchMonthPatterns,
+        defaultMatchWidth: 'wide',
+        parsePatterns: $5d6204eb3ea3147d$var$parseMonthPatterns,
+        defaultParseWidth: 'any'
+    }),
+    day: $c27fde69a6ebb361$export$2e2bcd8739ae039({
+        matchPatterns: $5d6204eb3ea3147d$var$matchDayPatterns,
+        defaultMatchWidth: 'wide',
+        parsePatterns: $5d6204eb3ea3147d$var$parseDayPatterns,
+        defaultParseWidth: 'any'
+    }),
+    dayPeriod: $c27fde69a6ebb361$export$2e2bcd8739ae039({
+        matchPatterns: $5d6204eb3ea3147d$var$matchDayPeriodPatterns,
+        defaultMatchWidth: 'any',
+        parsePatterns: $5d6204eb3ea3147d$var$parseDayPeriodPatterns,
+        defaultParseWidth: 'any'
+    })
+};
+var $5d6204eb3ea3147d$export$2e2bcd8739ae039 = $5d6204eb3ea3147d$var$match;
+
+
+/**
+ * @type {Locale}
+ * @category Locales
+ * @summary English locale (United States).
+ * @language English
+ * @iso-639-2 eng
+ * @author Sasha Koss [@kossnocorp]{@link https://github.com/kossnocorp}
+ * @author Lesha Koss [@leshakoss]{@link https://github.com/leshakoss}
+ */ var $b5dea07fd0a722a3$var$locale = {
+    code: 'en-US',
+    formatDistance: $f9ef6652a4d32483$export$2e2bcd8739ae039,
+    formatLong: $cfa3c8961c816fd5$export$2e2bcd8739ae039,
+    formatRelative: $a72e090828891516$export$2e2bcd8739ae039,
+    localize: $62081a81bc03ec0c$export$2e2bcd8739ae039,
+    match: $5d6204eb3ea3147d$export$2e2bcd8739ae039,
+    options: {
+        weekStartsOn: 0,
+        firstWeekContainsDate: 1
+    }
+};
+var $b5dea07fd0a722a3$export$2e2bcd8739ae039 = $b5dea07fd0a722a3$var$locale;
+
+
+function $c32f32022491d79a$export$2e2bcd8739ae039(dirtyNumber) {
+    if (dirtyNumber === null || dirtyNumber === true || dirtyNumber === false) return NaN;
+    var number = Number(dirtyNumber);
+    if (isNaN(number)) return number;
+    return number < 0 ? Math.ceil(number) : Math.floor(number);
+}
+
+
+
+
+
+function $0fe16cb13bf76c0b$export$2e2bcd8739ae039(dirtyDate, dirtyAmount) {
+    $80da59dc1f1c4b55$export$2e2bcd8739ae039(2, arguments);
+    var timestamp = $9a3150cd6bebc019$export$2e2bcd8739ae039(dirtyDate).getTime();
+    var amount = $c32f32022491d79a$export$2e2bcd8739ae039(dirtyAmount);
+    return new Date(timestamp + amount);
+}
+
+
+
+function $f1469a89d0b9c6db$export$2e2bcd8739ae039(dirtyDate, dirtyAmount) {
+    $80da59dc1f1c4b55$export$2e2bcd8739ae039(2, arguments);
+    var amount = $c32f32022491d79a$export$2e2bcd8739ae039(dirtyAmount);
+    return $0fe16cb13bf76c0b$export$2e2bcd8739ae039(dirtyDate, -amount);
+}
+
+
+
+function $c1a2f783a8e67dde$export$2e2bcd8739ae039(number, targetLength) {
+    var sign = number < 0 ? '-' : '';
+    var output = Math.abs(number).toString();
+    while(output.length < targetLength)output = '0' + output;
+    return sign + output;
+}
+
+
+/*
+ * |     | Unit                           |     | Unit                           |
+ * |-----|--------------------------------|-----|--------------------------------|
+ * |  a  | AM, PM                         |  A* |                                |
+ * |  d  | Day of month                   |  D  |                                |
+ * |  h  | Hour [1-12]                    |  H  | Hour [0-23]                    |
+ * |  m  | Minute                         |  M  | Month                          |
+ * |  s  | Second                         |  S  | Fraction of second             |
+ * |  y  | Year (abs)                     |  Y  |                                |
+ *
+ * Letters marked by * are not implemented but reserved by Unicode standard.
+ */ var $09d96ecb910e4247$var$formatters = {
+    // Year
+    y: function(date, token) {
+        // From http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_tokens
+        // | Year     |     y | yy |   yyy |  yyyy | yyyyy |
+        // |----------|-------|----|-------|-------|-------|
+        // | AD 1     |     1 | 01 |   001 |  0001 | 00001 |
+        // | AD 12    |    12 | 12 |   012 |  0012 | 00012 |
+        // | AD 123   |   123 | 23 |   123 |  0123 | 00123 |
+        // | AD 1234  |  1234 | 34 |  1234 |  1234 | 01234 |
+        // | AD 12345 | 12345 | 45 | 12345 | 12345 | 12345 |
+        var signedYear = date.getUTCFullYear(); // Returns 1 for 1 BC (which is year 0 in JavaScript)
+        var year = signedYear > 0 ? signedYear : 1 - signedYear;
+        return $c1a2f783a8e67dde$export$2e2bcd8739ae039(token === 'yy' ? year % 100 : year, token.length);
+    },
+    // Month
+    M: function(date, token) {
+        var month = date.getUTCMonth();
+        return token === 'M' ? String(month + 1) : $c1a2f783a8e67dde$export$2e2bcd8739ae039(month + 1, 2);
+    },
+    // Day of the month
+    d: function(date, token) {
+        return $c1a2f783a8e67dde$export$2e2bcd8739ae039(date.getUTCDate(), token.length);
+    },
+    // AM or PM
+    a: function(date, token) {
+        var dayPeriodEnumValue = date.getUTCHours() / 12 >= 1 ? 'pm' : 'am';
+        switch(token){
+            case 'a':
+            case 'aa':
+                return dayPeriodEnumValue.toUpperCase();
+            case 'aaa':
+                return dayPeriodEnumValue;
+            case 'aaaaa':
+                return dayPeriodEnumValue[0];
+            case 'aaaa':
+            default:
+                return dayPeriodEnumValue === 'am' ? 'a.m.' : 'p.m.';
+        }
+    },
+    // Hour [1-12]
+    h: function(date, token) {
+        return $c1a2f783a8e67dde$export$2e2bcd8739ae039(date.getUTCHours() % 12 || 12, token.length);
+    },
+    // Hour [0-23]
+    H: function(date, token) {
+        return $c1a2f783a8e67dde$export$2e2bcd8739ae039(date.getUTCHours(), token.length);
+    },
+    // Minute
+    m: function(date, token) {
+        return $c1a2f783a8e67dde$export$2e2bcd8739ae039(date.getUTCMinutes(), token.length);
+    },
+    // Second
+    s: function(date, token) {
+        return $c1a2f783a8e67dde$export$2e2bcd8739ae039(date.getUTCSeconds(), token.length);
+    },
+    // Fraction of second
+    S: function(date, token) {
+        var numberOfDigits = token.length;
+        var milliseconds = date.getUTCMilliseconds();
+        var fractionalSeconds = Math.floor(milliseconds * Math.pow(10, numberOfDigits - 3));
+        return $c1a2f783a8e67dde$export$2e2bcd8739ae039(fractionalSeconds, token.length);
+    }
+};
+var $09d96ecb910e4247$export$2e2bcd8739ae039 = $09d96ecb910e4247$var$formatters;
+
+
+
+
+var $d67abfa327c535bf$var$MILLISECONDS_IN_DAY = 86400000; // This function will be a part of public API when UTC function will be implemented.
+function $d67abfa327c535bf$export$2e2bcd8739ae039(dirtyDate) {
+    $80da59dc1f1c4b55$export$2e2bcd8739ae039(1, arguments);
+    var date = $9a3150cd6bebc019$export$2e2bcd8739ae039(dirtyDate);
+    var timestamp = date.getTime();
+    date.setUTCMonth(0, 1);
+    date.setUTCHours(0, 0, 0, 0);
+    var startOfYearTimestamp = date.getTime();
+    var difference = timestamp - startOfYearTimestamp;
+    return Math.floor(difference / $d67abfa327c535bf$var$MILLISECONDS_IN_DAY) + 1;
+}
+
+
+
+
+
+function $73039e8f4ece6bc9$export$2e2bcd8739ae039(dirtyDate) {
+    $80da59dc1f1c4b55$export$2e2bcd8739ae039(1, arguments);
+    var weekStartsOn = 1;
+    var date = $9a3150cd6bebc019$export$2e2bcd8739ae039(dirtyDate);
+    var day = date.getUTCDay();
+    var diff = (day < weekStartsOn ? 7 : 0) + day - weekStartsOn;
+    date.setUTCDate(date.getUTCDate() - diff);
+    date.setUTCHours(0, 0, 0, 0);
+    return date;
+}
+
+
+
+
+
+function $140bf7aa8b254e88$export$2e2bcd8739ae039(dirtyDate) {
+    $80da59dc1f1c4b55$export$2e2bcd8739ae039(1, arguments);
+    var date = $9a3150cd6bebc019$export$2e2bcd8739ae039(dirtyDate);
+    var year = date.getUTCFullYear();
+    var fourthOfJanuaryOfNextYear = new Date(0);
+    fourthOfJanuaryOfNextYear.setUTCFullYear(year + 1, 0, 4);
+    fourthOfJanuaryOfNextYear.setUTCHours(0, 0, 0, 0);
+    var startOfNextYear = $73039e8f4ece6bc9$export$2e2bcd8739ae039(fourthOfJanuaryOfNextYear);
+    var fourthOfJanuaryOfThisYear = new Date(0);
+    fourthOfJanuaryOfThisYear.setUTCFullYear(year, 0, 4);
+    fourthOfJanuaryOfThisYear.setUTCHours(0, 0, 0, 0);
+    var startOfThisYear = $73039e8f4ece6bc9$export$2e2bcd8739ae039(fourthOfJanuaryOfThisYear);
+    if (date.getTime() >= startOfNextYear.getTime()) return year + 1;
+    else if (date.getTime() >= startOfThisYear.getTime()) return year;
+    else return year - 1;
+}
+
+
+
+
+function $4efe240e6771bf6b$export$2e2bcd8739ae039(dirtyDate) {
+    $80da59dc1f1c4b55$export$2e2bcd8739ae039(1, arguments);
+    var year = $140bf7aa8b254e88$export$2e2bcd8739ae039(dirtyDate);
+    var fourthOfJanuary = new Date(0);
+    fourthOfJanuary.setUTCFullYear(year, 0, 4);
+    fourthOfJanuary.setUTCHours(0, 0, 0, 0);
+    var date = $73039e8f4ece6bc9$export$2e2bcd8739ae039(fourthOfJanuary);
+    return date;
+}
+
+
+
+var $4e1ea0d38788a855$var$MILLISECONDS_IN_WEEK = 604800000; // This function will be a part of public API when UTC function will be implemented.
+function $4e1ea0d38788a855$export$2e2bcd8739ae039(dirtyDate) {
+    $80da59dc1f1c4b55$export$2e2bcd8739ae039(1, arguments);
+    var date = $9a3150cd6bebc019$export$2e2bcd8739ae039(dirtyDate);
+    var diff = $73039e8f4ece6bc9$export$2e2bcd8739ae039(date).getTime() - $4efe240e6771bf6b$export$2e2bcd8739ae039(date).getTime(); // Round the number of days to the nearest integer
+    // because the number of milliseconds in a week is not constant
+    // (e.g. it's different in the week of the daylight saving time clock shift)
+    return Math.round(diff / $4e1ea0d38788a855$var$MILLISECONDS_IN_WEEK) + 1;
+}
+
+
+
+
+
+
+
+function $70e21926ce8d5e4f$export$2e2bcd8739ae039(dirtyDate, dirtyOptions) {
+    $80da59dc1f1c4b55$export$2e2bcd8739ae039(1, arguments);
+    var options = dirtyOptions || {
+    };
+    var locale = options.locale;
+    var localeWeekStartsOn = locale && locale.options && locale.options.weekStartsOn;
+    var defaultWeekStartsOn = localeWeekStartsOn == null ? 0 : $c32f32022491d79a$export$2e2bcd8739ae039(localeWeekStartsOn);
+    var weekStartsOn = options.weekStartsOn == null ? defaultWeekStartsOn : $c32f32022491d79a$export$2e2bcd8739ae039(options.weekStartsOn); // Test if weekStartsOn is between 0 and 6 _and_ is not NaN
+    if (!(weekStartsOn >= 0 && weekStartsOn <= 6)) throw new RangeError('weekStartsOn must be between 0 and 6 inclusively');
+    var date = $9a3150cd6bebc019$export$2e2bcd8739ae039(dirtyDate);
+    var day = date.getUTCDay();
+    var diff = (day < weekStartsOn ? 7 : 0) + day - weekStartsOn;
+    date.setUTCDate(date.getUTCDate() - diff);
+    date.setUTCHours(0, 0, 0, 0);
+    return date;
+}
+
+
+
+
+
+
+
+function $dbb3571fe13bd869$export$2e2bcd8739ae039(dirtyDate, dirtyOptions) {
+    $80da59dc1f1c4b55$export$2e2bcd8739ae039(1, arguments);
+    var date = $9a3150cd6bebc019$export$2e2bcd8739ae039(dirtyDate, dirtyOptions);
+    var year = date.getUTCFullYear();
+    var options = dirtyOptions || {
+    };
+    var locale = options.locale;
+    var localeFirstWeekContainsDate = locale && locale.options && locale.options.firstWeekContainsDate;
+    var defaultFirstWeekContainsDate = localeFirstWeekContainsDate == null ? 1 : $c32f32022491d79a$export$2e2bcd8739ae039(localeFirstWeekContainsDate);
+    var firstWeekContainsDate = options.firstWeekContainsDate == null ? defaultFirstWeekContainsDate : $c32f32022491d79a$export$2e2bcd8739ae039(options.firstWeekContainsDate); // Test if weekStartsOn is between 1 and 7 _and_ is not NaN
+    if (!(firstWeekContainsDate >= 1 && firstWeekContainsDate <= 7)) throw new RangeError('firstWeekContainsDate must be between 1 and 7 inclusively');
+    var firstWeekOfNextYear = new Date(0);
+    firstWeekOfNextYear.setUTCFullYear(year + 1, 0, firstWeekContainsDate);
+    firstWeekOfNextYear.setUTCHours(0, 0, 0, 0);
+    var startOfNextYear = $70e21926ce8d5e4f$export$2e2bcd8739ae039(firstWeekOfNextYear, dirtyOptions);
+    var firstWeekOfThisYear = new Date(0);
+    firstWeekOfThisYear.setUTCFullYear(year, 0, firstWeekContainsDate);
+    firstWeekOfThisYear.setUTCHours(0, 0, 0, 0);
+    var startOfThisYear = $70e21926ce8d5e4f$export$2e2bcd8739ae039(firstWeekOfThisYear, dirtyOptions);
+    if (date.getTime() >= startOfNextYear.getTime()) return year + 1;
+    else if (date.getTime() >= startOfThisYear.getTime()) return year;
+    else return year - 1;
+}
+
+
+
+
+function $493bd72978eb5205$export$2e2bcd8739ae039(dirtyDate, dirtyOptions) {
+    $80da59dc1f1c4b55$export$2e2bcd8739ae039(1, arguments);
+    var options = dirtyOptions || {
+    };
+    var locale = options.locale;
+    var localeFirstWeekContainsDate = locale && locale.options && locale.options.firstWeekContainsDate;
+    var defaultFirstWeekContainsDate = localeFirstWeekContainsDate == null ? 1 : $c32f32022491d79a$export$2e2bcd8739ae039(localeFirstWeekContainsDate);
+    var firstWeekContainsDate = options.firstWeekContainsDate == null ? defaultFirstWeekContainsDate : $c32f32022491d79a$export$2e2bcd8739ae039(options.firstWeekContainsDate);
+    var year = $dbb3571fe13bd869$export$2e2bcd8739ae039(dirtyDate, dirtyOptions);
+    var firstWeek = new Date(0);
+    firstWeek.setUTCFullYear(year, 0, firstWeekContainsDate);
+    firstWeek.setUTCHours(0, 0, 0, 0);
+    var date = $70e21926ce8d5e4f$export$2e2bcd8739ae039(firstWeek, dirtyOptions);
+    return date;
+}
+
+
+
+var $785987f6b4b840d0$var$MILLISECONDS_IN_WEEK = 604800000; // This function will be a part of public API when UTC function will be implemented.
+function $785987f6b4b840d0$export$2e2bcd8739ae039(dirtyDate, options) {
+    $80da59dc1f1c4b55$export$2e2bcd8739ae039(1, arguments);
+    var date = $9a3150cd6bebc019$export$2e2bcd8739ae039(dirtyDate);
+    var diff = $70e21926ce8d5e4f$export$2e2bcd8739ae039(date, options).getTime() - $493bd72978eb5205$export$2e2bcd8739ae039(date, options).getTime(); // Round the number of days to the nearest integer
+    // because the number of milliseconds in a week is not constant
+    // (e.g. it's different in the week of the daylight saving time clock shift)
+    return Math.round(diff / $785987f6b4b840d0$var$MILLISECONDS_IN_WEEK) + 1;
+}
+
+
+
+
+var $21ac03803329346a$var$dayPeriodEnum = {
+    am: 'am',
+    pm: 'pm',
+    midnight: 'midnight',
+    noon: 'noon',
+    morning: 'morning',
+    afternoon: 'afternoon',
+    evening: 'evening',
+    night: 'night'
+};
+/*
+ * |     | Unit                           |     | Unit                           |
+ * |-----|--------------------------------|-----|--------------------------------|
+ * |  a  | AM, PM                         |  A* | Milliseconds in day            |
+ * |  b  | AM, PM, noon, midnight         |  B  | Flexible day period            |
+ * |  c  | Stand-alone local day of week  |  C* | Localized hour w/ day period   |
+ * |  d  | Day of month                   |  D  | Day of year                    |
+ * |  e  | Local day of week              |  E  | Day of week                    |
+ * |  f  |                                |  F* | Day of week in month           |
+ * |  g* | Modified Julian day            |  G  | Era                            |
+ * |  h  | Hour [1-12]                    |  H  | Hour [0-23]                    |
+ * |  i! | ISO day of week                |  I! | ISO week of year               |
+ * |  j* | Localized hour w/ day period   |  J* | Localized hour w/o day period  |
+ * |  k  | Hour [1-24]                    |  K  | Hour [0-11]                    |
+ * |  l* | (deprecated)                   |  L  | Stand-alone month              |
+ * |  m  | Minute                         |  M  | Month                          |
+ * |  n  |                                |  N  |                                |
+ * |  o! | Ordinal number modifier        |  O  | Timezone (GMT)                 |
+ * |  p! | Long localized time            |  P! | Long localized date            |
+ * |  q  | Stand-alone quarter            |  Q  | Quarter                        |
+ * |  r* | Related Gregorian year         |  R! | ISO week-numbering year        |
+ * |  s  | Second                         |  S  | Fraction of second             |
+ * |  t! | Seconds timestamp              |  T! | Milliseconds timestamp         |
+ * |  u  | Extended year                  |  U* | Cyclic year                    |
+ * |  v* | Timezone (generic non-locat.)  |  V* | Timezone (location)            |
+ * |  w  | Local week of year             |  W* | Week of month                  |
+ * |  x  | Timezone (ISO-8601 w/o Z)      |  X  | Timezone (ISO-8601)            |
+ * |  y  | Year (abs)                     |  Y  | Local week-numbering year      |
+ * |  z  | Timezone (specific non-locat.) |  Z* | Timezone (aliases)             |
+ *
+ * Letters marked by * are not implemented but reserved by Unicode standard.
+ *
+ * Letters marked by ! are non-standard, but implemented by date-fns:
+ * - `o` modifies the previous token to turn it into an ordinal (see `format` docs)
+ * - `i` is ISO day of week. For `i` and `ii` is returns numeric ISO week days,
+ *   i.e. 7 for Sunday, 1 for Monday, etc.
+ * - `I` is ISO week of year, as opposed to `w` which is local week of year.
+ * - `R` is ISO week-numbering year, as opposed to `Y` which is local week-numbering year.
+ *   `R` is supposed to be used in conjunction with `I` and `i`
+ *   for universal ISO week-numbering date, whereas
+ *   `Y` is supposed to be used in conjunction with `w` and `e`
+ *   for week-numbering date specific to the locale.
+ * - `P` is long localized date format
+ * - `p` is long localized time format
+ */ var $21ac03803329346a$var$formatters = {
+    // Era
+    G: function(date, token, localize) {
+        var era = date.getUTCFullYear() > 0 ? 1 : 0;
+        switch(token){
+            // AD, BC
+            case 'G':
+            case 'GG':
+            case 'GGG':
+                return localize.era(era, {
+                    width: 'abbreviated'
+                });
+            // A, B
+            case 'GGGGG':
+                return localize.era(era, {
+                    width: 'narrow'
+                });
+            // Anno Domini, Before Christ
+            case 'GGGG':
+            default:
+                return localize.era(era, {
+                    width: 'wide'
+                });
+        }
+    },
+    // Year
+    y: function(date, token, localize) {
+        // Ordinal number
+        if (token === 'yo') {
+            var signedYear = date.getUTCFullYear(); // Returns 1 for 1 BC (which is year 0 in JavaScript)
+            var year = signedYear > 0 ? signedYear : 1 - signedYear;
+            return localize.ordinalNumber(year, {
+                unit: 'year'
+            });
+        }
+        return $09d96ecb910e4247$export$2e2bcd8739ae039.y(date, token);
+    },
+    // Local week-numbering year
+    Y: function(date, token, localize, options) {
+        var signedWeekYear = $dbb3571fe13bd869$export$2e2bcd8739ae039(date, options); // Returns 1 for 1 BC (which is year 0 in JavaScript)
+        var weekYear = signedWeekYear > 0 ? signedWeekYear : 1 - signedWeekYear; // Two digit year
+        if (token === 'YY') {
+            var twoDigitYear = weekYear % 100;
+            return $c1a2f783a8e67dde$export$2e2bcd8739ae039(twoDigitYear, 2);
+        } // Ordinal number
+        if (token === 'Yo') return localize.ordinalNumber(weekYear, {
+            unit: 'year'
+        });
+         // Padding
+        return $c1a2f783a8e67dde$export$2e2bcd8739ae039(weekYear, token.length);
+    },
+    // ISO week-numbering year
+    R: function(date, token) {
+        var isoWeekYear = $140bf7aa8b254e88$export$2e2bcd8739ae039(date); // Padding
+        return $c1a2f783a8e67dde$export$2e2bcd8739ae039(isoWeekYear, token.length);
+    },
+    // Extended year. This is a single number designating the year of this calendar system.
+    // The main difference between `y` and `u` localizers are B.C. years:
+    // | Year | `y` | `u` |
+    // |------|-----|-----|
+    // | AC 1 |   1 |   1 |
+    // | BC 1 |   1 |   0 |
+    // | BC 2 |   2 |  -1 |
+    // Also `yy` always returns the last two digits of a year,
+    // while `uu` pads single digit years to 2 characters and returns other years unchanged.
+    u: function(date, token) {
+        var year = date.getUTCFullYear();
+        return $c1a2f783a8e67dde$export$2e2bcd8739ae039(year, token.length);
+    },
+    // Quarter
+    Q: function(date, token, localize) {
+        var quarter = Math.ceil((date.getUTCMonth() + 1) / 3);
+        switch(token){
+            // 1, 2, 3, 4
+            case 'Q':
+                return String(quarter);
+            // 01, 02, 03, 04
+            case 'QQ':
+                return $c1a2f783a8e67dde$export$2e2bcd8739ae039(quarter, 2);
+            // 1st, 2nd, 3rd, 4th
+            case 'Qo':
+                return localize.ordinalNumber(quarter, {
+                    unit: 'quarter'
+                });
+            // Q1, Q2, Q3, Q4
+            case 'QQQ':
+                return localize.quarter(quarter, {
+                    width: 'abbreviated',
+                    context: 'formatting'
+                });
+            // 1, 2, 3, 4 (narrow quarter; could be not numerical)
+            case 'QQQQQ':
+                return localize.quarter(quarter, {
+                    width: 'narrow',
+                    context: 'formatting'
+                });
+            // 1st quarter, 2nd quarter, ...
+            case 'QQQQ':
+            default:
+                return localize.quarter(quarter, {
+                    width: 'wide',
+                    context: 'formatting'
+                });
+        }
+    },
+    // Stand-alone quarter
+    q: function(date, token, localize) {
+        var quarter = Math.ceil((date.getUTCMonth() + 1) / 3);
+        switch(token){
+            // 1, 2, 3, 4
+            case 'q':
+                return String(quarter);
+            // 01, 02, 03, 04
+            case 'qq':
+                return $c1a2f783a8e67dde$export$2e2bcd8739ae039(quarter, 2);
+            // 1st, 2nd, 3rd, 4th
+            case 'qo':
+                return localize.ordinalNumber(quarter, {
+                    unit: 'quarter'
+                });
+            // Q1, Q2, Q3, Q4
+            case 'qqq':
+                return localize.quarter(quarter, {
+                    width: 'abbreviated',
+                    context: 'standalone'
+                });
+            // 1, 2, 3, 4 (narrow quarter; could be not numerical)
+            case 'qqqqq':
+                return localize.quarter(quarter, {
+                    width: 'narrow',
+                    context: 'standalone'
+                });
+            // 1st quarter, 2nd quarter, ...
+            case 'qqqq':
+            default:
+                return localize.quarter(quarter, {
+                    width: 'wide',
+                    context: 'standalone'
+                });
+        }
+    },
+    // Month
+    M: function(date, token, localize) {
+        var month = date.getUTCMonth();
+        switch(token){
+            case 'M':
+            case 'MM':
+                return $09d96ecb910e4247$export$2e2bcd8739ae039.M(date, token);
+            // 1st, 2nd, ..., 12th
+            case 'Mo':
+                return localize.ordinalNumber(month + 1, {
+                    unit: 'month'
+                });
+            // Jan, Feb, ..., Dec
+            case 'MMM':
+                return localize.month(month, {
+                    width: 'abbreviated',
+                    context: 'formatting'
+                });
+            // J, F, ..., D
+            case 'MMMMM':
+                return localize.month(month, {
+                    width: 'narrow',
+                    context: 'formatting'
+                });
+            // January, February, ..., December
+            case 'MMMM':
+            default:
+                return localize.month(month, {
+                    width: 'wide',
+                    context: 'formatting'
+                });
+        }
+    },
+    // Stand-alone month
+    L: function(date, token, localize) {
+        var month = date.getUTCMonth();
+        switch(token){
+            // 1, 2, ..., 12
+            case 'L':
+                return String(month + 1);
+            // 01, 02, ..., 12
+            case 'LL':
+                return $c1a2f783a8e67dde$export$2e2bcd8739ae039(month + 1, 2);
+            // 1st, 2nd, ..., 12th
+            case 'Lo':
+                return localize.ordinalNumber(month + 1, {
+                    unit: 'month'
+                });
+            // Jan, Feb, ..., Dec
+            case 'LLL':
+                return localize.month(month, {
+                    width: 'abbreviated',
+                    context: 'standalone'
+                });
+            // J, F, ..., D
+            case 'LLLLL':
+                return localize.month(month, {
+                    width: 'narrow',
+                    context: 'standalone'
+                });
+            // January, February, ..., December
+            case 'LLLL':
+            default:
+                return localize.month(month, {
+                    width: 'wide',
+                    context: 'standalone'
+                });
+        }
+    },
+    // Local week of year
+    w: function(date, token, localize, options) {
+        var week = $785987f6b4b840d0$export$2e2bcd8739ae039(date, options);
+        if (token === 'wo') return localize.ordinalNumber(week, {
+            unit: 'week'
+        });
+        return $c1a2f783a8e67dde$export$2e2bcd8739ae039(week, token.length);
+    },
+    // ISO week of year
+    I: function(date, token, localize) {
+        var isoWeek = $4e1ea0d38788a855$export$2e2bcd8739ae039(date);
+        if (token === 'Io') return localize.ordinalNumber(isoWeek, {
+            unit: 'week'
+        });
+        return $c1a2f783a8e67dde$export$2e2bcd8739ae039(isoWeek, token.length);
+    },
+    // Day of the month
+    d: function(date, token, localize) {
+        if (token === 'do') return localize.ordinalNumber(date.getUTCDate(), {
+            unit: 'date'
+        });
+        return $09d96ecb910e4247$export$2e2bcd8739ae039.d(date, token);
+    },
+    // Day of year
+    D: function(date, token, localize) {
+        var dayOfYear = $d67abfa327c535bf$export$2e2bcd8739ae039(date);
+        if (token === 'Do') return localize.ordinalNumber(dayOfYear, {
+            unit: 'dayOfYear'
+        });
+        return $c1a2f783a8e67dde$export$2e2bcd8739ae039(dayOfYear, token.length);
+    },
+    // Day of week
+    E: function(date, token, localize) {
+        var dayOfWeek = date.getUTCDay();
+        switch(token){
+            // Tue
+            case 'E':
+            case 'EE':
+            case 'EEE':
+                return localize.day(dayOfWeek, {
+                    width: 'abbreviated',
+                    context: 'formatting'
+                });
+            // T
+            case 'EEEEE':
+                return localize.day(dayOfWeek, {
+                    width: 'narrow',
+                    context: 'formatting'
+                });
+            // Tu
+            case 'EEEEEE':
+                return localize.day(dayOfWeek, {
+                    width: 'short',
+                    context: 'formatting'
+                });
+            // Tuesday
+            case 'EEEE':
+            default:
+                return localize.day(dayOfWeek, {
+                    width: 'wide',
+                    context: 'formatting'
+                });
+        }
+    },
+    // Local day of week
+    e: function(date, token, localize, options) {
+        var dayOfWeek = date.getUTCDay();
+        var localDayOfWeek = (dayOfWeek - options.weekStartsOn + 8) % 7 || 7;
+        switch(token){
+            // Numerical value (Nth day of week with current locale or weekStartsOn)
+            case 'e':
+                return String(localDayOfWeek);
+            // Padded numerical value
+            case 'ee':
+                return $c1a2f783a8e67dde$export$2e2bcd8739ae039(localDayOfWeek, 2);
+            // 1st, 2nd, ..., 7th
+            case 'eo':
+                return localize.ordinalNumber(localDayOfWeek, {
+                    unit: 'day'
+                });
+            case 'eee':
+                return localize.day(dayOfWeek, {
+                    width: 'abbreviated',
+                    context: 'formatting'
+                });
+            // T
+            case 'eeeee':
+                return localize.day(dayOfWeek, {
+                    width: 'narrow',
+                    context: 'formatting'
+                });
+            // Tu
+            case 'eeeeee':
+                return localize.day(dayOfWeek, {
+                    width: 'short',
+                    context: 'formatting'
+                });
+            // Tuesday
+            case 'eeee':
+            default:
+                return localize.day(dayOfWeek, {
+                    width: 'wide',
+                    context: 'formatting'
+                });
+        }
+    },
+    // Stand-alone local day of week
+    c: function(date, token, localize, options) {
+        var dayOfWeek = date.getUTCDay();
+        var localDayOfWeek = (dayOfWeek - options.weekStartsOn + 8) % 7 || 7;
+        switch(token){
+            // Numerical value (same as in `e`)
+            case 'c':
+                return String(localDayOfWeek);
+            // Padded numerical value
+            case 'cc':
+                return $c1a2f783a8e67dde$export$2e2bcd8739ae039(localDayOfWeek, token.length);
+            // 1st, 2nd, ..., 7th
+            case 'co':
+                return localize.ordinalNumber(localDayOfWeek, {
+                    unit: 'day'
+                });
+            case 'ccc':
+                return localize.day(dayOfWeek, {
+                    width: 'abbreviated',
+                    context: 'standalone'
+                });
+            // T
+            case 'ccccc':
+                return localize.day(dayOfWeek, {
+                    width: 'narrow',
+                    context: 'standalone'
+                });
+            // Tu
+            case 'cccccc':
+                return localize.day(dayOfWeek, {
+                    width: 'short',
+                    context: 'standalone'
+                });
+            // Tuesday
+            case 'cccc':
+            default:
+                return localize.day(dayOfWeek, {
+                    width: 'wide',
+                    context: 'standalone'
+                });
+        }
+    },
+    // ISO day of week
+    i: function(date, token, localize) {
+        var dayOfWeek = date.getUTCDay();
+        var isoDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
+        switch(token){
+            // 2
+            case 'i':
+                return String(isoDayOfWeek);
+            // 02
+            case 'ii':
+                return $c1a2f783a8e67dde$export$2e2bcd8739ae039(isoDayOfWeek, token.length);
+            // 2nd
+            case 'io':
+                return localize.ordinalNumber(isoDayOfWeek, {
+                    unit: 'day'
+                });
+            // Tue
+            case 'iii':
+                return localize.day(dayOfWeek, {
+                    width: 'abbreviated',
+                    context: 'formatting'
+                });
+            // T
+            case 'iiiii':
+                return localize.day(dayOfWeek, {
+                    width: 'narrow',
+                    context: 'formatting'
+                });
+            // Tu
+            case 'iiiiii':
+                return localize.day(dayOfWeek, {
+                    width: 'short',
+                    context: 'formatting'
+                });
+            // Tuesday
+            case 'iiii':
+            default:
+                return localize.day(dayOfWeek, {
+                    width: 'wide',
+                    context: 'formatting'
+                });
+        }
+    },
+    // AM or PM
+    a: function(date, token, localize) {
+        var hours = date.getUTCHours();
+        var dayPeriodEnumValue = hours / 12 >= 1 ? 'pm' : 'am';
+        switch(token){
+            case 'a':
+            case 'aa':
+                return localize.dayPeriod(dayPeriodEnumValue, {
+                    width: 'abbreviated',
+                    context: 'formatting'
+                });
+            case 'aaa':
+                return localize.dayPeriod(dayPeriodEnumValue, {
+                    width: 'abbreviated',
+                    context: 'formatting'
+                }).toLowerCase();
+            case 'aaaaa':
+                return localize.dayPeriod(dayPeriodEnumValue, {
+                    width: 'narrow',
+                    context: 'formatting'
+                });
+            case 'aaaa':
+            default:
+                return localize.dayPeriod(dayPeriodEnumValue, {
+                    width: 'wide',
+                    context: 'formatting'
+                });
+        }
+    },
+    // AM, PM, midnight, noon
+    b: function(date, token, localize) {
+        var hours = date.getUTCHours();
+        var dayPeriodEnumValue;
+        if (hours === 12) dayPeriodEnumValue = $21ac03803329346a$var$dayPeriodEnum.noon;
+        else if (hours === 0) dayPeriodEnumValue = $21ac03803329346a$var$dayPeriodEnum.midnight;
+        else dayPeriodEnumValue = hours / 12 >= 1 ? 'pm' : 'am';
+        switch(token){
+            case 'b':
+            case 'bb':
+                return localize.dayPeriod(dayPeriodEnumValue, {
+                    width: 'abbreviated',
+                    context: 'formatting'
+                });
+            case 'bbb':
+                return localize.dayPeriod(dayPeriodEnumValue, {
+                    width: 'abbreviated',
+                    context: 'formatting'
+                }).toLowerCase();
+            case 'bbbbb':
+                return localize.dayPeriod(dayPeriodEnumValue, {
+                    width: 'narrow',
+                    context: 'formatting'
+                });
+            case 'bbbb':
+            default:
+                return localize.dayPeriod(dayPeriodEnumValue, {
+                    width: 'wide',
+                    context: 'formatting'
+                });
+        }
+    },
+    // in the morning, in the afternoon, in the evening, at night
+    B: function(date, token, localize) {
+        var hours = date.getUTCHours();
+        var dayPeriodEnumValue;
+        if (hours >= 17) dayPeriodEnumValue = $21ac03803329346a$var$dayPeriodEnum.evening;
+        else if (hours >= 12) dayPeriodEnumValue = $21ac03803329346a$var$dayPeriodEnum.afternoon;
+        else if (hours >= 4) dayPeriodEnumValue = $21ac03803329346a$var$dayPeriodEnum.morning;
+        else dayPeriodEnumValue = $21ac03803329346a$var$dayPeriodEnum.night;
+        switch(token){
+            case 'B':
+            case 'BB':
+            case 'BBB':
+                return localize.dayPeriod(dayPeriodEnumValue, {
+                    width: 'abbreviated',
+                    context: 'formatting'
+                });
+            case 'BBBBB':
+                return localize.dayPeriod(dayPeriodEnumValue, {
+                    width: 'narrow',
+                    context: 'formatting'
+                });
+            case 'BBBB':
+            default:
+                return localize.dayPeriod(dayPeriodEnumValue, {
+                    width: 'wide',
+                    context: 'formatting'
+                });
+        }
+    },
+    // Hour [1-12]
+    h: function(date, token, localize) {
+        if (token === 'ho') {
+            var hours = date.getUTCHours() % 12;
+            if (hours === 0) hours = 12;
+            return localize.ordinalNumber(hours, {
+                unit: 'hour'
+            });
+        }
+        return $09d96ecb910e4247$export$2e2bcd8739ae039.h(date, token);
+    },
+    // Hour [0-23]
+    H: function(date, token, localize) {
+        if (token === 'Ho') return localize.ordinalNumber(date.getUTCHours(), {
+            unit: 'hour'
+        });
+        return $09d96ecb910e4247$export$2e2bcd8739ae039.H(date, token);
+    },
+    // Hour [0-11]
+    K: function(date, token, localize) {
+        var hours = date.getUTCHours() % 12;
+        if (token === 'Ko') return localize.ordinalNumber(hours, {
+            unit: 'hour'
+        });
+        return $c1a2f783a8e67dde$export$2e2bcd8739ae039(hours, token.length);
+    },
+    // Hour [1-24]
+    k: function(date, token, localize) {
+        var hours = date.getUTCHours();
+        if (hours === 0) hours = 24;
+        if (token === 'ko') return localize.ordinalNumber(hours, {
+            unit: 'hour'
+        });
+        return $c1a2f783a8e67dde$export$2e2bcd8739ae039(hours, token.length);
+    },
+    // Minute
+    m: function(date, token, localize) {
+        if (token === 'mo') return localize.ordinalNumber(date.getUTCMinutes(), {
+            unit: 'minute'
+        });
+        return $09d96ecb910e4247$export$2e2bcd8739ae039.m(date, token);
+    },
+    // Second
+    s: function(date, token, localize) {
+        if (token === 'so') return localize.ordinalNumber(date.getUTCSeconds(), {
+            unit: 'second'
+        });
+        return $09d96ecb910e4247$export$2e2bcd8739ae039.s(date, token);
+    },
+    // Fraction of second
+    S: function(date, token) {
+        return $09d96ecb910e4247$export$2e2bcd8739ae039.S(date, token);
+    },
+    // Timezone (ISO-8601. If offset is 0, output is always `'Z'`)
+    X: function(date, token, _localize, options) {
+        var originalDate = options._originalDate || date;
+        var timezoneOffset = originalDate.getTimezoneOffset();
+        if (timezoneOffset === 0) return 'Z';
+        switch(token){
+            // Hours and optional minutes
+            case 'X':
+                return $21ac03803329346a$var$formatTimezoneWithOptionalMinutes(timezoneOffset);
+            // Hours, minutes and optional seconds without `:` delimiter
+            // Note: neither ISO-8601 nor JavaScript supports seconds in timezone offsets
+            // so this token always has the same output as `XX`
+            case 'XXXX':
+            case 'XX':
+                // Hours and minutes without `:` delimiter
+                return $21ac03803329346a$var$formatTimezone(timezoneOffset);
+            // Hours, minutes and optional seconds with `:` delimiter
+            // Note: neither ISO-8601 nor JavaScript supports seconds in timezone offsets
+            // so this token always has the same output as `XXX`
+            case 'XXXXX':
+            case 'XXX':
+            default:
+                return $21ac03803329346a$var$formatTimezone(timezoneOffset, ':');
+        }
+    },
+    // Timezone (ISO-8601. If offset is 0, output is `'+00:00'` or equivalent)
+    x: function(date, token, _localize, options) {
+        var originalDate = options._originalDate || date;
+        var timezoneOffset = originalDate.getTimezoneOffset();
+        switch(token){
+            // Hours and optional minutes
+            case 'x':
+                return $21ac03803329346a$var$formatTimezoneWithOptionalMinutes(timezoneOffset);
+            // Hours, minutes and optional seconds without `:` delimiter
+            // Note: neither ISO-8601 nor JavaScript supports seconds in timezone offsets
+            // so this token always has the same output as `xx`
+            case 'xxxx':
+            case 'xx':
+                // Hours and minutes without `:` delimiter
+                return $21ac03803329346a$var$formatTimezone(timezoneOffset);
+            // Hours, minutes and optional seconds with `:` delimiter
+            // Note: neither ISO-8601 nor JavaScript supports seconds in timezone offsets
+            // so this token always has the same output as `xxx`
+            case 'xxxxx':
+            case 'xxx':
+            default:
+                return $21ac03803329346a$var$formatTimezone(timezoneOffset, ':');
+        }
+    },
+    // Timezone (GMT)
+    O: function(date, token, _localize, options) {
+        var originalDate = options._originalDate || date;
+        var timezoneOffset = originalDate.getTimezoneOffset();
+        switch(token){
+            // Short
+            case 'O':
+            case 'OO':
+            case 'OOO':
+                return 'GMT' + $21ac03803329346a$var$formatTimezoneShort(timezoneOffset, ':');
+            // Long
+            case 'OOOO':
+            default:
+                return 'GMT' + $21ac03803329346a$var$formatTimezone(timezoneOffset, ':');
+        }
+    },
+    // Timezone (specific non-location)
+    z: function(date, token, _localize, options) {
+        var originalDate = options._originalDate || date;
+        var timezoneOffset = originalDate.getTimezoneOffset();
+        switch(token){
+            // Short
+            case 'z':
+            case 'zz':
+            case 'zzz':
+                return 'GMT' + $21ac03803329346a$var$formatTimezoneShort(timezoneOffset, ':');
+            // Long
+            case 'zzzz':
+            default:
+                return 'GMT' + $21ac03803329346a$var$formatTimezone(timezoneOffset, ':');
+        }
+    },
+    // Seconds timestamp
+    t: function(date, token, _localize, options) {
+        var originalDate = options._originalDate || date;
+        var timestamp = Math.floor(originalDate.getTime() / 1000);
+        return $c1a2f783a8e67dde$export$2e2bcd8739ae039(timestamp, token.length);
+    },
+    // Milliseconds timestamp
+    T: function(date, token, _localize, options) {
+        var originalDate = options._originalDate || date;
+        var timestamp = originalDate.getTime();
+        return $c1a2f783a8e67dde$export$2e2bcd8739ae039(timestamp, token.length);
+    }
+};
+function $21ac03803329346a$var$formatTimezoneShort(offset, dirtyDelimiter) {
+    var sign = offset > 0 ? '-' : '+';
+    var absOffset = Math.abs(offset);
+    var hours = Math.floor(absOffset / 60);
+    var minutes = absOffset % 60;
+    if (minutes === 0) return sign + String(hours);
+    var delimiter = dirtyDelimiter || '';
+    return sign + String(hours) + delimiter + $c1a2f783a8e67dde$export$2e2bcd8739ae039(minutes, 2);
+}
+function $21ac03803329346a$var$formatTimezoneWithOptionalMinutes(offset, dirtyDelimiter) {
+    if (offset % 60 === 0) {
+        var sign = offset > 0 ? '-' : '+';
+        return sign + $c1a2f783a8e67dde$export$2e2bcd8739ae039(Math.abs(offset) / 60, 2);
+    }
+    return $21ac03803329346a$var$formatTimezone(offset, dirtyDelimiter);
+}
+function $21ac03803329346a$var$formatTimezone(offset, dirtyDelimiter) {
+    var delimiter = dirtyDelimiter || '';
+    var sign = offset > 0 ? '-' : '+';
+    var absOffset = Math.abs(offset);
+    var hours = $c1a2f783a8e67dde$export$2e2bcd8739ae039(Math.floor(absOffset / 60), 2);
+    var minutes = $c1a2f783a8e67dde$export$2e2bcd8739ae039(absOffset % 60, 2);
+    return sign + hours + delimiter + minutes;
+}
+var $21ac03803329346a$export$2e2bcd8739ae039 = $21ac03803329346a$var$formatters;
+
+
+function $ed46a050b03a1a82$var$dateLongFormatter(pattern, formatLong) {
+    switch(pattern){
+        case 'P':
+            return formatLong.date({
+                width: 'short'
+            });
+        case 'PP':
+            return formatLong.date({
+                width: 'medium'
+            });
+        case 'PPP':
+            return formatLong.date({
+                width: 'long'
+            });
+        case 'PPPP':
+        default:
+            return formatLong.date({
+                width: 'full'
+            });
+    }
+}
+function $ed46a050b03a1a82$var$timeLongFormatter(pattern, formatLong) {
+    switch(pattern){
+        case 'p':
+            return formatLong.time({
+                width: 'short'
+            });
+        case 'pp':
+            return formatLong.time({
+                width: 'medium'
+            });
+        case 'ppp':
+            return formatLong.time({
+                width: 'long'
+            });
+        case 'pppp':
+        default:
+            return formatLong.time({
+                width: 'full'
+            });
+    }
+}
+function $ed46a050b03a1a82$var$dateTimeLongFormatter(pattern, formatLong) {
+    var matchResult = pattern.match(/(P+)(p+)?/);
+    var datePattern = matchResult[1];
+    var timePattern = matchResult[2];
+    if (!timePattern) return $ed46a050b03a1a82$var$dateLongFormatter(pattern, formatLong);
+    var dateTimeFormat;
+    switch(datePattern){
+        case 'P':
+            dateTimeFormat = formatLong.dateTime({
+                width: 'short'
+            });
+            break;
+        case 'PP':
+            dateTimeFormat = formatLong.dateTime({
+                width: 'medium'
+            });
+            break;
+        case 'PPP':
+            dateTimeFormat = formatLong.dateTime({
+                width: 'long'
+            });
+            break;
+        case 'PPPP':
+        default:
+            dateTimeFormat = formatLong.dateTime({
+                width: 'full'
+            });
+            break;
+    }
+    return dateTimeFormat.replace('{{date}}', $ed46a050b03a1a82$var$dateLongFormatter(datePattern, formatLong)).replace('{{time}}', $ed46a050b03a1a82$var$timeLongFormatter(timePattern, formatLong));
+}
+var $ed46a050b03a1a82$var$longFormatters = {
+    p: $ed46a050b03a1a82$var$timeLongFormatter,
+    P: $ed46a050b03a1a82$var$dateTimeLongFormatter
+};
+var $ed46a050b03a1a82$export$2e2bcd8739ae039 = $ed46a050b03a1a82$var$longFormatters;
+
+
+function $fb086e9dbae5f78d$export$2e2bcd8739ae039(date) {
+    var utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds()));
+    utcDate.setUTCFullYear(date.getFullYear());
+    return date.getTime() - utcDate.getTime();
+}
+
+
+var $e946caaa1ad7c4a5$var$protectedDayOfYearTokens = [
+    'D',
+    'DD'
+];
+var $e946caaa1ad7c4a5$var$protectedWeekYearTokens = [
+    'YY',
+    'YYYY'
+];
+function $e946caaa1ad7c4a5$export$c6cc36aa33304772(token) {
+    return $e946caaa1ad7c4a5$var$protectedDayOfYearTokens.indexOf(token) !== -1;
+}
+function $e946caaa1ad7c4a5$export$c6b49d6dceb604a1(token) {
+    return $e946caaa1ad7c4a5$var$protectedWeekYearTokens.indexOf(token) !== -1;
+}
+function $e946caaa1ad7c4a5$export$8073c1ae88f0e727(token, format, input) {
+    if (token === 'YYYY') throw new RangeError("Use `yyyy` instead of `YYYY` (in `".concat(format, "`) for formatting years to the input `").concat(input, "`; see: https://git.io/fxCyr"));
+    else if (token === 'YY') throw new RangeError("Use `yy` instead of `YY` (in `".concat(format, "`) for formatting years to the input `").concat(input, "`; see: https://git.io/fxCyr"));
+    else if (token === 'D') throw new RangeError("Use `d` instead of `D` (in `".concat(format, "`) for formatting days of the month to the input `").concat(input, "`; see: https://git.io/fxCyr"));
+    else if (token === 'DD') throw new RangeError("Use `dd` instead of `DD` (in `".concat(format, "`) for formatting days of the month to the input `").concat(input, "`; see: https://git.io/fxCyr"));
+}
+
+
+
+
+// - [yYQqMLwIdDecihHKkms]o matches any available ordinal number token
+//   (one of the certain letters followed by `o`)
+// - (\w)\1* matches any sequences of the same letter
+// - '' matches two quote characters in a row
+// - '(''|[^'])+('|$) matches anything surrounded by two quote characters ('),
+//   except a single quote symbol, which ends the sequence.
+//   Two quote characters do not end the sequence.
+//   If there is no matching single quote
+//   then the sequence will continue until the end of the string.
+// - . matches any single character unmatched by previous parts of the RegExps
+var $da6d57ab6fd01355$var$formattingTokensRegExp = /[yYQqMLwIdDecihHKkms]o|(\w)\1*|''|'(''|[^'])+('|$)|./g; // This RegExp catches symbols escaped by quotes, and also
+// sequences of symbols P, p, and the combinations like `PPPPPPPppppp`
+var $da6d57ab6fd01355$var$longFormattingTokensRegExp = /P+p+|P+|p+|''|'(''|[^'])+('|$)|./g;
+var $da6d57ab6fd01355$var$escapedStringRegExp = /^'([^]*?)'?$/;
+var $da6d57ab6fd01355$var$doubleQuoteRegExp = /''/g;
+var $da6d57ab6fd01355$var$unescapedLatinCharacterRegExp = /[a-zA-Z]/;
+function $da6d57ab6fd01355$export$2e2bcd8739ae039(dirtyDate, dirtyFormatStr, dirtyOptions) {
+    $80da59dc1f1c4b55$export$2e2bcd8739ae039(2, arguments);
+    var formatStr = String(dirtyFormatStr);
+    var options = dirtyOptions || {
+    };
+    var locale = options.locale || $b5dea07fd0a722a3$export$2e2bcd8739ae039;
+    var localeFirstWeekContainsDate = locale.options && locale.options.firstWeekContainsDate;
+    var defaultFirstWeekContainsDate = localeFirstWeekContainsDate == null ? 1 : $c32f32022491d79a$export$2e2bcd8739ae039(localeFirstWeekContainsDate);
+    var firstWeekContainsDate = options.firstWeekContainsDate == null ? defaultFirstWeekContainsDate : $c32f32022491d79a$export$2e2bcd8739ae039(options.firstWeekContainsDate); // Test if weekStartsOn is between 1 and 7 _and_ is not NaN
+    if (!(firstWeekContainsDate >= 1 && firstWeekContainsDate <= 7)) throw new RangeError('firstWeekContainsDate must be between 1 and 7 inclusively');
+    var localeWeekStartsOn = locale.options && locale.options.weekStartsOn;
+    var defaultWeekStartsOn = localeWeekStartsOn == null ? 0 : $c32f32022491d79a$export$2e2bcd8739ae039(localeWeekStartsOn);
+    var weekStartsOn = options.weekStartsOn == null ? defaultWeekStartsOn : $c32f32022491d79a$export$2e2bcd8739ae039(options.weekStartsOn); // Test if weekStartsOn is between 0 and 6 _and_ is not NaN
+    if (!(weekStartsOn >= 0 && weekStartsOn <= 6)) throw new RangeError('weekStartsOn must be between 0 and 6 inclusively');
+    if (!locale.localize) throw new RangeError('locale must contain localize property');
+    if (!locale.formatLong) throw new RangeError('locale must contain formatLong property');
+    var originalDate = $9a3150cd6bebc019$export$2e2bcd8739ae039(dirtyDate);
+    if (!$27d4df01eb937b72$export$2e2bcd8739ae039(originalDate)) throw new RangeError('Invalid time value');
+     // Convert the date in system timezone to the same date in UTC+00:00 timezone.
+    // This ensures that when UTC functions will be implemented, locales will be compatible with them.
+    // See an issue about UTC functions: https://github.com/date-fns/date-fns/issues/376
+    var timezoneOffset = $fb086e9dbae5f78d$export$2e2bcd8739ae039(originalDate);
+    var utcDate = $f1469a89d0b9c6db$export$2e2bcd8739ae039(originalDate, timezoneOffset);
+    var formatterOptions = {
+        firstWeekContainsDate: firstWeekContainsDate,
+        weekStartsOn: weekStartsOn,
+        locale: locale,
+        _originalDate: originalDate
+    };
+    var result = formatStr.match($da6d57ab6fd01355$var$longFormattingTokensRegExp).map(function(substring) {
+        var firstCharacter = substring[0];
+        if (firstCharacter === 'p' || firstCharacter === 'P') {
+            var longFormatter = $ed46a050b03a1a82$export$2e2bcd8739ae039[firstCharacter];
+            return longFormatter(substring, locale.formatLong, formatterOptions);
+        }
+        return substring;
+    }).join('').match($da6d57ab6fd01355$var$formattingTokensRegExp).map(function(substring) {
+        // Replace two single quote characters with one single quote character
+        if (substring === "''") return "'";
+        var firstCharacter = substring[0];
+        if (firstCharacter === "'") return $da6d57ab6fd01355$var$cleanEscapedString(substring);
+        var formatter = $21ac03803329346a$export$2e2bcd8739ae039[firstCharacter];
+        if (formatter) {
+            if (!options.useAdditionalWeekYearTokens && $e946caaa1ad7c4a5$export$c6b49d6dceb604a1(substring)) $e946caaa1ad7c4a5$export$8073c1ae88f0e727(substring, dirtyFormatStr, dirtyDate);
+            if (!options.useAdditionalDayOfYearTokens && $e946caaa1ad7c4a5$export$c6cc36aa33304772(substring)) $e946caaa1ad7c4a5$export$8073c1ae88f0e727(substring, dirtyFormatStr, dirtyDate);
+            return formatter(utcDate, substring, locale.localize, formatterOptions);
+        }
+        if (firstCharacter.match($da6d57ab6fd01355$var$unescapedLatinCharacterRegExp)) throw new RangeError('Format string contains an unescaped latin alphabet character `' + firstCharacter + '`');
+        return substring;
+    }).join('');
+    return result;
+}
+function $da6d57ab6fd01355$var$cleanEscapedString(input) {
+    return input.match($da6d57ab6fd01355$var$escapedStringRegExp)[1].replace($da6d57ab6fd01355$var$doubleQuoteRegExp, "'");
+}
+
+
+
+
+
+function $909bf4852b4e8590$export$2e2bcd8739ae039(dirtyDate, dirtyAmount) {
+    $80da59dc1f1c4b55$export$2e2bcd8739ae039(2, arguments);
+    var date = $9a3150cd6bebc019$export$2e2bcd8739ae039(dirtyDate);
+    var amount = $c32f32022491d79a$export$2e2bcd8739ae039(dirtyAmount);
+    if (isNaN(amount)) return new Date(NaN);
+    if (!amount) // If 0 days, no-op to avoid changing times in the hour before end of DST
+    return date;
+    date.setDate(date.getDate() + amount);
+    return date;
+}
+
+
+
+function $62370531b01d3f0a$export$2e2bcd8739ae039(dirtyDate, dirtyAmount) {
+    $80da59dc1f1c4b55$export$2e2bcd8739ae039(2, arguments);
+    var amount = $c32f32022491d79a$export$2e2bcd8739ae039(dirtyAmount);
+    return $909bf4852b4e8590$export$2e2bcd8739ae039(dirtyDate, -amount);
+}
+
+
+
+
+
+
+function $a0bf2633b8193409$export$2e2bcd8739ae039(dirtyDate, dirtyAmount) {
+    $80da59dc1f1c4b55$export$2e2bcd8739ae039(2, arguments);
+    var date = $9a3150cd6bebc019$export$2e2bcd8739ae039(dirtyDate);
+    var amount = $c32f32022491d79a$export$2e2bcd8739ae039(dirtyAmount);
+    if (isNaN(amount)) return new Date(NaN);
+    if (!amount) // If 0 months, no-op to avoid changing times in the hour before end of DST
+    return date;
+    var dayOfMonth = date.getDate(); // The JS Date object supports date math by accepting out-of-bounds values for
+    // month, day, etc. For example, new Date(2020, 0, 0) returns 31 Dec 2019 and
+    // new Date(2020, 13, 1) returns 1 Feb 2021.  This is *almost* the behavior we
+    // want except that dates will wrap around the end of a month, meaning that
+    // new Date(2020, 13, 31) will return 3 Mar 2021 not 28 Feb 2021 as desired. So
+    // we'll default to the end of the desired month by adding 1 to the desired
+    // month and using a date of 0 to back up one day to the end of the desired
+    // month.
+    var endOfDesiredMonth = new Date(date.getTime());
+    endOfDesiredMonth.setMonth(date.getMonth() + amount + 1, 0);
+    var daysInMonth = endOfDesiredMonth.getDate();
+    if (dayOfMonth >= daysInMonth) // If we're already at the end of the month, then this is the correct date
+    // and we're done.
+    return endOfDesiredMonth;
+    else {
+        // Otherwise, we now know that setting the original day-of-month value won't
+        // cause an overflow, so set the desired day-of-month. Note that we can't
+        // just set the date of `endOfDesiredMonth` because that object may have had
+        // its time changed in the unusual case where where a DST transition was on
+        // the last day of the month and its local time was in the hour skipped or
+        // repeated next to a DST transition.  So we use `date` instead which is
+        // guaranteed to still have the original time.
+        date.setFullYear(endOfDesiredMonth.getFullYear(), endOfDesiredMonth.getMonth(), dayOfMonth);
+        return date;
+    }
+}
+
+
+
+function $94513f0bb814a38b$export$2e2bcd8739ae039(dirtyDate, dirtyAmount) {
+    $80da59dc1f1c4b55$export$2e2bcd8739ae039(2, arguments);
+    var amount = $c32f32022491d79a$export$2e2bcd8739ae039(dirtyAmount);
+    return $a0bf2633b8193409$export$2e2bcd8739ae039(dirtyDate, -amount);
+}
+
+
+
+
+function $44bd25ce72e3a309$export$2e2bcd8739ae039(date, duration) {
+    $80da59dc1f1c4b55$export$2e2bcd8739ae039(2, arguments);
+    if (!duration || typeof duration !== 'object') return new Date(NaN);
+    var years = duration.years ? $c32f32022491d79a$export$2e2bcd8739ae039(duration.years) : 0;
+    var months = duration.months ? $c32f32022491d79a$export$2e2bcd8739ae039(duration.months) : 0;
+    var weeks = duration.weeks ? $c32f32022491d79a$export$2e2bcd8739ae039(duration.weeks) : 0;
+    var days = duration.days ? $c32f32022491d79a$export$2e2bcd8739ae039(duration.days) : 0;
+    var hours = duration.hours ? $c32f32022491d79a$export$2e2bcd8739ae039(duration.hours) : 0;
+    var minutes = duration.minutes ? $c32f32022491d79a$export$2e2bcd8739ae039(duration.minutes) : 0;
+    var seconds = duration.seconds ? $c32f32022491d79a$export$2e2bcd8739ae039(duration.seconds) : 0; // Subtract years and months
+    var dateWithoutMonths = $94513f0bb814a38b$export$2e2bcd8739ae039(date, months + years * 12); // Subtract weeks and days
+    var dateWithoutDays = $62370531b01d3f0a$export$2e2bcd8739ae039(dateWithoutMonths, days + weeks * 7); // Subtract hours, minutes and seconds
+    var minutestoSub = minutes + hours * 60;
+    var secondstoSub = seconds + minutestoSub * 60;
+    var mstoSub = secondstoSub * 1000;
+    var finalDate = new Date(dateWithoutDays.getTime() - mstoSub);
+    return finalDate;
+}
+
+
+
+const $440b8387a407120d$var$now = new Date();
+const $440b8387a407120d$var$today = $da6d57ab6fd01355$export$2e2bcd8739ae039($440b8387a407120d$var$now, "eee LLL dd HH:mm:ss yyyy xx");
+const $440b8387a407120d$var$yesterday = $da6d57ab6fd01355$export$2e2bcd8739ae039($44bd25ce72e3a309$export$2e2bcd8739ae039($440b8387a407120d$var$now, {
+    days: 1,
+    hours: 2,
+    minutes: 3,
+    seconds: 4
+}), "eee LLL dd HH:mm:ss yyyy xx");
+const $440b8387a407120d$var$commitId1 = "239f56d40fe5a9257bb12c2e1101f8770aed2661";
+const $440b8387a407120d$var$commitId2 = "9225393c9d2434dbc6a858c675bf09478f2866a0";
+var $440b8387a407120d$export$2e2bcd8739ae039 = [
+    {
+        input: "git log",
+        output: [
+            `commit ${$440b8387a407120d$var$commitId2} (HEAD -> master)`,
+            "Author: mstream <maciej.laciak@gmail.com>",
+            `Date:   ${$440b8387a407120d$var$today}`,
+            "",
+            "    another message",
+            "",
+            "Notes:",
+            "ci-stage-1",
+            "",
+            `commit ${$440b8387a407120d$var$commitId1}`,
+            "Author: mstream <maciej.laciak@gmail.com>",
+            `Date:   ${$440b8387a407120d$var$yesterday}`,
+            "",
+            "    some message",
+            "",
+            "Notes:",
+            "ci-stage-1",
+            "",
+            "ci-stage-2", 
+        ]
+    },
+    {
+        input: "npx @ci-toolkit/pipeline get-last --ci-stage stage-1",
+        output: [
+            $440b8387a407120d$var$commitId2
+        ]
+    },
+    {
+        input: "npx @ci-toolkit/pipeline get-last --ci-stage stage-1 --ci-stage stage-2",
+        output: [
+            $440b8387a407120d$var$commitId1
+        ]
+    }, 
+];
+
+
+var $4712c847a4d7d412$exports = {};
+$4712c847a4d7d412$exports = new URL("get-last.c3352ea4.html", import.meta.url).toString();
+
+
+
+const $85794d0cf76e7d8c$var$today = $da6d57ab6fd01355$export$2e2bcd8739ae039(new Date(), "yyyy.MM.dd");
 var $85794d0cf76e7d8c$export$2e2bcd8739ae039 = [
     {
         input: "npx @ci-toolkit/version show --format calendar",
@@ -209,27 +2216,35 @@ var $9bfe0c5fd97f784a$exports = {};
 $9bfe0c5fd97f784a$exports = new URL("show.19fc2524.html", import.meta.url).toString();
 
 
-function $a7aeecad1b3b40fb$var$loadDocumentation({ name: name , url: url  }) {
+function $b344392a429762eb$var$loadDocumentation({ name: name , url: url  }) {
     const containerId = `${name}-documentation`;
-    fetch((/*@__PURE__*/$parcel$interopDefault($9bfe0c5fd97f784a$exports))).then((response)=>response.text()
+    fetch(url).then((response)=>response.text()
     ).then((data)=>document.getElementById(containerId).innerHTML = data
     );
 }
-function $a7aeecad1b3b40fb$var$runTerminal({ name: name , script: script  }) {
+function $b344392a429762eb$var$runTerminal({ name: name , script: script  }) {
     const containerId = `${name}-terminal`;
     $bc6716f7ab7e18d4$export$889ea624f2cb2c57({
         containerId: containerId,
-        pauseInMs: 500,
+        pauseInMs: 300,
         script: script
     });
 }
-$a7aeecad1b3b40fb$var$loadDocumentation({
+$b344392a429762eb$var$loadDocumentation({
+    name: "pipeline-get-last",
+    url: (/*@__PURE__*/$parcel$interopDefault($4712c847a4d7d412$exports))
+});
+$b344392a429762eb$var$loadDocumentation({
     name: "version-show",
     url: (/*@__PURE__*/$parcel$interopDefault($9bfe0c5fd97f784a$exports))
 });
-$a7aeecad1b3b40fb$var$runTerminal({
+$b344392a429762eb$var$runTerminal({
     name: "version-show",
     script: $85794d0cf76e7d8c$export$2e2bcd8739ae039
+});
+$b344392a429762eb$var$runTerminal({
+    name: "pipeline-get-last",
+    script: $440b8387a407120d$export$2e2bcd8739ae039
 });
 
 

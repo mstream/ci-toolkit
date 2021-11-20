@@ -1,0 +1,21 @@
+<h4>Description</h4>
+<p>Get the last commit which passed given CI stage(s).</p>
+<h4>How to...</h4>
+<h5>getting an ID of the last commit with passed all given CI stages</h5>
+<pre><code class="language-shell">npx @ci-toolkit/pipeline get-last \ 
+  --ci-stage functional-testing \
+  --ci-stage integration-testing
+</code></pre>
+<h4>Reference</h4>
+<pre><code class="language-shell">npx @ci-toolkit/pipeline get-last \ 
+  [--ci-prefix ARG] 
+  [--ci-stage ARG]
+  [--git-directory ARG]
+</code></pre>
+<h5>ci-prefix</h5>
+<p>Prefix for stage names to differentiate the from other Git notes entries.
+Defaults to <code>ci-</code>.</p>
+<h5>ci-stage</h5>
+<p>Name of the stage(s) that searched commit needs to be marked with.</p>
+<h5>git-directory</h5>
+<p>Git repository path. Defaults to <code>.</code> (current directory).</p>
