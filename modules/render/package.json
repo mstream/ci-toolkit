@@ -1,6 +1,6 @@
 {
   "name": "@ci-toolkit/render",
-  "version": "0.2.13",
+  "version": "0.2.14",
   "private": false,
   "description": "A tool rendering a Git repository history",
   "files": [
