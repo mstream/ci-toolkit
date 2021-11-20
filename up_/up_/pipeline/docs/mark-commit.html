@@ -1,5 +1,8 @@
 <h4>Description</h4>
-<p>Mark a commit as passed given CI stage.</p>
+<p>Mark a commit as passed a given CI stage.</p>
+<p>That information is preserved in a Git repository in the form of commit
+notes and used by the <a href="/ci-toolkit/up_/up_/pipeline/docs/get-last.html">get-last</a> command to query for the
+last commit which passed certain stages. </p>
 <h4>How to...</h4>
 <h5>mark the current commit</h5>
 <pre><code class="language-shell">npx @ci-toolkit/pipeline mark-commit \

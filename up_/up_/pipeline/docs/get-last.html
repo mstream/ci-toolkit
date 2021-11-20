@@ -1,7 +1,10 @@
 <h4>Description</h4>
 <p>Get the last commit which passed given CI stage(s).</p>
+<p>This command uses information produced by the <a href="/ci-toolkit/up_/up_/pipeline/docs/mark-commit.html">mark-commit</a>
+command to retrieve an identifier of the last commit which passed
+requested ci-stages.</p>
 <h4>How to...</h4>
-<h5>getting an ID of the last commit with passed all given CI stages</h5>
+<h5>get an ID of the last commit with passed all given CI stages</h5>
 <pre><code class="language-shell">npx @ci-toolkit/pipeline get-last \ 
   --ci-stage functional-testing \
   --ci-stage integration-testing

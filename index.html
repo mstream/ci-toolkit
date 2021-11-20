@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="/ci-toolkit/index.bf0b4cff.css">
+    <link rel="stylesheet" href="/ci-toolkit/index.e8fd8d92.css">
   </head>
   <body class="base06-background">
     <div class="base05-background header row">
@@ -14,8 +14,8 @@
         </span></a>
       </div>
     </div>
-    <section class="container">
-      <div class="row">
+    <section id="pipeline">
+      <div class="row subheader">
         <div class="column column-80">
           <h2>pipeline</h2>
         </div>
@@ -25,6 +25,9 @@
           </span></a>
         </div>
       </div>
+    </section>
+    <section class="container">
+      <div id="pipeline-documentation"></div>
       <h3>get-last</h3>
       <pre id="pipeline-get-last-terminal" class="terminal"></pre>
       <div id="pipeline-get-last-documentation"></div>
@@ -33,8 +36,8 @@
       <div id="pipeline-mark-commit-documentation"></div>
     </section>
     <hr>
-    <section class="container">
-      <div class="row">
+    <section id="render">
+      <div class="row subheader">
         <div class="column column-80">
           <h2>render</h2>
         </div>
@@ -44,13 +47,16 @@
           </span></a>
         </div>
       </div>
+    </section>
+    <section class="container">
+      <div id="render-documentation"></div>
       <h3>repo</h3>
       <pre id="render-repo-terminal" class="terminal"></pre>
       <div id="render-repo-documentation"></div>
     </section>
     <hr>
-    <section class="container">
-      <div class="row">
+    <section id="version">
+      <div class="row subheader">
         <div class="column column-80">
           <h2>version</h2>
         </div>
@@ -60,6 +66,9 @@
           </span></a>
         </div>
       </div>
+    </section>
+    <section class="container">
+      <div id="version-documentation"></div>
       <h3>show</h3>
       <pre id="version-show-terminal" class="terminal"></pre>
       <div id="version-show-documentation"></div>
@@ -220,6 +229,10 @@ async function $bc6716f7ab7e18d4$export$889ea624f2cb2c57({ containerId: containe
         t.reset();
     }
 }
+
+
+var $af06f121bd7fb6b7$exports = {};
+$af06f121bd7fb6b7$exports = new URL("README.700db17f.html", import.meta.url).toString();
 
 
 function $80da59dc1f1c4b55$export$2e2bcd8739ae039(required, args) {
@@ -2266,8 +2279,8 @@ var $440b8387a407120d$export$2e2bcd8739ae039 = [
 ];
 
 
-var $4712c847a4d7d412$exports = {};
-$4712c847a4d7d412$exports = new URL("get-last.c3352ea4.html", import.meta.url).toString();
+var $888f1c5ad6b638d4$exports = {};
+$888f1c5ad6b638d4$exports = new URL("up_/up_/pipeline/docs/get-last.html", import.meta.url).toString();
 
 
 
@@ -2308,12 +2321,16 @@ var $87c90c74e76ef5cc$export$2e2bcd8739ae039 = [
 ];
 
 
-var $5df6e8d1c1f621e0$exports = {};
-$5df6e8d1c1f621e0$exports = new URL("mark-commit.3a2dc4c4.html", import.meta.url).toString();
+var $6bbae805d617efb7$exports = {};
+$6bbae805d617efb7$exports = new URL("up_/up_/pipeline/docs/mark-commit.html", import.meta.url).toString();
 
 
-var $caf8f1d5a37aead9$exports = {};
-$caf8f1d5a37aead9$exports = new URL("repo.0f5ba450.html", import.meta.url).toString();
+var $1d643816a0942fdd$exports = {};
+$1d643816a0942fdd$exports = new URL("README.1b31b626.html", import.meta.url).toString();
+
+
+var $64bdd35417a45959$exports = {};
+$64bdd35417a45959$exports = new URL("up_/up_/render/docs/repo.html", import.meta.url).toString();
 
 
 
@@ -2369,17 +2386,22 @@ var $85794d0cf76e7d8c$export$2e2bcd8739ae039 = [
 ];
 
 
-var $9bfe0c5fd97f784a$exports = {};
-$9bfe0c5fd97f784a$exports = new URL("show.19fc2524.html", import.meta.url).toString();
+var $6fe523613af465b5$exports = {};
+$6fe523613af465b5$exports = new URL("README.30451eb7.html", import.meta.url).toString();
 
 
-function $edc06c5cb058e93b$var$loadDocumentation({ name: name , url: url  }) {
+var $ebaef8b351d2f3b2$exports = {};
+$ebaef8b351d2f3b2$exports = new URL("up_/up_/version/docs/show.html", import.meta.url).toString();
+
+
+console.log((/*@__PURE__*/$parcel$interopDefault($ebaef8b351d2f3b2$exports)));
+function $f50c37873f0ee22b$var$loadDocumentation({ name: name , url: url  }) {
     const containerId = `${name}-documentation`;
     fetch(url).then((response)=>response.text()
     ).then((data)=>document.getElementById(containerId).innerHTML = data
     );
 }
-function $edc06c5cb058e93b$var$runTerminal({ name: name , script: script  }) {
+function $f50c37873f0ee22b$var$runTerminal({ name: name , script: script  }) {
     const containerId = `${name}-terminal`;
     $bc6716f7ab7e18d4$export$889ea624f2cb2c57({
         containerId: containerId,
@@ -2387,35 +2409,47 @@ function $edc06c5cb058e93b$var$runTerminal({ name: name , script: script  }) {
         script: script
     });
 }
-$edc06c5cb058e93b$var$loadDocumentation({
+$f50c37873f0ee22b$var$loadDocumentation({
+    name: "pipeline",
+    url: (/*@__PURE__*/$parcel$interopDefault($af06f121bd7fb6b7$exports))
+});
+$f50c37873f0ee22b$var$loadDocumentation({
     name: "pipeline-get-last",
-    url: (/*@__PURE__*/$parcel$interopDefault($4712c847a4d7d412$exports))
+    url: (/*@__PURE__*/$parcel$interopDefault($888f1c5ad6b638d4$exports))
 });
-$edc06c5cb058e93b$var$loadDocumentation({
+$f50c37873f0ee22b$var$loadDocumentation({
     name: "pipeline-mark-commit",
-    url: (/*@__PURE__*/$parcel$interopDefault($5df6e8d1c1f621e0$exports))
+    url: (/*@__PURE__*/$parcel$interopDefault($6bbae805d617efb7$exports))
 });
-$edc06c5cb058e93b$var$loadDocumentation({
+$f50c37873f0ee22b$var$loadDocumentation({
     name: "render-repo",
-    url: (/*@__PURE__*/$parcel$interopDefault($caf8f1d5a37aead9$exports))
+    url: (/*@__PURE__*/$parcel$interopDefault($64bdd35417a45959$exports))
 });
-$edc06c5cb058e93b$var$loadDocumentation({
+$f50c37873f0ee22b$var$loadDocumentation({
+    name: "render",
+    url: (/*@__PURE__*/$parcel$interopDefault($1d643816a0942fdd$exports))
+});
+$f50c37873f0ee22b$var$loadDocumentation({
+    name: "version",
+    url: (/*@__PURE__*/$parcel$interopDefault($6fe523613af465b5$exports))
+});
+$f50c37873f0ee22b$var$loadDocumentation({
     name: "version-show",
-    url: (/*@__PURE__*/$parcel$interopDefault($9bfe0c5fd97f784a$exports))
+    url: (/*@__PURE__*/$parcel$interopDefault($ebaef8b351d2f3b2$exports))
 });
-$edc06c5cb058e93b$var$runTerminal({
+$f50c37873f0ee22b$var$runTerminal({
     name: "pipeline-get-last",
     script: $440b8387a407120d$export$2e2bcd8739ae039
 });
-$edc06c5cb058e93b$var$runTerminal({
+$f50c37873f0ee22b$var$runTerminal({
     name: "pipeline-mark-commit",
     script: $87c90c74e76ef5cc$export$2e2bcd8739ae039
 });
-$edc06c5cb058e93b$var$runTerminal({
+$f50c37873f0ee22b$var$runTerminal({
     name: "render-repo",
     script: $daa5226c750acf04$export$2e2bcd8739ae039
 });
-$edc06c5cb058e93b$var$runTerminal({
+$f50c37873f0ee22b$var$runTerminal({
     name: "version-show",
     script: $85794d0cf76e7d8c$export$2e2bcd8739ae039
 });

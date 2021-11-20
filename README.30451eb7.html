@@ -1,0 +1,18 @@
+<h3>Description</h3>
+<p>The purpose of this suite of commands is to derive the version of
+a software based on the Git commits history so it is meaningful.</p>
+<h3>How to...</h3>
+<h4>create a release tag</h4>
+<pre><code class="language-shell"># cloning the repository 
+git clone git@github.com:mstream/ci-toolkit.git
+
+# taggin a commit with version 
+git tag $(npx @ci-toolkit/version show)
+
+# pushing tags
+git push --tags master
+</code></pre>
+<h3>Commands</h3>
+<ul>
+<li><a href="/ci-toolkit/up_/up_/version/docs/show.html">show</a></li>
+</ul>
