@@ -1,19 +1,36 @@
-import { format } from "date-fns"
-
-const now = new Date();
-const today = format(now, "yyyy.MM.dd");
+import {
+  commitIds,
+  dummyCommitStep,
+  gitLogOutput,
+  gitTimestamps,
+  versionDates,
+  versionShowCommand,
+} from "../utils.js";
 
 export default [
   {
-    input: "npx @ci-toolkit/version show --format calendar",
-    output: [`${today}_1`],
+    input: "git log",
+    output: gitLogOutput([
+      {
+        date: gitTimestamps[1],
+        id: commitIds[2],
+        message: "some message",
+        notes: [],
+      },
+    ]),
   },
   {
-    input: "git commit --allow-empty -m 'some message'",
-    output: ["[master 239f56d] some message"],
+    input: `${versionShowCommand} --format calendar`,
+    output: [`${versionDates[1]}_1`],
   },
+  dummyCommitStep({ id: commitIds[1], message: "another message" }),
   {
-    input: "npx @ci-toolkit/version show --format calendar",
-    output: [`${today}_2`],
+    input: `${versionShowCommand} --format calendar`,
+    output: [`${versionDates[0]}_1`],
   },
-]
+  dummyCommitStep({ id: commitIds[0], message: "yet another message" }),
+  {
+    input: `${versionShowCommand} --format calendar`,
+    output: [`${versionDates[0]}_2`],
+  },
+];
