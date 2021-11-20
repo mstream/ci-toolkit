@@ -28,6 +28,9 @@
       <h3>get-last</h3>
       <pre id="pipeline-get-last-terminal" class="terminal"></pre>
       <div id="pipeline-get-last-documentation"></div>
+      <h3>mark-commit</h3>
+      <pre id="pipeline-mark-commit-terminal" class="terminal"></pre>
+      <div id="pipeline-mark-commit-documentation"></div>
     </section>
     <hr/>
     <section class="container">
@@ -49,6 +52,8 @@
       import {run} from "./terminal";
       import pipelineGetLastScript from "./scripts/pipeline/get-last.js";
       import pipelineGetLastDocsUrl from "../../../modules/pipeline/docs/get-last.md";
+      import pipelineMarkCommitScript from "./scripts/pipeline/mark-commit.js";
+      import pipelineMarkCommitDocsUrl from "../../../modules/pipeline/docs/mark-commit.md";
       import versionShowScript from "./scripts/version/show";
       import versionShowDocsUrl from "../../../modules/version/docs/show.md";
      
@@ -74,20 +79,29 @@
       });
       
       loadDocumentation({
+        name: "pipeline-mark-commit", 
+        url: pipelineMarkCommitDocsUrl,
+      });
+      
+      loadDocumentation({
         name: "version-show", 
         url: versionShowDocsUrl,
+      });
+      
+      runTerminal({
+        name: "pipeline-get-last", 
+        script: pipelineGetLastScript,
+      });
+      
+      runTerminal({
+        name: "pipeline-mark-commit", 
+        script: pipelineMarkCommitScript,
       });
 
       runTerminal({
         name: "version-show", 
         script: versionShowScript,
       });
-
-      runTerminal({
-        name: "pipeline-get-last", 
-        script: pipelineGetLastScript,
-      });
-
     </script>
   </body>
 </html>

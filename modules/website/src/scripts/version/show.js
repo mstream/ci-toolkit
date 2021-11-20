@@ -1,6 +1,7 @@
 import { format } from "date-fns"
 
-const today = format(new Date(), "yyyy.MM.dd");
+const now = new Date();
+const today = format(now, "yyyy.MM.dd");
 
 export default [
   {
