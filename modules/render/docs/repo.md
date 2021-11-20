@@ -1,37 +1,41 @@
-# repo
-
-## Synopsis
-
-```shell
-npx @ci-toolkit/render repo \ 
-  [--ci-prefix ARG] 
-  [--ci-stage ARG]
-  [--dry-run] 
-  [--format ARG] 
-  [--git-directory ARG]
-  [-v|--verbose]
-```
-
-## Description
+#### Description
 
 Renders the entire repository.
 
-## Options
+#### How to...
 
-| Long Form         | Short Form | Default Value | Description |
-| :---              | :---       | :---          | :--- |
-| --ci-prefix       | <NONE>     | "ci-"         | CI prefix |
-| --ci-stage        | <NONE>     | <NONE>        | order of the CI stages | 
-| --dry-run         | <NONE>     | false         | make no changes to the repository | 
-| --format          | <NONE>     | "json"        | format of the output |
-| --git-directory   | <NONE>     | "."           | path to the repository | 
-| --verbose         | -v         | false         | include more logs | 
-
-## Examples
-
-### Generating a picture with a repository visualization
+##### generate a graphical repository visualization
 
 ```shell
-npx @ci-tools/ci-toolkit render --format dot | dot -Tpng > /tmp/output.png
+npx @ci-toolkit/render repo --format dot | dot -Tpng > /tmp/output.png
 ```
+
+#### Reference
+
+```
+repo
+  [--ci-prefix ARG] 
+  [--ci-stage ARG]
+  [--format ARG] 
+  [--git-directory ARG]
+```
+
+##### ci-prefix
+
+Prefix for stage names to differentiate the from other Git notes entries. 
+Defaults to `ci-`.
+
+##### ci-stage
+
+Order in which CI stages should appear.
+
+##### format
+
+Format in which the output should be produced.
+
+##### git-directory
+
+Git repository path. Defaults to `.` (current directory).
+
+
 

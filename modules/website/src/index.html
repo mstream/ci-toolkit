@@ -36,6 +36,22 @@
     <section class="container">
       <div class="row">
         <div class="column column-80">
+          <h2>render</h2>
+        </div>
+        <div class="column social-icon">
+          <a class="float-right" href="https://www.npmjs.com/package/@ci-toolkit/render">
+            <span class="mdi mdi-npm"/>
+          </a>
+        </div>
+      </div>
+      <h3>repo</h3>
+      <pre id="render-repo-terminal" class="terminal"></pre>
+      <div id="render-repo-documentation"></div>
+    </section>
+    <hr/>
+    <section class="container">
+      <div class="row">
+        <div class="column column-80">
           <h2>version</h2>
         </div>
         <div class="column social-icon">
@@ -54,6 +70,8 @@
       import pipelineGetLastDocsUrl from "../../../modules/pipeline/docs/get-last.md";
       import pipelineMarkCommitScript from "./scripts/pipeline/mark-commit.js";
       import pipelineMarkCommitDocsUrl from "../../../modules/pipeline/docs/mark-commit.md";
+      import renderRepoDocsUrl from "../../../modules/render/docs/repo.md";
+      import renderRepoScript from "./scripts/render/repo.js";
       import versionShowScript from "./scripts/version/show";
       import versionShowDocsUrl from "../../../modules/version/docs/show.md";
      
@@ -84,6 +102,11 @@
       });
       
       loadDocumentation({
+        name: "render-repo", 
+        url: renderRepoDocsUrl,
+      });
+      
+      loadDocumentation({
         name: "version-show", 
         url: versionShowDocsUrl,
       });
@@ -96,6 +119,11 @@
       runTerminal({
         name: "pipeline-mark-commit", 
         script: pipelineMarkCommitScript,
+      });
+      
+      runTerminal({
+        name: "render-repo", 
+        script: renderRepoScript,
       });
 
       runTerminal({

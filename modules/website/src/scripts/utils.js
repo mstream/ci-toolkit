@@ -40,6 +40,7 @@ export const versionDates = [formatVersionDate(now), formatVersionDate(past)];
 
 export const pipelineGetLastCommand = "npx @ci-toolkit/pipeline get-last";
 export const pipelineMarkCommitCommand = "npx @ci-toolkit/pipeline mark-commit";
+export const renderRepoCommand = "npx @ci-toolkit/render repo";
 export const versionShowCommand = "npx @ci-toolkit/version show";
 
 export function gitLogOutput(commits) {
