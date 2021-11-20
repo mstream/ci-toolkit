@@ -29,6 +29,7 @@
     "ide:pipeline": "cd modules/pipeline && pscid --test",
     "ide:render": "cd modules/render && pscid --test",
     "ide:version": "cd modules/version && pscid --test",
+    "lint:commits": "npx --no-install -- commitlint --to HEAD",
     "postinstall": "[ -z \"${CI}\" ] && npm run hooks:setup || echo 'skipping hooks setup'",
     "publish:pipeline": "cd modules/pipeline && npm publish",
     "publish:render": "cd modules/render && npm publish",

@@ -32,6 +32,9 @@ jobs:
       - name: Set up git user name for testing
         run: 'git config --global user.name "Test User"'
 
+      - name: Verify commit message formatting
+        run: 'npm run lint:commits'
+
       - name: Verify formatting
         run: 'npm run format:check'
       
