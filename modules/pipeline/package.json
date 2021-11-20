@@ -1,6 +1,6 @@
 {
   "name": "@ci-toolkit/pipeline",
-  "version": "0.2.18",
+  "version": "0.2.19",
   "private": false,
   "description": "A tool for keeping a continuous delivery pipeline state in a Git repository",
   "files": [
