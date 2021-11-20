@@ -53,6 +53,8 @@
   "homepage": "https://github.com/mstream/ci-toolkit#readme",
   "devDependencies": {
     "@artur0prets/parcel-transformer-remark": "0.0.3",
+    "@commitlint/cli": "^15",
+    "@commitlint/config-conventional": "^15",
     "@gammons/demo-cli": "0.0.1",
     "@mdi/font": "^6",
     "@parcel/transformer-inline-string": "^2",
