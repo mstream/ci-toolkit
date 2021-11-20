@@ -1,4 +1,6 @@
-const today = new Date().toISOString().slice(0, 10).replaceAll('-','.');
+import { format } from "date-fns"
+
+const today = format(new Date(), "yyyy.MM.dd");
 
 export default [
   {

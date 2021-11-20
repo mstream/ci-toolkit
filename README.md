@@ -2,6 +2,6 @@
 
 ## Modules
 
-- [Pipeline](modules/pipeline/README.md)
-- [Render](modules/render/README.md)
-- [Version](modules/version/README.md)
+- [pipeline](modules/pipeline/README.md)
+- [render](modules/render/README.md)
+- [version](modules/version/README.md)

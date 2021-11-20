@@ -3,7 +3,7 @@ import DemoCLI from "@gammons/demo-cli";
 async function input(t, pauseInMs, cmd) {
     t.printPrompt();
     await t.wait(pauseInMs);
-    await t.type(cmd);
+    await t.type(cmd, {delay: 50, delayVariability: 0.5, random: true});
     await t.wait(pauseInMs);
     t.enterKey();
 }
@@ -14,7 +14,6 @@ async function output(t, pauseInMs, lines) {
     t.println("");
 }
 
-
 export async function run({containerId, pauseInMs, script}) {
   const t = new DemoCLI(`#${containerId}`, {cursor: "▋", prompt: "$ "});
   while (true) {
@@ -22,7 +21,7 @@ export async function run({containerId, pauseInMs, script}) {
       await input(t, pauseInMs, step.input);
       await output(t, pauseInMs, step.output);
     }
-    await t.wait(4 * pauseInMs);
+    await t.wait(12 * pauseInMs);
     t.reset();
   }
 }

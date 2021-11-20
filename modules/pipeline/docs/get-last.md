@@ -1,36 +1,36 @@
-# get-last
-
-## Synopsis
-
-```shell
-npx @ci-toolkit/pipeline get-last \ 
-  [--ci-prefix ARG] 
-  [--ci-stage ARG]
-  [--dry-run] 
-  [--git-directory ARG]
-  [-v|--verbose]
-```
-
-## Description
+#### Description
 
 Get the last commit which passed given CI stage(s).
 
-## Options
+#### How to...
 
-| Long Form         | Short Form | Default Value | Description |
-| :---              | :---       | :---          | :--- |
-| --ci-prefix       | <NONE>     | "ci-"         | CI prefix |
-| --ci-stage        | <NONE>     | <NONE>        | name of the CI stage | 
-| --dry-run         | <NONE>     | false         | make no changes to the repository | 
-| --git-directory   | <NONE>     | "."           | path to the repository | 
-| --verbose         | -v         | false         | include more logs | 
-
-## Examples
-
-### Getting an ID of the last commit with multiple passed CI stages
+##### getting an ID of the last commit with passed all given CI stages
 
 ```shell
 npx @ci-toolkit/pipeline get-last \ 
   --ci-stage functional-testing \
   --ci-stage integration-testing
 ```
+
+#### Reference
+
+```shell
+npx @ci-toolkit/pipeline get-last \ 
+  [--ci-prefix ARG] 
+  [--ci-stage ARG]
+  [--git-directory ARG]
+```
+
+##### ci-prefix
+
+Prefix for stage names to differentiate the from other Git notes entries. 
+Defaults to `ci-`.
+
+##### ci-stage
+
+Name of the stage(s) that searched commit needs to be marked with.
+
+##### git-directory
+
+Git repository path. Defaults to `.` (current directory).
+

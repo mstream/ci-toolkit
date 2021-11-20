@@ -3,8 +3,8 @@
   <head>
     <link rel="stylesheet" href="index.css" />
   </head>
-  <body>
-    <div class="header row">
+  <body class="base06-background">
+    <div class="base05-background header row">
       <div class="column column-80">
         <h1>CI Toolbox</h1>
       </div>
@@ -14,6 +14,22 @@
         </a>
       </div>
     </div>
+    <section class="container">
+      <div class="row">
+        <div class="column column-80">
+          <h2>pipeline</h2>
+        </div>
+        <div class="column social-icon">
+          <a class="float-right" href="https://www.npmjs.com/package/@ci-toolkit/pipeline">
+            <span class="mdi mdi-npm"/>
+          </a>
+        </div>
+      </div>
+      <h3>get-last</h3>
+      <pre id="pipeline-get-last-terminal" class="terminal"></pre>
+      <div id="pipeline-get-last-documentation"></div>
+    </section>
+    <hr/>
     <section class="container">
       <div class="row">
         <div class="column column-80">
@@ -31,12 +47,14 @@
     </section>
     <script type="module">
       import {run} from "./terminal";
+      import pipelineGetLastScript from "./scripts/pipeline/get-last.js";
+      import pipelineGetLastDocsUrl from "../../../modules/pipeline/docs/get-last.md";
       import versionShowScript from "./scripts/version/show";
       import versionShowDocsUrl from "../../../modules/version/docs/show.md";
      
       function loadDocumentation({name, url}) {
         const containerId = `${name}-documentation`;
-        fetch(versionShowDocsUrl)
+        fetch(url)
           .then(response => response.text())
           .then(data => document.getElementById(containerId).innerHTML = data)
       }
@@ -45,20 +63,31 @@
         const containerId = `${name}-terminal`;
         run({
           containerId, 
-          pauseInMs: 500,
+          pauseInMs: 300,
           script,
         }); 
       }
 
       loadDocumentation({
+        name: "pipeline-get-last", 
+        url: pipelineGetLastDocsUrl,
+      });
+      
+      loadDocumentation({
         name: "version-show", 
         url: versionShowDocsUrl,
       });
-      
+
       runTerminal({
         name: "version-show", 
         script: versionShowScript,
       });
+
+      runTerminal({
+        name: "pipeline-get-last", 
+        script: pipelineGetLastScript,
+      });
+
     </script>
   </body>
 </html>
