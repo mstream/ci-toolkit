@@ -28,6 +28,9 @@
       <h3>get-last</h3>
       <pre id="pipeline-get-last-terminal" class="terminal"></pre>
       <div id="pipeline-get-last-documentation"></div>
+      <h3>mark-commit</h3>
+      <pre id="pipeline-mark-commit-terminal" class="terminal"></pre>
+      <div id="pipeline-mark-commit-documentation"></div>
     </section>
     <hr>
     <section class="container">
@@ -2189,7 +2192,50 @@ $4712c847a4d7d412$exports = new URL("get-last.c3352ea4.html", import.meta.url).t
 
 
 
-const $85794d0cf76e7d8c$var$today = $da6d57ab6fd01355$export$2e2bcd8739ae039(new Date(), "yyyy.MM.dd");
+const $87c90c74e76ef5cc$var$now = new Date();
+const $87c90c74e76ef5cc$var$today = $da6d57ab6fd01355$export$2e2bcd8739ae039($87c90c74e76ef5cc$var$now, "eee LLL dd HH:mm:ss yyyy xx");
+const $87c90c74e76ef5cc$var$commitId = "239f56d40fe5a9257bb12c2e1101f8770aed2661";
+const $87c90c74e76ef5cc$var$ciStageName = "stage-2";
+const $87c90c74e76ef5cc$var$output1 = [
+    `commit ${$87c90c74e76ef5cc$var$commitId} (HEAD -> master)`,
+    "Author: mstream <maciej.laciak@gmail.com>",
+    `Date:   ${$87c90c74e76ef5cc$var$today}`,
+    "",
+    "    some message",
+    "",
+    "Notes:",
+    "ci-stage-1", 
+];
+const $87c90c74e76ef5cc$var$output2 = [
+    ...$87c90c74e76ef5cc$var$output1,
+    "",
+    `ci-${$87c90c74e76ef5cc$var$ciStageName}`
+];
+var $87c90c74e76ef5cc$export$2e2bcd8739ae039 = [
+    {
+        input: "git log",
+        output: $87c90c74e76ef5cc$var$output1
+    },
+    {
+        input: `npx @ci-toolkit/pipeline mark-commit --ci-stage ${$87c90c74e76ef5cc$var$ciStageName} --commit-ref ${$87c90c74e76ef5cc$var$commitId}`,
+        output: [
+            `Marking commit ${$87c90c74e76ef5cc$var$commitId} with CI stage '${$87c90c74e76ef5cc$var$ciStageName}'`
+        ]
+    },
+    {
+        input: "git log",
+        output: $87c90c74e76ef5cc$var$output2
+    }, 
+];
+
+
+var $5df6e8d1c1f621e0$exports = {};
+$5df6e8d1c1f621e0$exports = new URL("mark-commit.3a2dc4c4.html", import.meta.url).toString();
+
+
+
+const $85794d0cf76e7d8c$var$now = new Date();
+const $85794d0cf76e7d8c$var$today = $da6d57ab6fd01355$export$2e2bcd8739ae039($85794d0cf76e7d8c$var$now, "yyyy.MM.dd");
 var $85794d0cf76e7d8c$export$2e2bcd8739ae039 = [
     {
         input: "npx @ci-toolkit/version show --format calendar",
@@ -2216,13 +2262,13 @@ var $9bfe0c5fd97f784a$exports = {};
 $9bfe0c5fd97f784a$exports = new URL("show.19fc2524.html", import.meta.url).toString();
 
 
-function $b344392a429762eb$var$loadDocumentation({ name: name , url: url  }) {
+function $4601f5e72cf22154$var$loadDocumentation({ name: name , url: url  }) {
     const containerId = `${name}-documentation`;
     fetch(url).then((response)=>response.text()
     ).then((data)=>document.getElementById(containerId).innerHTML = data
     );
 }
-function $b344392a429762eb$var$runTerminal({ name: name , script: script  }) {
+function $4601f5e72cf22154$var$runTerminal({ name: name , script: script  }) {
     const containerId = `${name}-terminal`;
     $bc6716f7ab7e18d4$export$889ea624f2cb2c57({
         containerId: containerId,
@@ -2230,21 +2276,29 @@ function $b344392a429762eb$var$runTerminal({ name: name , script: script  }) {
         script: script
     });
 }
-$b344392a429762eb$var$loadDocumentation({
+$4601f5e72cf22154$var$loadDocumentation({
     name: "pipeline-get-last",
     url: (/*@__PURE__*/$parcel$interopDefault($4712c847a4d7d412$exports))
 });
-$b344392a429762eb$var$loadDocumentation({
+$4601f5e72cf22154$var$loadDocumentation({
+    name: "pipeline-mark-commit",
+    url: (/*@__PURE__*/$parcel$interopDefault($5df6e8d1c1f621e0$exports))
+});
+$4601f5e72cf22154$var$loadDocumentation({
     name: "version-show",
     url: (/*@__PURE__*/$parcel$interopDefault($9bfe0c5fd97f784a$exports))
 });
-$b344392a429762eb$var$runTerminal({
-    name: "version-show",
-    script: $85794d0cf76e7d8c$export$2e2bcd8739ae039
-});
-$b344392a429762eb$var$runTerminal({
+$4601f5e72cf22154$var$runTerminal({
     name: "pipeline-get-last",
     script: $440b8387a407120d$export$2e2bcd8739ae039
+});
+$4601f5e72cf22154$var$runTerminal({
+    name: "pipeline-mark-commit",
+    script: $87c90c74e76ef5cc$export$2e2bcd8739ae039
+});
+$4601f5e72cf22154$var$runTerminal({
+    name: "version-show",
+    script: $85794d0cf76e7d8c$export$2e2bcd8739ae039
 });
 
 

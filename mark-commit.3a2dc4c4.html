@@ -1,0 +1,31 @@
+<h4>Description</h4>
+<p>Mark a commit as passed given CI stage.</p>
+<h4>How to...</h4>
+<h5>mark the current commit</h5>
+<pre><code class="language-shell">npx @ci-toolkit/pipeline mark-commit \
+  --ci-stage functional-testing \ 
+  --commit-ref $(git rev-parse HEAD)
+</code></pre>
+<h4>Reference</h4>
+<pre><code>mark-commit  
+  [--ci-prefix ARG] 
+  [--ci-stage ARG]  
+  [--commit-ref] 
+  [--dry-run] 
+  [--git-directory] 
+  [-v|--verbose]
+</code></pre>
+<h5>ci-prefix</h5>
+<p>Prefix for stage names to differentiate the from other Git notes entries.
+Defaults to <code>ci-</code>.</p>
+<h5>ci-stage</h5>
+<p>Name of the stage for commit to be marked with.</p>
+<h5>commit-ref</h5>
+<p>ID of the commit to be marked with CI stage name.</p>
+<h5>dry-run</h5>
+<p>When enabled, a simulated outcome of the marking is displayed but
+no change to the Git repository is made.</p>
+<h5>git-directory</h5>
+<p>Git repository path. Defaults to <code>.</code> (current directory).</p>
+<h5>verbose</h5>
+<p>Output the maximum amount of diagnostic information.</p>
