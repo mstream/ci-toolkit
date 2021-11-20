@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="/ci-toolkit/index.8f529849.css">
+    <link rel="stylesheet" href="/ci-toolkit/index.bf0b4cff.css">
   </head>
   <body class="base06-background">
     <div class="base05-background header row">
@@ -199,6 +199,7 @@ async function $bc6716f7ab7e18d4$export$889ea624f2cb2c57({ containerId: containe
             await $bc6716f7ab7e18d4$var$input(t, pauseInMs, step.input);
             await $bc6716f7ab7e18d4$var$output(t, pauseInMs, step.output);
         }
+        t.printPrompt();
         await t.wait(12 * pauseInMs);
         t.reset();
     }
@@ -2137,51 +2138,112 @@ function $44bd25ce72e3a309$export$2e2bcd8739ae039(date, duration) {
 
 
 
-const $440b8387a407120d$var$now = new Date();
-const $440b8387a407120d$var$today = $da6d57ab6fd01355$export$2e2bcd8739ae039($440b8387a407120d$var$now, "eee LLL dd HH:mm:ss yyyy xx");
-const $440b8387a407120d$var$yesterday = $da6d57ab6fd01355$export$2e2bcd8739ae039($44bd25ce72e3a309$export$2e2bcd8739ae039($440b8387a407120d$var$now, {
-    days: 1,
-    hours: 2,
-    minutes: 3,
-    seconds: 4
-}), "eee LLL dd HH:mm:ss yyyy xx");
-const $440b8387a407120d$var$commitId1 = "239f56d40fe5a9257bb12c2e1101f8770aed2661";
-const $440b8387a407120d$var$commitId2 = "9225393c9d2434dbc6a858c675bf09478f2866a0";
+function $b44e57b662a06047$var$formatGitTimestamp(date) {
+    return $da6d57ab6fd01355$export$2e2bcd8739ae039(date, "eee LLL dd HH:mm:ss yyyy xx");
+}
+function $b44e57b662a06047$var$formatVersionDate(date) {
+    return $da6d57ab6fd01355$export$2e2bcd8739ae039(date, "yyyy.MM.dd");
+}
+function $b44e57b662a06047$var$commitOutput({ author: author , date: date , id: id , isFirst: isFirst , message: message , notes: notes  }) {
+    return [
+        `commit ${id}${isFirst ? " (HEAD -> master)" : ""}`,
+        `Author: ${author.name} <${author.email}>`,
+        `Date:   ${date}`,
+        "",
+        `    ${message}`,
+        "",
+        ...notes.length ? [
+            "Notes:",
+            ...notes.reduce((acc, note)=>[
+                    ...acc,
+                    note,
+                    ""
+                ]
+            , [])
+        ] : [], 
+    ];
+}
+const $b44e57b662a06047$var$now = new Date();
+const $b44e57b662a06047$var$past = $44bd25ce72e3a309$export$2e2bcd8739ae039($b44e57b662a06047$var$now, {
+    weeks: 1,
+    days: 2,
+    hours: 3,
+    minutes: 4,
+    seconds: 5
+});
+const $b44e57b662a06047$export$d57608b203ee0b89 = [
+    "239f56d40fe5a9257bb12c2e1101f8770aed2661",
+    "9225393c9d2434dbc6a858c675bf09478f2866a0",
+    "1237e2d4a52362dca3cd4cea5c9455a7f96ab02b", 
+];
+const $b44e57b662a06047$export$a8c8d690d70d1aee = [
+    $b44e57b662a06047$var$formatGitTimestamp($b44e57b662a06047$var$now),
+    $b44e57b662a06047$var$formatGitTimestamp($b44e57b662a06047$var$past), 
+];
+const $b44e57b662a06047$export$7288528807d1b7e2 = [
+    $b44e57b662a06047$var$formatVersionDate($b44e57b662a06047$var$now),
+    $b44e57b662a06047$var$formatVersionDate($b44e57b662a06047$var$past)
+];
+const $b44e57b662a06047$export$37f118f5c5bcd6f0 = "npx @ci-toolkit/pipeline get-last";
+const $b44e57b662a06047$export$4b89f2eb786f1c7c = "npx @ci-toolkit/pipeline mark-commit";
+const $b44e57b662a06047$export$d2a4193fe94004e2 = "npx @ci-toolkit/version show";
+function $b44e57b662a06047$export$9697678c4c73527(commits) {
+    return commits.reduce((acc, commit, idx)=>[
+            ...acc,
+            ...$b44e57b662a06047$var$commitOutput({
+                ...commit,
+                author: {
+                    email: "maciej.laciak@gmail.com",
+                    name: "mstream"
+                },
+                isFirst: idx === 0
+            }), 
+        ]
+    , []);
+}
+function $b44e57b662a06047$export$dd996853ac237a06({ id: id , message: message  }) {
+    return {
+        input: `git commit --allow-empty -m '${message}'`,
+        output: [
+            `[master ${id.substring(0, 7)}] ${message}`
+        ]
+    };
+}
+
+
 var $440b8387a407120d$export$2e2bcd8739ae039 = [
     {
         input: "git log",
+        output: $b44e57b662a06047$export$9697678c4c73527([
+            {
+                date: $b44e57b662a06047$export$a8c8d690d70d1aee[0],
+                id: $b44e57b662a06047$export$d57608b203ee0b89[0],
+                message: "another message",
+                notes: [
+                    "ci-stage-1"
+                ]
+            },
+            {
+                date: $b44e57b662a06047$export$a8c8d690d70d1aee[1],
+                id: $b44e57b662a06047$export$d57608b203ee0b89[1],
+                message: "some message",
+                notes: [
+                    "ci-stage-1",
+                    "ci-stage-2"
+                ]
+            }, 
+        ])
+    },
+    {
+        input: `${$b44e57b662a06047$export$37f118f5c5bcd6f0} --ci-stage stage-1`,
         output: [
-            `commit ${$440b8387a407120d$var$commitId2} (HEAD -> master)`,
-            "Author: mstream <maciej.laciak@gmail.com>",
-            `Date:   ${$440b8387a407120d$var$today}`,
-            "",
-            "    another message",
-            "",
-            "Notes:",
-            "ci-stage-1",
-            "",
-            `commit ${$440b8387a407120d$var$commitId1}`,
-            "Author: mstream <maciej.laciak@gmail.com>",
-            `Date:   ${$440b8387a407120d$var$yesterday}`,
-            "",
-            "    some message",
-            "",
-            "Notes:",
-            "ci-stage-1",
-            "",
-            "ci-stage-2", 
+            $b44e57b662a06047$export$d57608b203ee0b89[0]
         ]
     },
     {
-        input: "npx @ci-toolkit/pipeline get-last --ci-stage stage-1",
+        input: `${$b44e57b662a06047$export$37f118f5c5bcd6f0} --ci-stage stage-1 --ci-stage stage-2`,
         output: [
-            $440b8387a407120d$var$commitId2
-        ]
-    },
-    {
-        input: "npx @ci-toolkit/pipeline get-last --ci-stage stage-1 --ci-stage stage-2",
-        output: [
-            $440b8387a407120d$var$commitId1
+            $b44e57b662a06047$export$d57608b203ee0b89[1]
         ]
     }, 
 ];
@@ -2192,39 +2254,39 @@ $4712c847a4d7d412$exports = new URL("get-last.c3352ea4.html", import.meta.url).t
 
 
 
-const $87c90c74e76ef5cc$var$now = new Date();
-const $87c90c74e76ef5cc$var$today = $da6d57ab6fd01355$export$2e2bcd8739ae039($87c90c74e76ef5cc$var$now, "eee LLL dd HH:mm:ss yyyy xx");
-const $87c90c74e76ef5cc$var$commitId = "239f56d40fe5a9257bb12c2e1101f8770aed2661";
-const $87c90c74e76ef5cc$var$ciStageName = "stage-2";
-const $87c90c74e76ef5cc$var$output1 = [
-    `commit ${$87c90c74e76ef5cc$var$commitId} (HEAD -> master)`,
-    "Author: mstream <maciej.laciak@gmail.com>",
-    `Date:   ${$87c90c74e76ef5cc$var$today}`,
-    "",
-    "    some message",
-    "",
-    "Notes:",
-    "ci-stage-1", 
-];
-const $87c90c74e76ef5cc$var$output2 = [
-    ...$87c90c74e76ef5cc$var$output1,
-    "",
-    `ci-${$87c90c74e76ef5cc$var$ciStageName}`
-];
 var $87c90c74e76ef5cc$export$2e2bcd8739ae039 = [
     {
         input: "git log",
-        output: $87c90c74e76ef5cc$var$output1
+        output: $b44e57b662a06047$export$9697678c4c73527([
+            {
+                date: $b44e57b662a06047$export$a8c8d690d70d1aee[0],
+                id: $b44e57b662a06047$export$d57608b203ee0b89[0],
+                message: "some message",
+                notes: [
+                    "ci-stage-1"
+                ]
+            }, 
+        ])
     },
     {
-        input: `npx @ci-toolkit/pipeline mark-commit --ci-stage ${$87c90c74e76ef5cc$var$ciStageName} --commit-ref ${$87c90c74e76ef5cc$var$commitId}`,
+        input: `${$b44e57b662a06047$export$4b89f2eb786f1c7c} --ci-stage stage-2 --commit-ref ${$b44e57b662a06047$export$d57608b203ee0b89[0]}`,
         output: [
-            `Marking commit ${$87c90c74e76ef5cc$var$commitId} with CI stage '${$87c90c74e76ef5cc$var$ciStageName}'`
+            `Marking commit ${$b44e57b662a06047$export$d57608b203ee0b89[0]} with CI stage 'stage-2'`
         ]
     },
     {
         input: "git log",
-        output: $87c90c74e76ef5cc$var$output2
+        output: $b44e57b662a06047$export$9697678c4c73527([
+            {
+                date: $b44e57b662a06047$export$a8c8d690d70d1aee[0],
+                id: $b44e57b662a06047$export$d57608b203ee0b89[0],
+                message: "some message",
+                notes: [
+                    "ci-stage-1",
+                    "ci-stage-2"
+                ]
+            }, 
+        ])
     }, 
 ];
 
@@ -2234,25 +2296,42 @@ $5df6e8d1c1f621e0$exports = new URL("mark-commit.3a2dc4c4.html", import.meta.url
 
 
 
-const $85794d0cf76e7d8c$var$now = new Date();
-const $85794d0cf76e7d8c$var$today = $da6d57ab6fd01355$export$2e2bcd8739ae039($85794d0cf76e7d8c$var$now, "yyyy.MM.dd");
 var $85794d0cf76e7d8c$export$2e2bcd8739ae039 = [
     {
-        input: "npx @ci-toolkit/version show --format calendar",
-        output: [
-            `${$85794d0cf76e7d8c$var$today}_1`
-        ]
+        input: "git log",
+        output: $b44e57b662a06047$export$9697678c4c73527([
+            {
+                date: $b44e57b662a06047$export$a8c8d690d70d1aee[1],
+                id: $b44e57b662a06047$export$d57608b203ee0b89[2],
+                message: "some message",
+                notes: []
+            }, 
+        ])
     },
     {
-        input: "git commit --allow-empty -m 'some message'",
+        input: `${$b44e57b662a06047$export$d2a4193fe94004e2} --format calendar`,
         output: [
-            "[master 239f56d] some message"
+            `${$b44e57b662a06047$export$7288528807d1b7e2[1]}_1`
         ]
     },
+    $b44e57b662a06047$export$dd996853ac237a06({
+        id: $b44e57b662a06047$export$d57608b203ee0b89[1],
+        message: "another message"
+    }),
     {
-        input: "npx @ci-toolkit/version show --format calendar",
+        input: `${$b44e57b662a06047$export$d2a4193fe94004e2} --format calendar`,
         output: [
-            `${$85794d0cf76e7d8c$var$today}_2`
+            `${$b44e57b662a06047$export$7288528807d1b7e2[0]}_1`
+        ]
+    },
+    $b44e57b662a06047$export$dd996853ac237a06({
+        id: $b44e57b662a06047$export$d57608b203ee0b89[0],
+        message: "yet another message"
+    }),
+    {
+        input: `${$b44e57b662a06047$export$d2a4193fe94004e2} --format calendar`,
+        output: [
+            `${$b44e57b662a06047$export$7288528807d1b7e2[0]}_2`
         ]
     }, 
 ];

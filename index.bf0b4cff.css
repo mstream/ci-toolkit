@@ -21004,8 +21004,8 @@ img {
 
 .terminal {
     width: 100%;
-    max-height: 650px;
-    min-height: 650px;
+    max-height: 700px;
+    min-height: 700px;
     margin-bottom: 40px;
     background: var(--color-bg);
     color: var(--color-text);
@@ -21113,4 +21113,4 @@ section:first-of-type {
 
 
 
-/*# sourceMappingURL=index.8f529849.css.map */
+/*# sourceMappingURL=index.bf0b4cff.css.map */
