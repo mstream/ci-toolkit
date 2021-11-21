@@ -7,7 +7,6 @@ module CiToolkit.Version.ProgramInput
 
 import Prelude
 
-import CiToolkit.Common.ProgramInput (ProgramInput(ProgramInput))
 import CiToolkit.Common.Version
   ( VersionTagPrefix(VersionTagPrefix)
   , versionTagPrefixParser
@@ -16,7 +15,6 @@ import Data.Either (Either(Left, Right))
 import Data.Generic.Rep (class Generic)
 import Data.Show.Generic (genericShow)
 import Data.String.NonEmpty (nes)
-import Node.Path (FilePath)
 import Options.Applicative as Opts
 import Text.Parsing.StringParser (runParser)
 import Type.Proxy (Proxy(Proxy))
@@ -30,7 +28,7 @@ derive instance Generic VersionFormat _
 instance Show VersionFormat where
   show = genericShow
 
-data Command = Show ShowOptions
+data Command = Show ShowOptions | Version
 
 derive instance Generic Command _
 
@@ -38,7 +36,7 @@ instance Show Command where
   show = genericShow
 
 newtype ShowOptions = ShowOptions
-  { format ∷ VersionFormat }
+  { format ∷ VersionFormat, versionTagPrefix ∷ VersionTagPrefix }
 
 derive instance Generic ShowOptions _
 
@@ -47,12 +45,16 @@ instance Show ShowOptions where
 
 commandParser ∷ Opts.Parser Command
 commandParser =
-  Opts.hsubparser $ Opts.command
-    "show"
-    ( Opts.info
-        showCommandParser
-        (Opts.progDesc "show version")
-    )
+  Opts.hsubparser $
+    Opts.command
+      "show"
+      ( Opts.info
+          showCommandParser
+          (Opts.progDesc "show version")
+      ) <> Opts.command "version"
+      ( Opts.info versionCommandParser
+          (Opts.progDesc "Print the CLI's version")
+      )
 
 showCommandParser ∷ Opts.Parser Command
 showCommandParser = ado
@@ -63,8 +65,15 @@ showOptionsParser ∷ Opts.Parser ShowOptions
 showOptionsParser = ado
   format ← Opts.option parseVersionFormat
     (Opts.long "format" <> Opts.value Semantic)
+  versionTagPrefix ← Opts.option parseVersionPrefix
+    ( Opts.long "version-prefix" <>
+        (Opts.value $ VersionTagPrefix (nes (Proxy ∷ Proxy "v")))
+    )
   in
-    ShowOptions { format }
+    ShowOptions { format, versionTagPrefix }
+
+versionCommandParser ∷ Opts.Parser Command
+versionCommandParser = pure Version
 
 parseVersionFormat ∷ Opts.ReadM VersionFormat
 parseVersionFormat = Opts.eitherReader $ \s →

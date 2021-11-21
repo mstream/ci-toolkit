@@ -2,20 +2,13 @@ module Test.CiToolkit.Version.Program (spec) where
 
 import Prelude
 
-import CiToolkit.Common.CI (CIStagePrefix(CIStagePrefix))
 import CiToolkit.Common.ProgramInput
   ( CommonOptions(CommonOptions)
   , ProgramInput(ProgramInput)
   )
-import CiToolkit.Common.ProgramOutput
-  ( OutputFormat(Text)
-  , ProgramOutput(TextOutput)
-  )
-import CiToolkit.Common.Utils
-  ( unsafeDate
-  , unsafeNonEmptyString
-  , unsafeTimeFromHours
-  )
+import CiToolkit.Common.ProgramOutput (ProgramOutput(TextOutput))
+import CiToolkit.Common.Utils (unsafeDate, unsafeTimeFromHours)
+import CiToolkit.Common.Version (unsafeVersionTagPrefix)
 import CiToolkit.Version.Program (execute)
 import CiToolkit.Version.ProgramInput
   ( Command(Show)
@@ -23,7 +16,6 @@ import CiToolkit.Version.ProgramInput
   , VersionFormat(Calendar)
   )
 import Data.DateTime (DateTime(DateTime))
-import Data.List (List(Nil))
 import Data.Maybe (Maybe(Nothing))
 import Test.CiToolkit.Common.TestUtils (createCommit, withGitRepo)
 import Test.Spec (Spec, around, describe, it)
@@ -72,16 +64,15 @@ spec = describe "Program" do
           expected = TextOutput "2020.06.10_2"
 
           commonOpts = CommonOptions
-            { ciPrefix: CIStagePrefix $ unsafeNonEmptyString "ci-"
-            , ciStages: Nil
-            , dryRun: false
-            , format: Text
-            , gitDirectory: gitDirPath
-            , isVerbose: false
+            { gitDirectory: gitDirPath
+            , verbose: false
             }
 
-          command = Show $ ShowOptions { format: Calendar }
+          command = Show $ ShowOptions
+            { format: Calendar
+            , versionTagPrefix: unsafeVersionTagPrefix "v"
+            }
 
-        actual ← execute $ ProgramInput commonOpts command
+        actual ← execute "1.2.3" (ProgramInput commonOpts command)
 
         actual `shouldEqual` expected

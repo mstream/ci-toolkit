@@ -2,8 +2,8 @@
 , dependencies =
   [ "aff"
   , "argonaut"
-  , "argonaut-core"
   , "argonaut-codecs"
+  , "argonaut-core"
   , "argonaut-generic"
   , "arrays"
   , "colors"
@@ -16,6 +16,7 @@
   , "enums"
   , "exceptions"
   , "foldable-traversable"
+  , "foreign-object"
   , "formatters"
   , "integers"
   , "lists"
@@ -26,6 +27,7 @@
   , "node-fs-aff"
   , "node-os"
   , "node-path"
+  , "node-process"
   , "nonempty"
   , "numbers"
   , "optparse"
@@ -38,6 +40,7 @@
   , "spec"
   , "string-parsers"
   , "strings"
+  , "transformers"
   , "tuples"
   ]
 , packages = ../../packages.dhall

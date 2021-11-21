@@ -1,7 +1,10 @@
 module CiToolkit.Common.ProgramInput
   ( CommonOptions(..)
   , ProgramInput(..)
+  , ciStagePrefixParser
   , commonOptionsParser
+  , dryRunParser
+  , outputFormatParser
   , parseCIPrefix
   , parseCIStage
   , parseCommitRef
@@ -37,12 +40,8 @@ instance (Show c) ⇒ Show (ProgramInput c) where
   show = genericShow
 
 newtype CommonOptions = CommonOptions
-  { ciPrefix ∷ CIStagePrefix
-  , ciStages ∷ List CIStage
-  , dryRun ∷ Boolean
-  , format ∷ OutputFormat
-  , gitDirectory ∷ FilePath
-  , isVerbose ∷ Boolean
+  { gitDirectory ∷ FilePath
+  , verbose ∷ Boolean
   }
 
 derive instance Generic CommonOptions _
@@ -58,31 +57,40 @@ programInputParser commandParser = ado
 
 commonOptionsParser ∷ Opts.Parser CommonOptions
 commonOptionsParser = ado
-  ciPrefix ← Opts.option
-    parseCIPrefix
-    ( Opts.long "ci-prefix" <>
-        (Opts.value $ CIStagePrefix (nes (Proxy ∷ Proxy "ci-")))
-    )
-  ciStages ← Opts.many $ Opts.option parseCIStage
-    (Opts.long "ci-stage" <> Opts.help "passed stage")
-  dryRun ← Opts.switch (Opts.long "dry-run")
-  format ← Opts.option
-    parseOutputFormat
-    (Opts.long "format" <> Opts.value JSON)
-  gitDirectory ← Opts.strOption
-    (Opts.long "git-directory" <> Opts.value ".")
-  isVerbose ← Opts.switch
-    (Opts.long "verbose" <> Opts.short 'v')
-
+  gitDirectory ← gitDirectoryParser
+  verbose ← verboseParser
   in
-    CommonOptions
-      { ciPrefix
-      , ciStages
-      , dryRun
-      , format
-      , gitDirectory
-      , isVerbose
-      }
+    CommonOptions { gitDirectory, verbose }
+
+ciStagePrefixParser ∷ Opts.Parser CIStagePrefix
+ciStagePrefixParser = Opts.option
+  parseCIPrefix
+  ( Opts.long "ci-prefix" <>
+      (Opts.value $ CIStagePrefix (nes (Proxy ∷ Proxy "ci-")))
+  )
+
+ciStagesParser ∷ Opts.Parser (List CIStage)
+ciStagesParser = Opts.many $
+  Opts.option
+    parseCIStage
+    (Opts.long "ci-stage" <> Opts.help "passed stage")
+
+dryRunParser ∷ Opts.Parser Boolean
+dryRunParser = Opts.switch $
+  Opts.long "dry-run"
+
+outputFormatParser ∷ Opts.Parser OutputFormat
+outputFormatParser = Opts.option
+  parseOutputFormat
+  (Opts.long "format" <> Opts.value JSON)
+
+gitDirectoryParser ∷ Opts.Parser FilePath
+gitDirectoryParser = Opts.strOption $
+  Opts.long "git-directory" <> Opts.value "."
+
+verboseParser ∷ Opts.Parser Boolean
+verboseParser = Opts.switch $
+  Opts.long "verbose" <> Opts.short 'v'
 
 parseCIPrefix ∷ Opts.ReadM CIStagePrefix
 parseCIPrefix = Opts.eitherReader $ \s →

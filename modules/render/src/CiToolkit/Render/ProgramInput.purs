@@ -1,5 +1,6 @@
 module CiToolkit.Render.ProgramInput
   ( Command(..)
+  , RepoOptions(..)
   , commandParser
   ) where
 
@@ -8,6 +9,11 @@ import Prelude
 import CiToolkit.Common.CI
   ( CIStage
   , CIStagePrefix(..)
+  )
+import CiToolkit.Common.ProgramInput
+  ( ciStagePrefixParser
+  , outputFormatParser
+  , parseCIStage
   )
 import CiToolkit.Common.ProgramOutput (OutputFormat(JSON))
 import Data.Generic.Rep (class Generic)
@@ -21,11 +27,23 @@ import Type.Proxy (Proxy(Proxy))
 data Command
   = Branch
   | Commit
-  | Repo
+  | Repo RepoOptions
+  | Version
 
 derive instance Generic Command _
 
 instance Show Command where
+  show = genericShow
+
+newtype RepoOptions = RepoOptions
+  { ciStagePrefix ∷ CIStagePrefix
+  , ciStages ∷ List CIStage
+  , outputFormat ∷ OutputFormat
+  }
+
+derive instance Generic RepoOptions _
+
+instance Show RepoOptions where
   show = genericShow
 
 commandParser ∷ Opts.Parser Command
@@ -38,12 +56,29 @@ commandParser = Opts.hsubparser $
       ( Opts.info repoCommandParser
           (Opts.progDesc "Render repository")
       )
+    <> Opts.command "version"
+      ( Opts.info versionCommandParser
+          (Opts.progDesc "Print the CLI's version")
+      )
 
 branchCommandParser ∷ Opts.Parser Command
 branchCommandParser = pure Branch
 
 commitCommandParser ∷ Opts.Parser Command
-commitCommandParser = pure Branch
+commitCommandParser = pure Commit
 
 repoCommandParser ∷ Opts.Parser Command
-repoCommandParser = pure Branch
+repoCommandParser = ado
+  opts ← repoOptionsParser
+  in Repo opts
+
+repoOptionsParser ∷ Opts.Parser RepoOptions
+repoOptionsParser = ado
+  ciStagePrefix ← ciStagePrefixParser
+  ciStages ← Opts.many $ Opts.option parseCIStage
+    (Opts.long "ci-stage" <> Opts.help "CI stages order")
+  outputFormat ← outputFormatParser
+  in RepoOptions { ciStagePrefix, ciStages, outputFormat }
+
+versionCommandParser ∷ Opts.Parser Command
+versionCommandParser = pure Version

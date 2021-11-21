@@ -110,6 +110,6 @@ spec = describe "Git" do
 
         actual ← loadRepo
           gitDirPath
-          (CIStagePrefix $ unsafeNonEmptyString "ci-")
+          (pure (CIStagePrefix $ unsafeNonEmptyString "ci-"))
 
         actual `shouldEqual` expected

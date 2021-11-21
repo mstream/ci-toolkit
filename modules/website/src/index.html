@@ -2,6 +2,7 @@
 <html>
   <head>
     <link rel="stylesheet" href="index.css" />
+    <title>CI Toolkit</title>
   </head>
   <body class="base06-background">
     <div class="base05-background header row">
@@ -9,9 +10,7 @@
         <h1>CI Toolbox</h1>
       </div>
       <div class="column social-icon">
-        <a class="float-right" href="https://github.com/mstream/ci-toolkit">
-          <span class="mdi mdi-github"/>
-        </a>
+        <a class="float-right" href="https://github.com/mstream/ci-toolkit"></a>
       </div>
     </div>
     <section id="pipeline">
@@ -20,9 +19,10 @@
           <h2>pipeline</h2>
         </div>
         <div class="column social-icon">
-          <a class="float-right" href="https://www.npmjs.com/package/@ci-toolkit/pipeline">
-            <span class="mdi mdi-npm"/>
-          </a>
+          <a
+            class="float-right"
+            href="https://www.npmjs.com/package/@ci-toolkit/pipeline"
+          ></a>
         </div>
       </div>
     </section>
@@ -35,16 +35,17 @@
       <pre id="pipeline-mark-commit-terminal" class="terminal"></pre>
       <div id="pipeline-mark-commit-documentation"></div>
     </section>
-    <hr/>
+    <hr />
     <section id="render">
       <div class="row subheader">
         <div class="column column-80">
           <h2>render</h2>
         </div>
         <div class="column social-icon">
-          <a class="float-right" href="https://www.npmjs.com/package/@ci-toolkit/render">
-            <span class="mdi mdi-npm"/>
-          </a>
+          <a
+            class="float-right"
+            href="https://www.npmjs.com/package/@ci-toolkit/render"
+          ></a>
         </div>
       </div>
     </section>
@@ -54,16 +55,17 @@
       <pre id="render-repo-terminal" class="terminal"></pre>
       <div id="render-repo-documentation"></div>
     </section>
-    <hr/>
+    <hr />
     <section id="version">
       <div class="row subheader">
         <div class="column column-80">
           <h2>version</h2>
         </div>
         <div class="column social-icon">
-          <a class="float-right" href="https://www.npmjs.com/package/@ci-toolkit/version">
-            <span class="mdi mdi-npm"/>
-          </a>
+          <a
+            class="float-right"
+            href="https://www.npmjs.com/package/@ci-toolkit/version"
+          ></a>
         </div>
       </div>
     </section>
@@ -74,7 +76,7 @@
       <div id="version-show-documentation"></div>
     </section>
     <script type="module">
-      import {run} from "./terminal";
+      import { run } from "./terminal";
       import pipelineDocsUrl from "../../../modules/pipeline/README.md";
       import pipelineGetLastScript from "./scripts/pipeline/get-last.js";
       import pipelineGetLastDocsUrl from "../../../modules/pipeline/docs/get-last.md";
@@ -86,77 +88,79 @@
       import versionShowScript from "./scripts/version/show";
       import versionDocsUrl from "../../../modules/version/README.md";
       import versionShowDocsUrl from "../../../modules/version/docs/show.md";
-    
+
       console.log(versionShowDocsUrl);
 
-      function loadDocumentation({name, url}) {
+      function loadDocumentation({ name, url }) {
         const containerId = `${name}-documentation`;
         fetch(url)
-          .then(response => response.text())
-          .then(data => document.getElementById(containerId).innerHTML = data)
+          .then((response) => response.text())
+          .then(
+            (data) => (document.getElementById(containerId).innerHTML = data)
+          );
       }
 
-      function runTerminal({name,script}) {
+      function runTerminal({ name, script }) {
         const containerId = `${name}-terminal`;
         run({
-          containerId, 
+          containerId,
           pauseInMs: 300,
           script,
-        }); 
+        });
       }
 
       loadDocumentation({
-        name: "pipeline", 
+        name: "pipeline",
         url: pipelineDocsUrl,
       });
-      
+
       loadDocumentation({
-        name: "pipeline-get-last", 
+        name: "pipeline-get-last",
         url: pipelineGetLastDocsUrl,
       });
-      
+
       loadDocumentation({
-        name: "pipeline-mark-commit", 
+        name: "pipeline-mark-commit",
         url: pipelineMarkCommitDocsUrl,
       });
-      
+
       loadDocumentation({
-        name: "render-repo", 
+        name: "render-repo",
         url: renderRepoDocsUrl,
       });
-      
+
       loadDocumentation({
-        name: "render", 
+        name: "render",
         url: renderDocsUrl,
       });
-      
+
       loadDocumentation({
-        name: "version", 
+        name: "version",
         url: versionDocsUrl,
       });
 
       loadDocumentation({
-        name: "version-show", 
+        name: "version-show",
         url: versionShowDocsUrl,
       });
-      
+
       runTerminal({
-        name: "pipeline-get-last", 
+        name: "pipeline-get-last",
         script: pipelineGetLastScript,
       });
-      
+
       runTerminal({
-        name: "pipeline-mark-commit", 
+        name: "pipeline-mark-commit",
         script: pipelineMarkCommitScript,
       });
-      
+
       runTerminal({
-        name: "render-repo", 
+        name: "render-repo",
         script: renderRepoScript,
       });
 
       runTerminal({
-        name: "version-show", 
+        name: "version-show",
         script: versionShowScript,
       });
     </script>

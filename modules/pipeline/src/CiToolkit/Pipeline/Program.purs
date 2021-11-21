@@ -21,7 +21,7 @@ import CiToolkit.Common.Query (findLastCommit)
 import CiToolkit.Common.Text.SerDe (serialize)
 import CiToolkit.Common.Update (Update(MarkWithCIStage), markCommit)
 import CiToolkit.Pipeline.ProgramInput
-  ( Command(MarkCommit, GetLast)
+  ( Command(MarkCommit, GetLast, Version)
   , GetLastOptions(GetLastOptions)
   , MarkCommitOptions(MarkCommitOptions)
   )
@@ -32,42 +32,41 @@ import Data.Tuple.Nested ((/\))
 import Effect.Aff (Aff)
 import Node.Path (FilePath)
 
-execute ∷ ProgramInput Command → Aff ProgramOutput
-execute (ProgramInput (CommonOptions commonOpts) command) = do
-  repo ← loadRepo
-    commonOpts.gitDirectory
-    commonOpts.ciPrefix
-
+execute ∷ String → ProgramInput Command → Aff ProgramOutput
+execute version (ProgramInput (CommonOptions commonOpts) command) =
   case command of
-
-    GetLast (GetLastOptions { ciStages }) →
-      case findLastCommit ciStages repo of
+    GetLast (GetLastOptions { ciStagePrefix, ciStages }) → do
+      repo ← loadRepo commonOpts.gitDirectory (pure ciStagePrefix)
+      pure $ case findLastCommit ciStages repo of
         Just (commitRef /\ _) →
-          pure $ TextOutput $ serialize FullHex commitRef
-        Nothing → pure $ TextOutput $ "Not found."
+          TextOutput $ serialize FullHex commitRef
+        Nothing →
+          TextOutput $ "Not found."
+    MarkCommit
+      (MarkCommitOptions { ciStage, ciStagePrefix, commitRef, dryRun }) →
+      do
+        repo ← loadRepo commonOpts.gitDirectory (pure ciStagePrefix)
+        case markCommit ciStage commitRef repo of
+          Just update → do
+            if dryRun then pure unit
+            else
+              executeUpdate
+                commonOpts.gitDirectory
+                ciStagePrefix
+                update
 
-    MarkCommit (MarkCommitOptions { ciStage, commitRef }) →
-      case markCommit ciStage commitRef repo of
-        Just update → do
+            pure $ TextOutput $ serialize unit update
 
-          if commonOpts.dryRun then pure unit
-          else
-            executeUpdate
-              commonOpts.gitDirectory
-              commonOpts.ciPrefix
-              update
+          Nothing → do
+            let
+              (CIStage stage) = ciStage
 
-          pure $ TextOutput $ serialize unit update
-
-        Nothing → do
-          let
-            (CIStage stage) = ciStage
-
-          pure $ TextOutput $
-            "Commit '" <> (serialize FullHex commitRef)
-              <> "' is already marked with CI stage '"
-              <> NES.toString stage
-              <> "'"
+            pure $ TextOutput $
+              "Commit '" <> (serialize FullHex commitRef)
+                <> "' is already marked with CI stage '"
+                <> NES.toString stage
+                <> "'"
+    Version → pure $ TextOutput version
 
 executeUpdate ∷ FilePath → CIStagePrefix → Update → Aff Unit
 executeUpdate gitDirectory (CIStagePrefix prefix) update =

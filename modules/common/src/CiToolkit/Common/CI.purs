@@ -297,7 +297,7 @@ passedStagesFromNotes (CIStagePrefix prefix) (Notes noteLines) =
     ciStageName ← NES.fromString suffix
     pure $ CIStage ciStageName
 
-loadRepo ∷ FilePath → CIStagePrefix → Aff Repo
+loadRepo ∷ FilePath → Maybe CIStagePrefix → Aff Repo
 loadRepo gitDirectory ciPrefix = do
   commitRefs ← getCommitRefs gitDirectory
   tagAndInfos ← do
@@ -320,9 +320,12 @@ loadRepo gitDirectory ciPrefix = do
 
         pure
           { info: commitInfo
-          , passedStages: fromMaybe
-              Nil
-              (passedStagesFromNotes ciPrefix <$> notes)
+          , passedStages: maybe
+              mempty
+              ( \p → fromMaybe mempty
+                  (passedStagesFromNotes p <$> notes)
+              )
+              ciPrefix
           , ref: commitRef
           , tags: commitTags
           }

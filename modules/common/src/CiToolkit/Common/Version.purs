@@ -1,11 +1,13 @@
 module CiToolkit.Common.Version
   ( VersionTagPrefix(..)
+  , unsafeVersionTagPrefix
   , versionTagPrefixParser
   ) where
 
 import Prelude
 
 import CiToolkit.Common.Git.Parsing (wordParser)
+import CiToolkit.Common.Utils (unsafeNonEmptyString)
 import Data.Eq.Generic
   ( genericEq
   )
@@ -32,3 +34,6 @@ versionTagPrefixParser ∷ Parser VersionTagPrefix
 versionTagPrefixParser = do
   versionTagPrefixName ← wordParser
   pure $ VersionTagPrefix versionTagPrefixName
+
+unsafeVersionTagPrefix ∷ String → VersionTagPrefix
+unsafeVersionTagPrefix = VersionTagPrefix <<< unsafeNonEmptyString

@@ -11,31 +11,31 @@ import CiToolkit.Common.ProgramInput
 import CiToolkit.Common.ProgramOutput (ProgramOutput(TextOutput))
 import CiToolkit.Version.Calendar (showCalendarVersion)
 import CiToolkit.Version.ProgramInput
-  ( Command(Show)
+  ( Command(Show, Version)
   , ShowOptions(ShowOptions)
   , VersionFormat(Calendar, Semantic)
   )
 import CiToolkit.Version.Semantic (showSemanticVersion)
 import Control.Monad.Error.Class (throwError)
 import Data.Either (either)
-import Data.Tuple (uncurry)
-import Data.Tuple.Nested ((/\))
+import Data.Maybe (Maybe(Nothing))
 import Effect.Aff (Aff)
 import Effect.Exception (error)
-import Node.Path (FilePath)
 
-execute ∷ ProgramInput Command → Aff ProgramOutput
-execute (ProgramInput (CommonOptions commonOpts) command) = do
-  repo ← loadRepo commonOpts.gitDirectory commonOpts.ciPrefix
-  headRef ← getHeadRef commonOpts.gitDirectory
-  let
-    result = case command of
-      Show (ShowOptions { format }) →
-        case format of
+execute ∷ String → ProgramInput Command → Aff ProgramOutput
+execute version (ProgramInput (CommonOptions commonOpts) command) =
+  case command of
+    Show (ShowOptions { format }) → do
+      repo ← loadRepo commonOpts.gitDirectory Nothing
+      headRef ← getHeadRef commonOpts.gitDirectory
+
+      let
+        result = case format of
           Calendar → showCalendarVersion repo headRef
           Semantic → showSemanticVersion repo headRef
 
-  either
-    (throwError <<< error)
-    (pure <<< TextOutput)
-    result
+      either
+        (throwError <<< error)
+        (pure <<< TextOutput)
+        result
+    Version → pure $ TextOutput version
