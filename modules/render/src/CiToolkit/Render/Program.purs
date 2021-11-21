@@ -15,9 +15,9 @@ import CiToolkit.Common.ProgramOutput
   , ProgramOutput(DotOutput, JsonOutput, TextOutput)
   )
 import CiToolkit.Common.Text.SerDe (serialize)
-import CiToolkit.Render.ProgramInput
-  ( Command(Branch, Commit, Repo, Version)
-  , RepoOptions(RepoOptions)
+import CiToolkit.Render.Command (Command(Branch, Commit, Repo, Version))
+import CiToolkit.Render.Command.Repo
+  ( RepoOptions(RepoOptions)
   )
 import Data.Argonaut (encodeJson)
 import Data.DotLang (toGraph)

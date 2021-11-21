@@ -1,8 +1,8 @@
-module CiToolkit.Version.ProgramInput
-  ( Command(..)
-  , ShowOptions(..)
+module CiToolkit.Version.Command.Show
+  ( ShowOptions(..)
   , VersionFormat(..)
-  , commandParser
+  , showCommandDescription
+  , showOptionsParser
   ) where
 
 import Prelude
@@ -43,28 +43,9 @@ derive instance Generic ShowOptions _
 instance Show ShowOptions where
   show = genericShow
 
-commandParser ∷ Opts.Parser Command
-commandParser =
-  Opts.hsubparser $
-    Opts.command
-      "show"
-      ( Opts.info
-          showCommandParser
-          (Opts.progDesc "show version")
-      ) <> Opts.command "version"
-      ( Opts.info versionCommandParser
-          (Opts.progDesc "Print the CLI's version")
-      )
-
-showCommandParser ∷ Opts.Parser Command
-showCommandParser = ado
-  opts ← showOptionsParser
-  in Show opts
-
 showOptionsParser ∷ Opts.Parser ShowOptions
 showOptionsParser = ado
-  format ← Opts.option parseVersionFormat
-    (Opts.long "format" <> Opts.value Semantic)
+  format ← versionFormatParser
   versionTagPrefix ← Opts.option parseVersionPrefix
     ( Opts.long "version-prefix" <>
         (Opts.value $ VersionTagPrefix (nes (Proxy ∷ Proxy "v")))
@@ -72,8 +53,10 @@ showOptionsParser = ado
   in
     ShowOptions { format, versionTagPrefix }
 
-versionCommandParser ∷ Opts.Parser Command
-versionCommandParser = pure Version
+versionFormatParser ∷ Opts.Parser VersionFormat
+versionFormatParser =
+  Opts.option parseVersionFormat
+    (Opts.long "format" <> Opts.value Semantic)
 
 parseVersionFormat ∷ Opts.ReadM VersionFormat
 parseVersionFormat = Opts.eitherReader $ \s →
@@ -87,3 +70,6 @@ parseVersionPrefix = Opts.eitherReader $ \s →
   case runParser versionTagPrefixParser s of
     Left { error } → Left error
     Right versionPrefix → pure versionPrefix
+
+showCommandDescription ∷ String
+showCommandDescription = "Calculate a version of the current commit."

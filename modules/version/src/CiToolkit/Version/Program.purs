@@ -10,9 +10,9 @@ import CiToolkit.Common.ProgramInput
   )
 import CiToolkit.Common.ProgramOutput (ProgramOutput(TextOutput))
 import CiToolkit.Version.Calendar (showCalendarVersion)
-import CiToolkit.Version.ProgramInput
-  ( Command(Show, Version)
-  , ShowOptions(ShowOptions)
+import CiToolkit.Version.Command (Command(Show, Version))
+import CiToolkit.Version.Command.Show
+  ( ShowOptions(ShowOptions)
   , VersionFormat(Calendar, Semantic)
   )
 import CiToolkit.Version.Semantic (showSemanticVersion)

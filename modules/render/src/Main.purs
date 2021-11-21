@@ -4,8 +4,8 @@ import Prelude
 
 import CiToolkit.Common.CLI (run)
 import CiToolkit.Common.ProgramInput (programInputParser)
+import CiToolkit.Render.Command (commandParser)
 import CiToolkit.Render.Program (execute)
-import CiToolkit.Render.ProgramInput (commandParser)
 import Effect (Effect)
 import Effect.Aff (launchAff_)
 

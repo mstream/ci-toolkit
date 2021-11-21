@@ -10,9 +10,9 @@ import CiToolkit.Common.ProgramInput
   , ProgramInput(ProgramInput)
   )
 import CiToolkit.Common.ProgramOutput (ProgramOutput(TextOutput))
-import CiToolkit.Version.ProgramInput
-  ( Command(Show)
-  , ShowOptions(ShowOptions)
+import CiToolkit.Version.Command (Command(Show))
+import CiToolkit.Version.Command.Show
+  ( ShowOptions(ShowOptions)
   , VersionFormat(Calendar, Semantic)
   )
 import Control.Monad.Error.Class (throwError)

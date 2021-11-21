@@ -1,8 +1,7 @@
-module CiToolkit.Pipeline.ProgramInput
-  ( Command(..)
-  , GetLastOptions(..)
-  , MarkCommitOptions(..)
-  , commandParser
+module CiToolkit.Pipeline.Command.MarkCommit
+  ( MarkCommitOptions(..)
+  , markCommitCommandDescription
+  , markCommitOptionsParser
   ) where
 
 import Prelude
@@ -52,41 +51,8 @@ derive instance Generic GetLastOptions _
 instance Show GetLastOptions where
   show = genericShow
 
-commandParser ∷ Opts.Parser Command
-commandParser = Opts.hsubparser $
-  Opts.command "get-last"
-    (Opts.info getLastCommandParser (Opts.progDesc "Get last commit"))
-    <> Opts.command "mark-commit"
-      ( Opts.info markCommitCommandParser
-          (Opts.progDesc "Mark commit")
-      )
-    <> Opts.command "version"
-      ( Opts.info versionCommandParser
-          (Opts.progDesc "Print the CLI's version")
-      )
-
-getLastCommandParser ∷ Opts.Parser Command
-getLastCommandParser = ado
-  opts ← getLastOptionsParser
-  in GetLast opts
-
-markCommitCommandParser ∷ Opts.Parser Command
-markCommitCommandParser = ado
-  opts ← getMarkCommitOptionsParser
-  in MarkCommit opts
-
-versionCommandParser ∷ Opts.Parser Command
-versionCommandParser = pure Version
-
-getLastOptionsParser ∷ Opts.Parser GetLastOptions
-getLastOptionsParser = ado
-  ciStagePrefix ← ciStagePrefixParser
-  ciStages ← Opts.many $ Opts.option parseCIStage
-    (Opts.long "ci-stage" <> Opts.help "passed stage")
-  in GetLastOptions { ciStagePrefix, ciStages }
-
-getMarkCommitOptionsParser ∷ Opts.Parser MarkCommitOptions
-getMarkCommitOptionsParser = ado
+markCommitOptionsParser ∷ Opts.Parser MarkCommitOptions
+markCommitOptionsParser = ado
   ciStage ← Opts.option parseCIStage
     (Opts.long "ci-stage" <> Opts.help "stage to be marked with")
   ciStagePrefix ← ciStagePrefixParser
@@ -94,3 +60,7 @@ getMarkCommitOptionsParser = ado
     (Opts.long "commit-ref" <> Opts.help "commit to be marked")
   dryRun ← dryRunParser
   in MarkCommitOptions { ciStage, ciStagePrefix, commitRef, dryRun }
+
+markCommitCommandDescription ∷ String
+markCommitCommandDescription =
+  "Mark a commit as passed a given CI stage."

@@ -9,12 +9,12 @@ import CiToolkit.Common.ProgramInput
 import CiToolkit.Common.ProgramOutput (ProgramOutput(TextOutput))
 import CiToolkit.Common.Utils (unsafeDate, unsafeTimeFromHours)
 import CiToolkit.Common.Version (unsafeVersionTagPrefix)
-import CiToolkit.Version.Program (execute)
-import CiToolkit.Version.ProgramInput
-  ( Command(Show)
-  , ShowOptions(ShowOptions)
+import CiToolkit.Version.Command (Command(Show))
+import CiToolkit.Version.Command.Show
+  ( ShowOptions(ShowOptions)
   , VersionFormat(Calendar)
   )
+import CiToolkit.Version.Program (execute)
 import Data.DateTime (DateTime(DateTime))
 import Data.Maybe (Maybe(Nothing))
 import Test.CiToolkit.Common.TestUtils (createCommit, withGitRepo)

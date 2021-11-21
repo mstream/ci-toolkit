@@ -1,7 +1,7 @@
-module CiToolkit.Render.ProgramInput
-  ( Command(..)
-  , RepoOptions(..)
-  , commandParser
+module CiToolkit.Render.Command.Repo
+  ( RepoOptions(..)
+  , repoCommandDescription
+  , repoOptionsParser
   ) where
 
 import Prelude
@@ -46,32 +46,6 @@ derive instance Generic RepoOptions _
 instance Show RepoOptions where
   show = genericShow
 
-commandParser ∷ Opts.Parser Command
-commandParser = Opts.hsubparser $
-  Opts.command "branch"
-    (Opts.info branchCommandParser (Opts.progDesc "Render branch"))
-    <> Opts.command "commit"
-      (Opts.info commitCommandParser (Opts.progDesc "Render commit"))
-    <> Opts.command "repo"
-      ( Opts.info repoCommandParser
-          (Opts.progDesc "Render repository")
-      )
-    <> Opts.command "version"
-      ( Opts.info versionCommandParser
-          (Opts.progDesc "Print the CLI's version")
-      )
-
-branchCommandParser ∷ Opts.Parser Command
-branchCommandParser = pure Branch
-
-commitCommandParser ∷ Opts.Parser Command
-commitCommandParser = pure Commit
-
-repoCommandParser ∷ Opts.Parser Command
-repoCommandParser = ado
-  opts ← repoOptionsParser
-  in Repo opts
-
 repoOptionsParser ∷ Opts.Parser RepoOptions
 repoOptionsParser = ado
   ciStagePrefix ← ciStagePrefixParser
@@ -80,5 +54,5 @@ repoOptionsParser = ado
   outputFormat ← outputFormatParser
   in RepoOptions { ciStagePrefix, ciStages, outputFormat }
 
-versionCommandParser ∷ Opts.Parser Command
-versionCommandParser = pure Version
+repoCommandDescription ∷ String
+repoCommandDescription = "Renders the entire repository."

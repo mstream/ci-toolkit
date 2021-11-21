@@ -20,10 +20,14 @@ import CiToolkit.Common.ProgramOutput (ProgramOutput(TextOutput))
 import CiToolkit.Common.Query (findLastCommit)
 import CiToolkit.Common.Text.SerDe (serialize)
 import CiToolkit.Common.Update (Update(MarkWithCIStage), markCommit)
-import CiToolkit.Pipeline.ProgramInput
+import CiToolkit.Pipeline.Command
   ( Command(MarkCommit, GetLast, Version)
-  , GetLastOptions(GetLastOptions)
-  , MarkCommitOptions(MarkCommitOptions)
+  )
+import CiToolkit.Pipeline.Command.GetLast
+  ( GetLastOptions(GetLastOptions)
+  )
+import CiToolkit.Pipeline.Command.MarkCommit
+  ( MarkCommitOptions(MarkCommitOptions)
   )
 import Data.List (List(Nil), (:))
 import Data.Maybe (Maybe(Just, Nothing))
