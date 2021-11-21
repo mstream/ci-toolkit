@@ -1,6 +1,6 @@
 {
   "name": "@ci-toolkit/version",
-  "version": "0.2.20",
+  "version": "0.2.21",
   "private": false,
   "description": "A tool for determining a codebase version",
   "files": [
