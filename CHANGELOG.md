@@ -1,4 +1,11 @@
 Changelog
+### 0.2.20 (2021-11-21)
+
+
+### Features
+
+* **pipeline,render,version:** add version command ([0efcd2c](https://github.com/mstream/ci-toolkit/commit/0efcd2c1471d1db6f11d3c7ed24610969cfaaa75))
+
 ### 0.2.19 (2021-11-20)
 
 ### 0.2.18 (2021-11-20)
