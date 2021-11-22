@@ -1,0 +1,28 @@
+= show
+
+== Description
+
+Calculate a version of the current commit.
+
+== How to...
+
+=== create a release tag
+
+[source,bash]
+----
+git tag $(npx @ci-toolkit/version show)
+----
+
+== Reference
+
+=== format
+
+Format of the version
+
+=== git-directory
+
+Git repository path
+
+=== version-prefix
+
+Prefix for version-related Git tags

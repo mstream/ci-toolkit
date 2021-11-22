@@ -24,6 +24,7 @@
     "format:check:pipeline": "purs-tidy check 'modules/pipeline/src/**/*.purs' 'modules/pipeline/test/**/*.purs'",
     "format:check:render": "purs-tidy check 'modules/render/src/**/*.purs' 'modules/render/test/**/*.purs'",
     "format:check:version": "purs-tidy check 'modules/version/src/**/*.purs' 'modules/version/test/**/*.purs'",
+    "generate:docs": "cd modules/doc-gen && spago run --exec-args ../..",
     "hooks:setup": "git config core.hooksPath .git-hooks",
     "ide:common": "cd modules/common && pscid --test",
     "ide:pipeline": "cd modules/pipeline && pscid --test",

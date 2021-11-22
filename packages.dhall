@@ -23,6 +23,7 @@ let extras =
         }
       }
 
-let local = {ci-toolkit-common = ./modules/common/spago.dhall as Location}
+let local =
+  { ci-toolkit-common = ./modules/common/spago.dhall as Location }
 
 in  upstream // extras // local

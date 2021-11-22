@@ -7,6 +7,7 @@ module CiToolkit.Version.Command.Show
 
 import Prelude
 
+import CiToolkit.Common.Documentation (CommandInfo(CommandInfo))
 import CiToolkit.Common.Version
   ( VersionTagPrefix(VersionTagPrefix)
   , versionTagPrefixParser
