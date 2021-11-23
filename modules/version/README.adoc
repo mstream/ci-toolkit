@@ -4,6 +4,15 @@
 
 The purpose of this suite of commands is to derive the version of a software based on the Git commits history so it is meaningful.
 
+== How to...
+
+=== create a release tag
+
+[source,bash]
+----
+
+----
+
 == Commands
 
 - link:show.adoc[show]

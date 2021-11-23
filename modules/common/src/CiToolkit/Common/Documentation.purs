@@ -1,9 +1,11 @@
 module CiToolkit.Common.Documentation
-  ( CommandInfo(..)
+  ( CodeSnippet(..)
+  , CommandInfo(..)
   , CommandOption(..)
   , CommandSuiteInfo(..)
   , HowTo(..)
   , ProjectInfo(..)
+  , ciPrefixOption
   , commandInfoToAsciiDoc
   , commandSuiteInfoToAsciiDoc
   , gitDirectoryOption
@@ -23,29 +25,44 @@ newtype ProjectInfo = ProjectInfo
 
 newtype CommandSuiteInfo = CommandSuiteInfo
   { commands ∷ Array CommandInfo
-  , description ∷ String
+  , description ∷ Array String
+  , howTos ∷ Array HowTo
   , name ∷ String
   }
 
 newtype CommandInfo = CommandInfo
-  { description ∷ String
+  { description ∷ Array String
   , howTos ∷ Array HowTo
   , name ∷ String
   , options ∷ Array CommandOption
   }
 
 newtype HowTo = HowTo
-  { codeSnippet ∷ String, title ∷ String }
+  { codeSnippets ∷ Array CodeSnippet
+  , title ∷ String
+  }
+
+newtype CodeSnippet = CodeSnippet
+  { code ∷ Array String, title ∷ Maybe String }
 
 newtype CommandOption = CommandOption
-  { description ∷ String
+  { description ∷ Array String
   , longForm ∷ String
   , shortForm ∷ Maybe String
   }
 
+ciPrefixOption ∷ CommandOption
+ciPrefixOption = CommandOption
+  { description:
+      [ "Prefix for stage names to differentiate the from other Git notes entries."
+      ]
+  , longForm: "ci-prefix"
+  , shortForm: Nothing
+  }
+
 gitDirectoryOption ∷ CommandOption
 gitDirectoryOption = CommandOption
-  { description: "Git repository path"
+  { description: [ "Git repository path" ]
   , longForm: "git-directory"
   , shortForm: Nothing
   }
@@ -64,18 +81,25 @@ projectInfoToAsciiDoc (ProjectInfo { commandSuites, name }) =
 
 commandSuiteInfoToAsciiDoc ∷ CommandSuiteInfo → String
 commandSuiteInfoToAsciiDoc
-  (CommandSuiteInfo { commands, description, name }) =
+  (CommandSuiteInfo { commands, description, howTos, name }) =
   let
     lines =
       [ ADoc.title ADoc.L0 name
       , ""
       , ADoc.title ADoc.L1 "Description"
       , ""
-      , description
+      , joinWith "\n" description
       , ""
-      , ADoc.title ADoc.L1 "Commands"
+      , ADoc.title ADoc.L1 "How to..."
       , ""
-      ] <> (ADoc.bullet <<< commandInfoToLink <$> commands)
+      ]
+        <>
+          (howToToAsciiDoc <$> howTos)
+        <>
+          [ ADoc.title ADoc.L1 "Commands"
+          , ""
+          ]
+        <> (ADoc.bullet <<< commandInfoToLink <$> commands)
   in
     joinWith
       "\n"
@@ -98,7 +122,7 @@ commandInfoToAsciiDoc
       , ""
       , ADoc.title ADoc.L1 "Description"
       , ""
-      , description
+      , joinWith "\n" description
       , ""
       , ADoc.title ADoc.L1 "How to..."
       , ""
@@ -119,17 +143,22 @@ commandOptionToAsciiDoc
     "\n"
     [ ADoc.title ADoc.L2 longForm
     , ""
-    , description
+    , joinWith "\n" description
     , ""
     ]
 
 howToToAsciiDoc ∷ HowTo → String
-howToToAsciiDoc
-  (HowTo { codeSnippet, title }) =
-  joinWith
-    "\n"
-    [ ADoc.title ADoc.L2 title
-    , ""
-    , ADoc.sourceBlock { code: codeSnippet, language: "bash" }
-    , ""
-    ]
+howToToAsciiDoc (HowTo { codeSnippets, title }) =
+  let
+    lines =
+      [ ADoc.title ADoc.L2 title
+      , ""
+      ]
+        <> (codeSnippetToAsciiDoc <$> codeSnippets)
+        <> [ "" ]
+  in
+    joinWith "\n" lines
+
+codeSnippetToAsciiDoc ∷ CodeSnippet → String
+codeSnippetToAsciiDoc (CodeSnippet { code, title }) =
+  ADoc.sourceBlock { code: joinWith "\n" code, language: "bash", title }

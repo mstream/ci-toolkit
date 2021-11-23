@@ -1,40 +1,41 @@
-module CiToolkit.Common.Documentation.Version.Show (commandInfo) where
+module CiToolkit.Common.Documentation.Render.Repo (commandInfo) where
 
 import CiToolkit.Common.Documentation
   ( CodeSnippet(CodeSnippet)
   , CommandInfo(CommandInfo)
   , CommandOption(CommandOption)
   , HowTo(HowTo)
+  , ciPrefixOption
   , gitDirectoryOption
   )
 import Data.Maybe (Maybe(Nothing))
 
 commandInfo ∷ CommandInfo
 commandInfo = CommandInfo
-  { description: [ "Calculate a version of the current commit." ]
+  { description: [ "Renders the entire repository." ]
   , howTos:
       [ HowTo
           { codeSnippets:
               [ CodeSnippet
-                  { code: [ "git tag $(npx @ci-toolkit/version show)" ]
+                  { code:
+                      [ "npx @ci-toolkit/render repo \\"
+                      , "    --format dot | dot -Tpng > /tmp/output.png"
+                      ]
                   , title: Nothing
                   }
               ]
-          , title: "create a release tag"
+          , title: "generate a graphical repository visualization"
           }
       ]
-  , name: "show"
+  , name: "repo"
   , options:
-      [ CommandOption
-          { description: [ "Format of the version" ]
+      [ ciPrefixOption
+      , CommandOption
+          { description:
+              [ "Format in which the output should be produced." ]
           , longForm: "format"
           , shortForm: Nothing
           }
       , gitDirectoryOption
-      , CommandOption
-          { description: [ "Prefix for version-related Git tags" ]
-          , longForm: "version-prefix"
-          , shortForm: Nothing
-          }
       ]
   }

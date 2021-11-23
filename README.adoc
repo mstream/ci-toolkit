@@ -2,4 +2,6 @@
 
 == Modules
 
+- link:modules/pipeline/README.adoc[pipeline]
+- link:modules/render/README.adoc[render]
 - link:modules/version/README.adoc[version]

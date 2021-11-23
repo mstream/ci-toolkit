@@ -8,6 +8,8 @@ module CiToolkit.Common.AsciiDoc
 
 import Prelude
 
+import Data.Maybe (Maybe, maybe)
+
 data TitleLevel
   = L0
   | L1
@@ -27,9 +29,16 @@ bullet s = "- " <> s
 link ∷ { alias ∷ String, href ∷ String } → String
 link { alias, href } = "link:" <> href <> "[" <> alias <> "]"
 
-sourceBlock ∷ { code ∷ String, language ∷ String } → String
-sourceBlock { code, language } =
-  "[source," <> language <> "]\n" <> "----\n" <> code <> "\n----"
+sourceBlock
+  ∷ { code ∷ String, language ∷ String, title ∷ Maybe String } → String
+sourceBlock { code, language, title } =
+  (maybe "" (\s → "." <> s <> "\n") title)
+    <> "[source,"
+    <> language
+    <> "]\n"
+    <> "----\n"
+    <> code
+    <> "\n----"
 
 title ∷ TitleLevel → String → String
 title level s = show level <> " " <> s

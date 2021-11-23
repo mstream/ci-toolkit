@@ -1,0 +1,43 @@
+= mark-commit
+
+== Description
+
+Mark a commit as passed a given CI stage.
+That information is preserved in a Git repository in the form of commit notes and used by the `get-last` command to query for the last commit which passed certain stages.
+
+== How to...
+
+=== mark the current commit
+
+[source,bash]
+----
+npx @ci-toolkit/pipeline mark-commit \
+    --ci-stage functional-testing \
+    --commit-ref $(git rev-parse HEAD)
+----
+
+== Reference
+
+=== ci-prefix
+
+Prefix for stage names to differentiate the from other Git notes entries.
+
+=== ci-stage
+
+Name of the stage for commit to be marked with.
+
+=== commit-ref
+
+ID of the commit to be marked with CI stage name.
+
+=== dry-run
+
+When enabled, a simulated outcome of the marking is displayed but no change to the Git repository is made.
+
+=== git-directory
+
+Git repository path
+
+=== verbose
+
+Output the maximum amount of diagnostic information.

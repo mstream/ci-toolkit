@@ -1,0 +1,31 @@
+= get-last
+
+== Description
+
+Get the last commit which passed given CI stage(s).
+This command uses information produced by the `mark-commit` command to retrieve an identifier of the last commit which passed requested ci-stages.
+
+== How to...
+
+=== get an ID of the last commit with passed all given CI stages
+
+[source,bash]
+----
+npx @ci-toolkit/pipeline get-last \
+    --ci-stage functional-testing \
+    --ci-stage integration-testing
+----
+
+== Reference
+
+=== ci-prefix
+
+Prefix for stage names to differentiate the from other Git notes entries.
+
+=== ci-stage
+
+Name of the stage(s) that searched commit needs to be marked with.
+
+=== git-directory
+
+Git repository path

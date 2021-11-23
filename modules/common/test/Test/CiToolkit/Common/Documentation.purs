@@ -3,11 +3,13 @@ module Test.CiToolkit.Common.Documentation (spec) where
 import Prelude
 
 import CiToolkit.Common.Documentation
-  ( CommandInfo(CommandInfo)
+  ( CodeSnippet(CodeSnippet)
+  , CommandInfo(CommandInfo)
   , CommandOption(CommandOption)
   , HowTo(HowTo)
   , commandInfoToAsciiDoc
   )
+import Data.Maybe (Maybe(Nothing))
 import Data.String (joinWith)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
@@ -21,26 +23,45 @@ commandInfoToAsciiDocSpec = describe "commandInfoToAsciiDoc" do
   it "converts correctly" do
     let
       commandInfo = CommandInfo
-        { description: "commandDescription"
+        { description:
+            [ "commandDescriptionLine1"
+            , "commandDescriptionLine2"
+            ]
         , howTos:
             [ HowTo
-                { codeSnippet: "codeSnippet1"
+                { codeSnippets:
+                    [ CodeSnippet
+                        { code:
+                            [ "codeSnippetCode1Line1"
+                            , "codeSnippetCode1Line2"
+                            ]
+                        , title: pure "codeSnippetTitle1"
+                        }
+                    ]
                 , title: "howToTitle1"
                 }
             , HowTo
-                { codeSnippet: "codeSnippet2"
+                { codeSnippets:
+                    [ CodeSnippet
+                        { code: [ "codeSnippetCode2" ]
+                        , title: Nothing
+                        }
+                    ]
                 , title: "howToTitle2"
                 }
             ]
         , name: "commandName"
         , options:
             [ CommandOption
-                { description: "optionDescription1"
+                { description:
+                    [ "optionDescription1Line1"
+                    , "optionDescription1Line2"
+                    ]
                 , longForm: "option1"
                 , shortForm: pure "o1"
                 }
             , CommandOption
-                { description: "optionDescription2"
+                { description: [ "optionDescription2" ]
                 , longForm: "option2"
                 , shortForm: pure "o2"
                 }
@@ -52,29 +73,33 @@ commandInfoToAsciiDocSpec = describe "commandInfoToAsciiDoc" do
         , ""
         , "== Description"
         , ""
-        , "commandDescription"
+        , "commandDescriptionLine1"
+        , "commandDescriptionLine2"
         , ""
         , "== How to..."
         , ""
         , "=== howToTitle1"
         , ""
+        , ".codeSnippetTitle1"
         , "[source,bash]"
         , "----"
-        , "codeSnippet1"
+        , "codeSnippetCode1Line1"
+        , "codeSnippetCode1Line2"
         , "----"
         , ""
         , "=== howToTitle2"
         , ""
         , "[source,bash]"
         , "----"
-        , "codeSnippet2"
+        , "codeSnippetCode2"
         , "----"
         , ""
         , "== Reference"
         , ""
         , "=== option1"
         , ""
-        , "optionDescription1"
+        , "optionDescription1Line1"
+        , "optionDescription1Line2"
         , ""
         , "=== option2"
         , ""

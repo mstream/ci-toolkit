@@ -1,0 +1,29 @@
+= repo
+
+== Description
+
+Renders the entire repository.
+
+== How to...
+
+=== generate a graphical repository visualization
+
+[source,bash]
+----
+npx @ci-toolkit/render repo \
+    --format dot | dot -Tpng > /tmp/output.png
+----
+
+== Reference
+
+=== ci-prefix
+
+Prefix for stage names to differentiate the from other Git notes entries.
+
+=== format
+
+Format in which the output should be produced.
+
+=== git-directory
+
+Git repository path
