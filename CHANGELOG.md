@@ -1,4 +1,15 @@
 Changelog
+## 0.3.0 (2021-11-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* **version:** changes the delimiter from '_' to '-'
+
+### Features
+
+* **version:** change calendar version delimiter ([8d86ca5](https://github.com/mstream/ci-toolkit/commit/8d86ca5df745c7371ef6e5c7a9ce4661a2028862))
+
 ### 0.2.23 (2021-11-22)
 
 ### 0.2.22 (2021-11-21)
