@@ -61,7 +61,7 @@ spec = describe "Program" do
           (unsafeTimeFromHours 2)
 
         let
-          expected = TextOutput "2020.06.10_2"
+          expected = TextOutput "2020.06.10-2"
 
           commonOpts = CommonOptions
             { gitDirectory: gitDirPath

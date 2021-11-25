@@ -61,5 +61,5 @@ formatCalendarVersion commitDate commitIndex =
       <> padded m
       <> "."
       <> padded d
-      <> "_"
+      <> "-"
       <> show commitIndex

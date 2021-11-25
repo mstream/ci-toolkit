@@ -21,16 +21,16 @@ export default [
   },
   {
     input: `${versionShowCommand} --format calendar`,
-    output: [`${versionDates[1]}_1`],
+    output: [`${versionDates[1]}-1`],
   },
   dummyCommitStep({ id: commitIds[1], message: "another message" }),
   {
     input: `${versionShowCommand} --format calendar`,
-    output: [`${versionDates[0]}_1`],
+    output: [`${versionDates[0]}-1`],
   },
   dummyCommitStep({ id: commitIds[0], message: "yet another message" }),
   {
     input: `${versionShowCommand} --format calendar`,
-    output: [`${versionDates[0]}_2`],
+    output: [`${versionDates[0]}-2`],
   },
 ];

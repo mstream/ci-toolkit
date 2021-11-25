@@ -70,7 +70,7 @@ formatCalendarVersionSpec ∷ Spec Unit
 formatCalendarVersionSpec = describe "formatCalendarVersion" do
   it "formats date properly" do
     let
-      expected = "2020.05.01_2"
+      expected = "2020.05.01-2"
       actual = formatCalendarVersion
         (unsafeDate { year: 2020, month: 5, day: 1 })
         2
@@ -109,9 +109,9 @@ showCalendarVersionSpec = describe "showCalendarVersion" do
         ]
 
       expected =
-        [ pure "2020.05.01_1"
-        , pure "2020.05.02_1"
-        , pure "2020.05.02_2"
+        [ pure "2020.05.01-1"
+        , pure "2020.05.02-1"
+        , pure "2020.05.02-2"
         ]
 
       actual = showCalendarVersion repo <$>
