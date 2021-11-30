@@ -1,6 +1,6 @@
 {
   "name": "ci-toolkit",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "description": "A collection of tools supporting continuous integration",
   "scripts": {
@@ -70,7 +70,7 @@
     "pscid": "^2",
     "purescript": "~0.14",
     "purs-tidy": "~0.6",
-    "rimraf" : "^3",
+    "rimraf": "^3",
     "spago": "~0.20",
     "standard-version": "^9"
   }

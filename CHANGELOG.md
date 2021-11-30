@@ -1,4 +1,15 @@
 Changelog
+## 0.4.0 (2021-11-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* pipeline get-last command will fail on no match
+
+### Features
+
+* introduce non-zero exit codes ([a050d01](https://github.com/mstream/ci-toolkit/commit/a050d0186e663422382285a57b87c2864f862281))
+
 ## 0.3.0 (2021-11-25)
 
 
