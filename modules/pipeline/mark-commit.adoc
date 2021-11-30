@@ -22,6 +22,8 @@ npx @ci-toolkit/pipeline mark-commit \
 
 Prefix for stage names to differentiate the from other Git notes entries.
 
+Default value: *(CIStagePrefix (NonEmptyString.unsafeFromString "ci-"))*
+
 === ci-stage
 
 Name of the stage for commit to be marked with.
@@ -32,12 +34,19 @@ ID of the commit to be marked with CI stage name.
 
 === dry-run
 
-When enabled, a simulated outcome of the marking is displayed but no change to the Git repository is made.
+When enabled, a simulated outcome of the command is displayed
+but no change to the Git repository is made.
+
+Default value: *false*
 
 === git-directory
 
 Git repository path
 
+Default value: *"."*
+
 === verbose
 
 Output the maximum amount of diagnostic information.
+
+Default value: *false*

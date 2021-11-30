@@ -3,6 +3,10 @@ module CiToolkit.Version.Program (execute) where
 import Prelude
 
 import CiToolkit.Common.CI (loadRepo)
+import CiToolkit.Common.Documentation.Version.Show
+  ( ShowOptions(ShowOptions)
+  , VersionFormat(Calendar, Semantic)
+  )
 import CiToolkit.Common.Git (getHeadRef)
 import CiToolkit.Common.ProgramInput
   ( CommonOptions(CommonOptions)
@@ -11,10 +15,6 @@ import CiToolkit.Common.ProgramInput
 import CiToolkit.Common.ProgramOutput (ProgramOutput(TextOutput))
 import CiToolkit.Version.Calendar (showCalendarVersion)
 import CiToolkit.Version.Command (Command(Show, Version))
-import CiToolkit.Version.Command.Show
-  ( ShowOptions(ShowOptions)
-  , VersionFormat(Calendar, Semantic)
-  )
 import CiToolkit.Version.Semantic (showSemanticVersion)
 import Control.Monad.Error.Class (throwError)
 import Data.Either (either)

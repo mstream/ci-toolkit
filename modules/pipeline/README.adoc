@@ -26,6 +26,7 @@ npx @ci-toolkit/pipeline mark-commit \
 # pushing notes
 git push origin refs/notes/*
 ----
+
 .Process B
 [source,bash]
 ----
@@ -46,6 +47,7 @@ npx @ci-toolkit/pipeline mark-commit \
 # pushing notes
 git push origin refs/notes/*
 ----
+
 .Process C
 [source,bash]
 ----
@@ -66,7 +68,6 @@ npx @ci-toolkit/pipeline mark-commit \
 # pushing notes
 git push origin refs/notes/*
 ----
-
 == Commands
 
 - link:get-last.adoc[get-last]

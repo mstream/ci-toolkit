@@ -5,15 +5,16 @@ module CiToolkit.Pipeline.Command
 
 import Prelude
 
-import CiToolkit.Common.Command.Version (versionCommandDescription)
-import CiToolkit.Pipeline.Command.GetLast
+import CiToolkit.Common.Command.Version
+  ( versionCommandDescription
+  )
+import CiToolkit.Common.Documentation (commandOptionDescription)
+import CiToolkit.Common.Documentation.Pipeline.GetLast
   ( GetLastOptions
-  , getLastCommandDescription
   , getLastOptionsParser
   )
-import CiToolkit.Pipeline.Command.MarkCommit
+import CiToolkit.Common.Documentation.Pipeline.MarkCommit
   ( MarkCommitOptions
-  , markCommitCommandDescription
   , markCommitOptionsParser
   )
 import Data.Generic.Rep (class Generic)
@@ -37,14 +38,14 @@ commandParser = Opts.hsubparser $
     "get-last"
     ( Opts.info
         (GetLast <$> getLastOptionsParser)
-        (Opts.progDesc getLastCommandDescription)
+        (Opts.progDesc "TODO")
     )
     <>
       Opts.command
         "mark-commit"
         ( Opts.info
             (MarkCommit <$> markCommitOptionsParser)
-            (Opts.progDesc markCommitCommandDescription)
+            (Opts.progDesc "TODO")
         )
     <>
       Opts.command

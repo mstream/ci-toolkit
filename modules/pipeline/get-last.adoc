@@ -22,6 +22,8 @@ npx @ci-toolkit/pipeline get-last \
 
 Prefix for stage names to differentiate the from other Git notes entries.
 
+Default value: *(CIStagePrefix (NonEmptyString.unsafeFromString "ci-"))*
+
 === ci-stage
 
 Name of the stage(s) that searched commit needs to be marked with.
@@ -29,3 +31,5 @@ Name of the stage(s) that searched commit needs to be marked with.
 === git-directory
 
 Git repository path
+
+Default value: *"."*

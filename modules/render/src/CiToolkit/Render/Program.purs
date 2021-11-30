@@ -6,6 +6,15 @@ import CiToolkit.Common.CI
   ( RenderRepoOpts(RenderRepoOpts)
   , loadRepo
   )
+import CiToolkit.Common.Documentation.Render.Branch
+  ( BranchOptions(BranchOptions)
+  )
+import CiToolkit.Common.Documentation.Render.Commit
+  ( CommitOptions(CommitOptions)
+  )
+import CiToolkit.Common.Documentation.Render.Repo
+  ( RepoOptions(RepoOptions)
+  )
 import CiToolkit.Common.ProgramInput
   ( CommonOptions(CommonOptions)
   , ProgramInput(ProgramInput)
@@ -16,9 +25,6 @@ import CiToolkit.Common.ProgramOutput
   )
 import CiToolkit.Common.Text.SerDe (serialize)
 import CiToolkit.Render.Command (Command(Branch, Commit, Repo, Version))
-import CiToolkit.Render.Command.Repo
-  ( RepoOptions(RepoOptions)
-  )
 import Data.Argonaut (encodeJson)
 import Data.DotLang (toGraph)
 import Effect.Aff (Aff)
@@ -26,8 +32,8 @@ import Effect.Aff (Aff)
 execute ∷ String → ProgramInput Command → Aff ProgramOutput
 execute version (ProgramInput (CommonOptions commonOpts) command) = do
   case command of
-    Branch → pure $ TextOutput $ "TODO"
-    Commit → pure $ TextOutput $ "TODO"
+    Branch _ → pure $ TextOutput $ "TODO"
+    Commit _ → pure $ TextOutput $ "TODO"
     Repo (RepoOptions { ciStagePrefix, ciStages, outputFormat }) → do
       repo ← loadRepo commonOpts.gitDirectory (pure ciStagePrefix)
       pure $ case outputFormat of

@@ -19,10 +19,16 @@ git tag $(npx @ci-toolkit/version show)
 
 Format of the version
 
+Default value: *semantic*
+
 === git-directory
 
 Git repository path
 
+Default value: *"."*
+
 === version-prefix
 
 Prefix for version-related Git tags
+
+Default value: *(VersionTagPrefix (NonEmptyString.unsafeFromString "v"))*

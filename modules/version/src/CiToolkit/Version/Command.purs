@@ -8,9 +8,8 @@ import Prelude
 import CiToolkit.Common.Command.Version
   ( versionCommandDescription
   )
-import CiToolkit.Version.Command.Show
+import CiToolkit.Common.Documentation.Version.Show
   ( ShowOptions
-  , showCommandDescription
   , showOptionsParser
   )
 import Data.Generic.Rep (class Generic)
@@ -28,18 +27,17 @@ instance Show Command where
   show = genericShow
 
 commandParser ∷ Opts.Parser Command
-commandParser =
-  Opts.hsubparser $
-    Opts.command
-      "show"
-      ( Opts.info
-          (Show <$> showOptionsParser)
-          (Opts.progDesc showCommandDescription)
-      )
-      <>
-        Opts.command
-          "version"
-          ( Opts.info
-              (NilP Version)
-              (Opts.progDesc versionCommandDescription)
-          )
+commandParser = Opts.hsubparser $
+  Opts.command
+    "show"
+    ( Opts.info
+        (Show <$> showOptionsParser)
+        (Opts.progDesc "TODO")
+    )
+    <>
+      Opts.command
+        "version"
+        ( Opts.info
+            (NilP Version)
+            (Opts.progDesc versionCommandDescription)
+        )

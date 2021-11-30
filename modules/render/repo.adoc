@@ -20,10 +20,16 @@ npx @ci-toolkit/render repo \
 
 Prefix for stage names to differentiate the from other Git notes entries.
 
+Default value: *(CIStagePrefix (NonEmptyString.unsafeFromString "ci-"))*
+
 === format
 
 Format in which the output should be produced.
 
+Default value: *JSON*
+
 === git-directory
 
 Git repository path
+
+Default value: *"."*

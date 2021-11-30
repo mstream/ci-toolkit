@@ -24,7 +24,7 @@
     "format:check:pipeline": "purs-tidy check 'modules/pipeline/src/**/*.purs' 'modules/pipeline/test/**/*.purs'",
     "format:check:render": "purs-tidy check 'modules/render/src/**/*.purs' 'modules/render/test/**/*.purs'",
     "format:check:version": "purs-tidy check 'modules/version/src/**/*.purs' 'modules/version/test/**/*.purs'",
-    "generate:docs": "cd modules/doc-gen && spago run --exec-args ../..",
+    "generate:docs": "rimraf **/*.adoc && cd modules/doc-gen && spago run --exec-args ../..",
     "hooks:setup": "git config core.hooksPath .git-hooks",
     "ide:common": "cd modules/common && pscid --test",
     "ide:pipeline": "cd modules/pipeline && pscid --test",
@@ -37,8 +37,9 @@
     "publish:version": "cd modules/version && npm publish",
     "release:git": "standard-version",
     "release:gh": "conventional-github-releaser",
+    "serve:website": "cd modules/website && parcel serve",
     "test": "npm run test:common && npm run test:pipeline && npm run test:pipeline && npm run test:version",
-    "test:common": "cd modules/common && nyc spago test --source-maps",
+    "test:common": "cd modules/common && spago test --source-maps",
     "test:pipeline": "cd modules/pipeline && spago test --source-maps",
     "test:render": "cd modules/render && spago test --source-maps",
     "test:version": "cd modules/version && spago test --source-maps"
@@ -69,6 +70,7 @@
     "pscid": "^2",
     "purescript": "~0.14",
     "purs-tidy": "~0.6",
+    "rimraf" : "^3",
     "spago": "~0.20",
     "standard-version": "^9"
   }

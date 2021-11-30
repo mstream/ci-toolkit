@@ -2,6 +2,10 @@ module Test.CiToolkit.Version.Program (spec) where
 
 import Prelude
 
+import CiToolkit.Common.Documentation.Version.Show
+  ( ShowOptions(ShowOptions)
+  , VersionFormat(Calendar)
+  )
 import CiToolkit.Common.ProgramInput
   ( CommonOptions(CommonOptions)
   , ProgramInput(ProgramInput)
@@ -10,10 +14,6 @@ import CiToolkit.Common.ProgramOutput (ProgramOutput(TextOutput))
 import CiToolkit.Common.Utils (unsafeDate, unsafeTimeFromHours)
 import CiToolkit.Common.Version (unsafeVersionTagPrefix)
 import CiToolkit.Version.Command (Command(Show))
-import CiToolkit.Version.Command.Show
-  ( ShowOptions(ShowOptions)
-  , VersionFormat(Calendar)
-  )
 import CiToolkit.Version.Program (execute)
 import Data.DateTime (DateTime(DateTime))
 import Data.Maybe (Maybe(Nothing))

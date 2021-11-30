@@ -7,6 +7,12 @@ import CiToolkit.Common.CI
   , CIStagePrefix(CIStagePrefix)
   , loadRepo
   )
+import CiToolkit.Common.Documentation.Pipeline.GetLast
+  ( GetLastOptions(GetLastOptions)
+  )
+import CiToolkit.Common.Documentation.Pipeline.MarkCommit
+  ( MarkCommitOptions(MarkCommitOptions)
+  )
 import CiToolkit.Common.Git (appendCommitNotes)
 import CiToolkit.Common.Git.Commit
   ( GitObjectRefFormat(FullHex)
@@ -22,12 +28,6 @@ import CiToolkit.Common.Text.SerDe (serialize)
 import CiToolkit.Common.Update (Update(MarkWithCIStage), markCommit)
 import CiToolkit.Pipeline.Command
   ( Command(MarkCommit, GetLast, Version)
-  )
-import CiToolkit.Pipeline.Command.GetLast
-  ( GetLastOptions(GetLastOptions)
-  )
-import CiToolkit.Pipeline.Command.MarkCommit
-  ( MarkCommitOptions(MarkCommitOptions)
   )
 import Data.List (List(Nil), (:))
 import Data.Maybe (Maybe(Just, Nothing))

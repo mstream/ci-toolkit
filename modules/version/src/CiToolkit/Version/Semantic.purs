@@ -11,10 +11,6 @@ import CiToolkit.Common.ProgramInput
   )
 import CiToolkit.Common.ProgramOutput (ProgramOutput(TextOutput))
 import CiToolkit.Version.Command (Command(Show))
-import CiToolkit.Version.Command.Show
-  ( ShowOptions(ShowOptions)
-  , VersionFormat(Calendar, Semantic)
-  )
 import Control.Monad.Error.Class (throwError)
 import Data.Argonaut (encodeJson)
 import Data.Date (Date, day, month, year)

@@ -10,23 +10,24 @@ import CiToolkit.Common.CI
   , CIStagePrefix(..)
   )
 import CiToolkit.Common.Command.Version (versionCommandDescription)
+import CiToolkit.Common.Documentation.Render.Branch
+  ( BranchOptions
+  , branchOptionsParser
+  )
+import CiToolkit.Common.Documentation.Render.Commit
+  ( CommitOptions
+  , commitOptionsParser
+  )
+import CiToolkit.Common.Documentation.Render.Repo
+  ( RepoOptions
+  , repoOptionsParser
+  )
 import CiToolkit.Common.ProgramInput
   ( ciStagePrefixParser
   , outputFormatParser
   , parseCIStage
   )
 import CiToolkit.Common.ProgramOutput (OutputFormat(JSON))
-import CiToolkit.Render.Command.Branch
-  ( branchCommandDescription
-  )
-import CiToolkit.Render.Command.Commit
-  ( commitCommandDescription
-  )
-import CiToolkit.Render.Command.Repo
-  ( RepoOptions(RepoOptions)
-  , repoCommandDescription
-  , repoOptionsParser
-  )
 import Data.Generic.Rep (class Generic)
 import Data.List (List)
 import Data.Show.Generic (genericShow)
@@ -37,8 +38,8 @@ import Options.Applicative.Types (Parser(NilP))
 import Type.Proxy (Proxy(Proxy))
 
 data Command
-  = Branch
-  | Commit
+  = Branch BranchOptions
+  | Commit CommitOptions
   | Repo RepoOptions
   | Version
 
@@ -52,22 +53,22 @@ commandParser = Opts.hsubparser $
   Opts.command
     "branch"
     ( Opts.info
-        (NilP Branch)
-        (Opts.progDesc branchCommandDescription)
+        (Branch <$> branchOptionsParser)
+        (Opts.progDesc "TODO")
     )
     <>
       Opts.command
         "commit"
         ( Opts.info
-            (NilP Commit)
-            (Opts.progDesc commitCommandDescription)
+            (Commit <$> commitOptionsParser)
+            (Opts.progDesc "TODO")
         )
     <>
       Opts.command
         "repo"
         ( Opts.info
             (Repo <$> repoOptionsParser)
-            (Opts.progDesc repoCommandDescription)
+            (Opts.progDesc "TODO")
         )
     <>
       Opts.command
