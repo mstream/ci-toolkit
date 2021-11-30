@@ -19,7 +19,7 @@ import CiToolkit.Common.Documentation
   , outputFormatOption
   )
 import CiToolkit.Common.ProgramInput (parseCIStage)
-import CiToolkit.Common.ProgramOutput (OutputFormat(DOT, JSON, Text))
+import CiToolkit.Common.ProgramOutcome (OutputFormat(DOT, JSON, Text))
 import Control.Plus (empty)
 import Data.Either (Either(Left, Right))
 import Data.Generic.Rep (class Generic)

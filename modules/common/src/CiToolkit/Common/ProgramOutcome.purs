@@ -1,5 +1,6 @@
-module CiToolkit.Common.ProgramOutput
+module CiToolkit.Common.ProgramOutcome
   ( OutputFormat(..)
+  , ProgramOutcome(..)
   , ProgramOutput(..)
   ) where
 
@@ -13,7 +14,19 @@ import Data.DotLang (Graph)
 import Data.DotLang.Class (toText)
 import Data.Eq.Generic (genericEq)
 import Data.Generic.Rep (class Generic)
+import Data.Maybe (Maybe)
 import Data.Show.Generic (genericShow)
+
+data ProgramOutcome
+  = Failure { exitCode ∷ Int, stderr ∷ String }
+  | Success { stderr ∷ Maybe String, stdout ∷ Maybe ProgramOutput }
+
+derive instance Generic ProgramOutcome _
+
+instance Show ProgramOutcome where
+  show = genericShow
+
+derive instance Eq ProgramOutcome
 
 data ProgramOutput
   = DotOutput Graph

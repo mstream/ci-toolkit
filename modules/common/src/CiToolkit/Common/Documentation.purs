@@ -26,7 +26,7 @@ import Prelude
 import CiToolkit.Common.AsciiDoc as ADoc
 import CiToolkit.Common.CI (CIStagePrefix(CIStagePrefix))
 import CiToolkit.Common.ProgramInput (parseCIPrefix, parseOutputFormat)
-import CiToolkit.Common.ProgramOutput (OutputFormat(JSON))
+import CiToolkit.Common.ProgramOutcome (OutputFormat(JSON))
 import Control.Plus (empty)
 import Data.Maybe (Maybe(Nothing), fromMaybe, maybe)
 import Data.String (joinWith)

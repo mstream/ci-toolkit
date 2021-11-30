@@ -21,7 +21,7 @@ import CiToolkit.Common.CI
   , ciStageParser
   )
 import CiToolkit.Common.Git.Commit (CommitRef, commitRefParser)
-import CiToolkit.Common.ProgramOutput (OutputFormat(DOT, JSON, Text))
+import CiToolkit.Common.ProgramOutcome (OutputFormat(DOT, JSON, Text))
 import Data.Either (Either(Left, Right))
 import Data.Generic.Rep (class Generic)
 import Data.List (List)

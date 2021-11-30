@@ -2,6 +2,7 @@
 , dependencies =
   [ "aff"
   , "ci-toolkit-common"
+  , "control"
   , "effect"
   , "lists"
   , "maybe"

@@ -10,11 +10,15 @@ import CiToolkit.Common.ProgramInput
   ( CommonOptions(CommonOptions)
   , ProgramInput(ProgramInput)
   )
-import CiToolkit.Common.ProgramOutput (ProgramOutput(TextOutput))
+import CiToolkit.Common.ProgramOutcome
+  ( ProgramOutcome(Failure, Success)
+  , ProgramOutput(TextOutput)
+  )
 import CiToolkit.Common.Utils (unsafeDate, unsafeTimeFromHours)
 import CiToolkit.Common.Version (unsafeVersionTagPrefix)
 import CiToolkit.Version.Command (Command(Show))
 import CiToolkit.Version.Program (execute)
+import Control.Plus (empty)
 import Data.DateTime (DateTime(DateTime))
 import Data.Maybe (Maybe(Nothing))
 import Test.CiToolkit.Common.TestUtils (createCommit, withGitRepo)
@@ -61,7 +65,8 @@ spec = describe "Program" do
           (unsafeTimeFromHours 2)
 
         let
-          expected = TextOutput "2020.06.10-2"
+          expected = Success
+            { stderr: empty, stdout: pure $ TextOutput "2020.06.10-2" }
 
           commonOpts = CommonOptions
             { gitDirectory: gitDirPath

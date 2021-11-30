@@ -1,32 +1,45 @@
-module CiToolkit.Common.CLI (run) where
+module CiToolkit.Common.CLI (executeVersion, run) where
 
 import Prelude
 
-import CiToolkit.Common.ProgramOutput (ProgramOutput)
+import CiToolkit.Common.ProgramOutcome
+  ( ProgramOutcome(Failure, Success)
+  , ProgramOutput(TextOutput)
+  )
 import CiToolkit.Common.Text.SerDe (serialize)
 import Control.Monad.Error.Class (throwError)
+import Control.Plus (empty)
 import Data.Argonaut.Core (caseJsonObject, caseJsonString)
 import Data.Argonaut.Parser (jsonParser)
 import Data.Either (Either(Left), either)
 import Data.Maybe (fromMaybe, maybe)
 import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
-import Effect.Console (log)
+import Effect.Console as Console
 import Effect.Exception (error)
 import Foreign.Object (lookup)
 import Node.Encoding (Encoding(UTF8))
 import Node.FS.Aff (readTextFile)
 import Node.Globals (__dirname)
 import Node.Path (sep)
+import Node.Process (exit)
 import Options.Applicative ((<**>))
 import Options.Applicative as Opts
 
-run ∷ ∀ i. Opts.Parser i → (String → i → Aff ProgramOutput) → Aff Unit
+run ∷ ∀ i. Opts.Parser i → (String → i → Aff ProgramOutcome) → Aff Unit
 run programInputParser execute = do
   version ← getVersion
   args ← liftEffect $ Opts.execParser $ options programInputParser
-  output ← execute version args
-  liftEffect $ log $ serialize unit output
+  outcome ← execute version args
+  liftEffect $ case outcome of
+    Failure { exitCode, stderr } → do
+      Console.error stderr
+      exit exitCode
+    Success { stderr, stdout } →
+      maybe
+        (pure unit)
+        (Console.log <<< serialize unit)
+        stdout
 
 options ∷ ∀ i. Opts.Parser i → Opts.ParserInfo i
 options programInputParser = Opts.info
@@ -63,3 +76,7 @@ parseVersion fileName s = do
     (Left $ "version property of " <> fileName <> " is not a string")
     pure
     versionJson
+
+executeVersion ∷ String → Aff ProgramOutcome
+executeVersion version = pure $ Success
+  { stderr: empty, stdout: pure $ TextOutput version }

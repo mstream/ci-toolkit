@@ -27,7 +27,7 @@ import CiToolkit.Common.ProgramInput
   , outputFormatParser
   , parseCIStage
   )
-import CiToolkit.Common.ProgramOutput (OutputFormat(JSON))
+import CiToolkit.Common.ProgramOutcome (OutputFormat(JSON))
 import Data.Generic.Rep (class Generic)
 import Data.List (List)
 import Data.Show.Generic (genericShow)

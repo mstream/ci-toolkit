@@ -3,6 +3,7 @@
   [ "aff"
   , "argonaut"
   , "ci-toolkit-common"
+  , "control"
   , "dotlang"
   , "effect"
   , "lists"
